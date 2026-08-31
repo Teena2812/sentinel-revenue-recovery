@@ -128,6 +128,8 @@ type reports\b2b_batch_breakdown.csv
 python -m unittest discover tests/
 ```
 
+> **Note**: Dev/investigation scripts in `scripts/` (`generate_reports.py`, `inspect_memory_and_prompt.py`) use relative imports and must be invoked from the **project root** — e.g. `python scripts/generate_reports.py` — not from inside the `scripts/` directory.
+
 ---
 
 ## Methodology & Design Decisions
