@@ -1,0 +1,51 @@
+﻿case_id,status,final_action,amount,amount_recovered,resolution_time,resolution_unit,initial_attempt_count,attempts_made,diagnosis_category,diagnosis_confidence,escalation_reason,reasoning_summary
+B2B-709b7d97-464,ESCALATED,ESCALATE_HUMAN,2917.55,0.00,N/A,days,2,1,N/A,N/A,dispute_skip,Pre-pipeline skip (dispute): Active dispute flag detected — skipping LLM pipeline for immediate dispute queue routing.
+B2B-6a34c854-107,ESCALATED,ESCALATE_HUMAN,1951.00,0.00,N/A,days,2,1,N/A,N/A,dispute_skip,Pre-pipeline skip (dispute): Active dispute flag detected — skipping LLM pipeline for immediate dispute queue routing.
+B2B-5a0cdd7c-f15,ESCALATED,ESCALATE_HUMAN,2455.21,0.00,N/A,days,2,1,N/A,N/A,dispute_skip,Pre-pipeline skip (dispute): Active dispute flag detected — skipping LLM pipeline for immediate dispute queue routing.
+B2B-cc530e36-add,ESCALATED,ESCALATE_HUMAN,1753593.01,0.00,N/A,days,1,1,N/A,N/A,dispute_skip,Pre-pipeline skip (dispute): Active dispute flag detected — skipping LLM pipeline for immediate dispute queue routing.
+B2B-53cd6268-610,ESCALATED,ESCALATE_HUMAN,151051.12,0.00,N/A,days,1,1,N/A,N/A,dispute_skip,Pre-pipeline skip (dispute): Active dispute flag detected — skipping LLM pipeline for immediate dispute queue routing.
+B2B-f510ab53-c7f,ESCALATED,ESCALATE_HUMAN,1068689.32,0.00,N/A,days,4,1,CASH_FLOW_MISMATCH,0.88,attempt_cap_reached_on_attempt_4,Terminal action ESCALATE_HUMAN executed (ESCALATED).
+B2B-c4536f1d-419,RECOVERED,ESCALATE_TONE,2598082.05,2598082.05,11.0,days,2,2,CASH_FLOW_MISMATCH,0.88,N/A,Recovered on loop attempt 2 (attempt_count=3) via ESCALATE_TONE.
+B2B-13748146-32c,STOPPED,STOP,4155071.69,0.00,N/A,days,1,1,N/A,N/A,fraud_stop_skip,Pre-pipeline skip (fraud): Fraud flag detected — skipping LLM pipeline for immediate STOP hard-stop.
+B2B-a5c5650c-818,STOPPED,STOP,72747.37,0.00,N/A,days,1,1,N/A,N/A,fraud_stop_skip,Pre-pipeline skip (fraud): Fraud flag detected — skipping LLM pipeline for immediate STOP hard-stop.
+B2B-c64ee6e3-89c,RECOVERED,OFFER_PAYMENT_PLAN,658308.31,658308.31,7.0,days,1,1,CASH_FLOW_MISMATCH,0.88,N/A,Recovered on loop attempt 1 (attempt_count=1) via OFFER_PAYMENT_PLAN.
+B2B-6105716b-ab0,ESCALATED,ESCALATE_HUMAN,207358.22,0.00,N/A,days,1,2,ADMINISTRATIVE_DELAY,0.90,attempt_cap_reached_on_attempt_2,Terminal action ESCALATE_HUMAN executed (ESCALATED).
+B2B-7d137018-680,RECOVERED,ESCALATE_TONE,53879.49,53879.49,16.0,days,1,3,CASH_FLOW_MISMATCH,0.88,N/A,Recovered on loop attempt 3 (attempt_count=3) via ESCALATE_TONE.
+B2B-ff233d5f-6ce,RECOVERED,OFFER_PAYMENT_PLAN,384736.96,384736.96,5.0,days,1,1,CASH_FLOW_MISMATCH,0.88,N/A,Recovered on loop attempt 1 (attempt_count=1) via OFFER_PAYMENT_PLAN.
+B2B-b97e6703-46c,RECOVERED,SEND_REMINDER,208366.57,208366.57,6.0,days,1,1,ADMINISTRATIVE_DELAY,0.90,N/A,Recovered on loop attempt 1 (attempt_count=1) via SEND_REMINDER.
+B2B-2053da42-f1a,FAILED,ESCALATE_TONE,492204.25,0.00,N/A,days,1,3,ADMINISTRATIVE_DELAY,0.90,exhausted_all_attempts_failed,Case unrecovered after maximum 3 attempts.
+B2B-a1235a8c-93b,FAILED,ESCALATE_TONE,11103.89,0.00,N/A,days,1,3,CASH_FLOW_MISMATCH,0.88,exhausted_all_attempts_failed,Case unrecovered after maximum 3 attempts.
+B2B-4c1f55ab-715,ESCALATED,ESCALATE_HUMAN,1923688.46,0.00,N/A,days,2,3,CASH_FLOW_MISMATCH,0.88,attempt_cap_reached_on_attempt_4,Terminal action ESCALATE_HUMAN executed (ESCALATED).
+B2B-00af5b3a-281,ESCALATED,ESCALATE_HUMAN,65892.46,0.00,N/A,days,3,1,CASH_FLOW_MISMATCH,0.88,strategy_policy_escalation,Terminal action ESCALATE_HUMAN executed (ESCALATED).
+B2B-32a447b2-ef0,ESCALATED,ESCALATE_HUMAN,113055.94,0.00,N/A,days,2,1,CASH_FLOW_MISMATCH,0.88,strategy_policy_escalation,Terminal action ESCALATE_HUMAN executed (ESCALATED).
+B2B-b321bf21-4dd,RECOVERED,SEND_REMINDER,463364.58,463364.58,3.0,days,1,2,ADMINISTRATIVE_DELAY,0.90,N/A,Recovered on loop attempt 2 (attempt_count=2) via SEND_REMINDER.
+B2B-c19ad58c-c35,ESCALATED,ESCALATE_HUMAN,275103.55,0.00,N/A,days,2,1,CASH_FLOW_MISMATCH,0.92,strategy_policy_escalation,Terminal action ESCALATE_HUMAN executed (ESCALATED).
+B2B-a99f1318-49c,ESCALATED,ESCALATE_HUMAN,211262.63,0.00,N/A,days,1,2,CASH_FLOW_MISMATCH,0.92,attempt_cap_reached_on_attempt_2,Terminal action ESCALATE_HUMAN executed (ESCALATED).
+B2B-c1a6423b-9f6,ESCALATED,ESCALATE_HUMAN,281930.36,0.00,N/A,days,4,1,CASH_FLOW_MISMATCH,0.92,strategy_policy_escalation,Terminal action ESCALATE_HUMAN executed (ESCALATED).
+B2B-8d605936-038,WAITING,WAIT,34035.06,0.00,N/A,days,1,1,N/A,N/A,active_promise_wait_skip,Pre-pipeline skip (active_promise): Active unexpired promise-to-pay exists (kept=None). Stand down contact to respect debtor commitment.
+B2B-6232b17a-250,WAITING,WAIT,670191.68,0.00,N/A,days,1,1,N/A,N/A,active_promise_wait_skip,Pre-pipeline skip (active_promise): Active unexpired promise-to-pay exists (kept=None). Stand down contact to respect debtor commitment.
+B2B-dd81b7f5-7d5,WAITING,WAIT,154603.34,0.00,N/A,days,4,1,N/A,N/A,active_promise_wait_skip,Pre-pipeline skip (active_promise): Active unexpired promise-to-pay exists (kept=None). Stand down contact to respect debtor commitment.
+B2B-e9d68f23-b48,WAITING,WAIT,59672.57,0.00,N/A,days,1,1,N/A,N/A,active_promise_wait_skip,Pre-pipeline skip (active_promise): Active unexpired promise-to-pay exists (kept=None). Stand down contact to respect debtor commitment.
+B2B-74f93d17-e91,WAITING,WAIT,428299.02,0.00,N/A,days,1,1,N/A,N/A,active_promise_wait_skip,Pre-pipeline skip (active_promise): Active unexpired promise-to-pay exists (kept=None). Stand down contact to respect debtor commitment.
+B2B-a075e927-511,RECOVERED,OFFER_PAYMENT_PLAN,1954935.19,1954935.19,13.0,days,2,1,CASH_FLOW_MISMATCH,0.88,N/A,Recovered on loop attempt 1 (attempt_count=2) via OFFER_PAYMENT_PLAN.
+B2B-2a96e1e2-719,RECOVERED,SEND_REMINDER,553848.65,553848.65,6.0,days,2,1,ADMINISTRATIVE_DELAY,0.90,N/A,Recovered on loop attempt 1 (attempt_count=2) via SEND_REMINDER.
+B2B-2cd1586a-2b8,ESCALATED,ESCALATE_HUMAN,81652.91,0.00,N/A,days,2,1,CASH_FLOW_MISMATCH,0.88,strategy_policy_escalation,Terminal action ESCALATE_HUMAN executed (ESCALATED).
+B2B-12e89d10-287,RECOVERED,OFFER_PAYMENT_PLAN,196331.92,196331.92,14.0,days,1,1,CASH_FLOW_MISMATCH,0.88,N/A,Recovered on loop attempt 1 (attempt_count=1) via OFFER_PAYMENT_PLAN.
+B2B-fe2110d0-4bb,ESCALATED,ESCALATE_HUMAN,355575.48,0.00,N/A,days,4,1,CASH_FLOW_MISMATCH,0.88,strategy_policy_escalation,Terminal action ESCALATE_HUMAN executed (ESCALATED).
+B2B-3810ae66-5a3,FAILED,ESCALATE_TONE,1093708.61,0.00,N/A,days,1,3,CASH_FLOW_MISMATCH,0.88,exhausted_all_attempts_failed,Case unrecovered after maximum 3 attempts.
+B2B-1712fb16-21a,FAILED,ESCALATE_TONE,388371.35,0.00,N/A,days,1,3,CASH_FLOW_MISMATCH,0.88,exhausted_all_attempts_failed,Case unrecovered after maximum 3 attempts.
+B2B-cde22f1c-56b,ESCALATED,ESCALATE_HUMAN,180317.92,0.00,N/A,days,1,1,CASH_FLOW_MISMATCH,0.88,fallback_ladder_conflicting_signals,Terminal action ESCALATE_HUMAN executed (ESCALATED).
+B2B-5e5ba13d-746,FAILED,ESCALATE_TONE,96985.02,0.00,N/A,days,1,3,CASH_FLOW_MISMATCH,0.88,exhausted_all_attempts_failed,Case unrecovered after maximum 3 attempts.
+B2B-e8cda0cc-76d,ESCALATED,ESCALATE_HUMAN,428966.92,0.00,N/A,days,2,3,ADMINISTRATIVE_DELAY,0.90,attempt_cap_reached_on_attempt_4,Terminal action ESCALATE_HUMAN executed (ESCALATED).
+B2B-aba4fc03-5ef,ESCALATED,ESCALATE_HUMAN,14081.21,0.00,N/A,days,2,1,ADMINISTRATIVE_DELAY,0.90,strategy_policy_escalation,Terminal action ESCALATE_HUMAN executed (ESCALATED).
+B2B-71d79665-718,RECOVERED,SEND_REMINDER,334936.14,334936.14,4.0,days,1,2,ADMINISTRATIVE_DELAY,0.90,N/A,Recovered on loop attempt 2 (attempt_count=2) via SEND_REMINDER.
+B2B-a3b5cece-a44,ESCALATED,ESCALATE_HUMAN,71711.22,0.00,N/A,days,1,2,CASH_FLOW_MISMATCH,0.88,attempt_cap_reached_on_attempt_2,Terminal action ESCALATE_HUMAN executed (ESCALATED).
+B2B-3ba5cd2f-dea,FAILED,ESCALATE_TONE,865353.35,0.00,N/A,days,1,3,CASH_FLOW_MISMATCH,0.88,exhausted_all_attempts_failed,Case unrecovered after maximum 3 attempts.
+B2B-96bf10ab-3ce,ESCALATED,ESCALATE_HUMAN,504253.33,0.00,N/A,days,3,2,CASH_FLOW_MISMATCH,0.88,attempt_cap_reached_on_attempt_4,Terminal action ESCALATE_HUMAN executed (ESCALATED).
+B2B-e8a3f341-c88,RECOVERED,ESCALATE_TONE,76754.63,76754.63,3.0,days,1,3,ADMINISTRATIVE_DELAY,0.90,N/A,Recovered on loop attempt 3 (attempt_count=3) via ESCALATE_TONE.
+B2B-204e178c-10d,FAILED,ESCALATE_TONE,485610.47,0.00,N/A,days,1,3,CASH_FLOW_MISMATCH,0.88,exhausted_all_attempts_failed,Case unrecovered after maximum 3 attempts.
+B2B-73991a47-6e1,ESCALATED,ESCALATE_HUMAN,230074.18,0.00,N/A,days,2,3,CASH_FLOW_MISMATCH,0.88,attempt_cap_reached_on_attempt_4,Terminal action ESCALATE_HUMAN executed (ESCALATED).
+B2B-be9d61ee-18b,RECOVERED,SEND_REMINDER,1098095.28,1098095.28,2.0,days,1,1,ADMINISTRATIVE_DELAY,0.90,N/A,Recovered on loop attempt 1 (attempt_count=1) via SEND_REMINDER.
+B2B-0d2b91ef-b89,ESCALATED,ESCALATE_HUMAN,334586.03,0.00,N/A,days,2,1,CASH_FLOW_MISMATCH,0.88,strategy_policy_escalation,Terminal action ESCALATE_HUMAN executed (ESCALATED).
+B2B-8f9b72ae-d85,ESCALATED,ESCALATE_HUMAN,62012.67,0.00,N/A,days,2,1,ADMINISTRATIVE_DELAY,0.90,strategy_policy_escalation,Terminal action ESCALATE_HUMAN executed (ESCALATED).
+B2B-24ac2130-dea,RECOVERED,OFFER_PAYMENT_PLAN,357079.67,357079.67,15.0,days,1,1,CASH_FLOW_MISMATCH,0.88,N/A,Recovered on loop attempt 1 (attempt_count=1) via OFFER_PAYMENT_PLAN.

@@ -1,0 +1,15 @@
+# Python cache & compiled files
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environments
+.venv/
+venv/
+
+# Environment files (never commit API keys)
+.env
+
+# NOTE: data/, reports/, and data/agent_memory.json are intentionally NOT ignored.
+# These contain real proof artifacts (benchmark CSVs, live Gemini proof, memory stats)
+# and must be tracked in version control.

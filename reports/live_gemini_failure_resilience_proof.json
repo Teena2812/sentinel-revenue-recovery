@@ -1,0 +1,18 @@
+{
+  "case_id": "PAY-6dadd6c7-95a",
+  "amount": 32866.95,
+  "failure_code": "GATEWAY_ERROR",
+  "model": "gemini-flash-latest",
+  "diagnosis": {
+    "root_cause": "LLM diagnosis call failed or returned malformed content.",
+    "category": "UNKNOWN",
+    "confidence": 0.0,
+    "reasoning": "Automated fallback due to LLM invocation/parsing failure."
+  },
+  "strategy": {
+    "proposed_action": "ESCALATE_HUMAN",
+    "confidence": 0.0,
+    "risk_assessment": "LOW",
+    "reasoning": "Automated fallback to human queue due to Strategy LLM error."
+  }
+}

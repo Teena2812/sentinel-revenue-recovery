@@ -1,0 +1,31 @@
+﻿case_id,status,final_action,amount,amount_recovered,resolution_time,resolution_unit,initial_attempt_count,attempts_made,diagnosis_category,diagnosis_confidence,escalation_reason,reasoning_summary
+PAY-b3aa7efe-445,ESCALATED,ESCALATE_HUMAN,81.92,0.00,N/A,hours,5,1,N/A,N/A,attempt_cap_reached_at_start,Pre-pipeline skip (cost_threshold): COST GATE: Case amount ₹81.92 is below the FAILED_PAYMENT recovery threshold (₹500.00). Use cheap automatic path only — skip full LLM diagnosis pipeline to avoid spending more on recovery than the case is worth.
+PAY-451b4cf3-612,ESCALATED,ESCALATE_HUMAN,424.66,0.00,N/A,hours,5,1,N/A,N/A,attempt_cap_reached_at_start,Pre-pipeline skip (cost_threshold): COST GATE: Case amount ₹424.66 is below the FAILED_PAYMENT recovery threshold (₹500.00). Use cheap automatic path only — skip full LLM diagnosis pipeline to avoid spending more on recovery than the case is worth.
+PAY-9132b63e-f16,FAILED,RETRY_NOW,445.81,0.00,N/A,hours,3,1,N/A,N/A,N/A,Pre-pipeline skip (cost_threshold): COST GATE: Case amount ₹445.81 is below the FAILED_PAYMENT recovery threshold (₹500.00). Use cheap automatic path only — skip full LLM diagnosis pipeline to avoid spending more on recovery than the case is worth.
+PAY-6dadd6c7-95a,RECOVERED,RETRY_NOW,32866.95,32866.95,4.0,hours,1,1,TRANSIENT_NETWORK,0.91,N/A,Recovered on loop attempt 1 (attempt_count=1) via RETRY_NOW.
+PAY-61b1cd22-628,ESCALATED,ESCALATE_HUMAN,34985.01,0.00,N/A,hours,3,3,FUNDS_UNAVAILABLE,0.88,attempt_cap_reached_on_attempt_5,Terminal action ESCALATE_HUMAN executed (ESCALATED).
+PAY-287d06ca-6f4,FAILED,SUGGEST_ALTERNATE_METHOD,14361.00,0.00,N/A,hours,1,3,FUNDS_UNAVAILABLE,0.88,exhausted_all_attempts_failed,Case unrecovered after maximum 3 attempts.
+PAY-5fb8d16c-272,STOPPED,STOP,4792.17,0.00,N/A,hours,4,1,N/A,N/A,fraud_stop_skip,Pre-pipeline skip (fraud): Fraud flag detected — skipping LLM pipeline for immediate STOP hard-stop.
+PAY-e0c53cb8-3da,STOPPED,STOP,15787.58,0.00,N/A,hours,1,1,N/A,N/A,fraud_stop_skip,Pre-pipeline skip (fraud): Fraud flag detected — skipping LLM pipeline for immediate STOP hard-stop.
+PAY-43dac043-2a4,STOPPED,STOP,6575.14,0.00,N/A,hours,1,1,N/A,N/A,fraud_stop_skip,Pre-pipeline skip (fraud): Fraud flag detected — skipping LLM pipeline for immediate STOP hard-stop.
+PAY-3985c3cf-3f7,RECOVERED,RETRY_LATER,17131.88,17131.88,10.0,hours,1,1,FUNDS_UNAVAILABLE,0.92,N/A,Recovered on loop attempt 1 (attempt_count=1) via RETRY_LATER.
+PAY-5496f63c-dc1,ESCALATED,ESCALATE_HUMAN,594.65,0.00,N/A,hours,2,1,AUTH_EXPIRED,0.80,strategy_policy_escalation,Terminal action ESCALATE_HUMAN executed (ESCALATED).
+PAY-6e595ed3-a8b,RECOVERED,RETRY_NOW,1571.02,1571.02,4.0,hours,1,1,TRANSIENT_NETWORK,0.91,N/A,Recovered on loop attempt 1 (attempt_count=1) via RETRY_NOW.
+PAY-dc96925e-ccf,STOPPED,STOP,2349.96,0.00,N/A,hours,4,1,N/A,N/A,fraud_stop_skip,Pre-pipeline skip (fraud): Fraud flag detected — skipping LLM pipeline for immediate STOP hard-stop.
+PAY-ffd0f9d5-a6f,RECOVERED,RETRY_LATER,1362.16,1362.16,10.0,hours,1,1,AUTH_EXPIRED,0.86,N/A,Recovered on loop attempt 1 (attempt_count=1) via RETRY_LATER.
+PAY-63f2ae24-fc3,RECOVERED,SUGGEST_ALTERNATE_METHOD,5295.16,5295.16,12.0,hours,1,3,FUNDS_UNAVAILABLE,0.88,N/A,Recovered on loop attempt 3 (attempt_count=3) via SUGGEST_ALTERNATE_METHOD.
+PAY-0f9aea4b-8ac,ESCALATED,ESCALATE_HUMAN,4028.32,0.00,N/A,hours,1,1,TRANSIENT_NETWORK,0.92,fallback_ladder_conflicting_signals,Terminal action ESCALATE_HUMAN executed (ESCALATED).
+PAY-118a9d29-2f9,RECOVERED,RETRY_LATER,6143.31,6143.31,10.0,hours,1,1,AUTH_EXPIRED,0.86,N/A,Recovered on loop attempt 1 (attempt_count=1) via RETRY_LATER.
+PAY-42c18a62-ef4,FAILED,SUGGEST_ALTERNATE_METHOD,18504.25,0.00,N/A,hours,1,3,FUNDS_UNAVAILABLE,0.92,exhausted_all_attempts_failed,Case unrecovered after maximum 3 attempts.
+PAY-89a2688b-12c,ESCALATED,ESCALATE_HUMAN,3722.86,0.00,N/A,hours,4,1,FUNDS_UNAVAILABLE,0.82,strategy_policy_escalation,Terminal action ESCALATE_HUMAN executed (ESCALATED).
+PAY-8dfa6a56-d12,RECOVERED,RETRY_NOW,1693.40,1693.40,4.0,hours,1,1,TRANSIENT_NETWORK,0.92,N/A,Recovered on loop attempt 1 (attempt_count=1) via RETRY_NOW.
+PAY-57c700aa-b7b,ESCALATED,ESCALATE_HUMAN,3485.25,0.00,N/A,hours,1,1,FUNDS_UNAVAILABLE,0.82,fallback_ladder_low_confidence,Terminal action ESCALATE_HUMAN executed (ESCALATED).
+PAY-295d6fbf-430,RECOVERED,SUGGEST_ALTERNATE_METHOD,3354.07,3354.07,12.0,hours,2,2,FUNDS_UNAVAILABLE,0.88,N/A,Recovered on loop attempt 2 (attempt_count=3) via SUGGEST_ALTERNATE_METHOD.
+PAY-5d59cd2a-4ee,ESCALATED,ESCALATE_HUMAN,16033.61,0.00,N/A,hours,4,2,TRANSIENT_NETWORK,0.92,attempt_cap_reached_on_attempt_5,Terminal action ESCALATE_HUMAN executed (ESCALATED).
+PAY-f94d6204-680,RECOVERED,SUGGEST_ALTERNATE_METHOD,44903.06,44903.06,16.0,hours,2,3,FUNDS_UNAVAILABLE,0.88,N/A,Recovered on loop attempt 3 (attempt_count=4) via SUGGEST_ALTERNATE_METHOD.
+PAY-bc2cbb0d-dd3,RECOVERED,SUGGEST_ALTERNATE_METHOD,8091.07,8091.07,12.0,hours,1,3,FUNDS_UNAVAILABLE,0.88,N/A,Recovered on loop attempt 3 (attempt_count=3) via SUGGEST_ALTERNATE_METHOD.
+PAY-3170f437-a8f,RECOVERED,RETRY_NOW,31670.14,31670.14,4.0,hours,1,1,TRANSIENT_NETWORK,0.94,N/A,Recovered on loop attempt 1 (attempt_count=1) via RETRY_NOW.
+PAY-42deffcc-f86,ESCALATED,ESCALATE_HUMAN,1753.71,0.00,N/A,hours,4,1,FUNDS_UNAVAILABLE,0.82,strategy_policy_escalation,Terminal action ESCALATE_HUMAN executed (ESCALATED).
+PAY-30a900ad-939,FAILED,SUGGEST_ALTERNATE_METHOD,4831.40,0.00,N/A,hours,1,3,FUNDS_UNAVAILABLE,0.88,exhausted_all_attempts_failed,Case unrecovered after maximum 3 attempts.
+PAY-5487fd4f-ebb,FAILED,SUGGEST_ALTERNATE_METHOD,3689.53,0.00,N/A,hours,1,3,FUNDS_UNAVAILABLE,0.88,exhausted_all_attempts_failed,Case unrecovered after maximum 3 attempts.
+PAY-610faa3f-f0b,FAILED,SUGGEST_ALTERNATE_METHOD,18267.75,0.00,N/A,hours,1,3,FUNDS_UNAVAILABLE,0.88,exhausted_all_attempts_failed,Case unrecovered after maximum 3 attempts.

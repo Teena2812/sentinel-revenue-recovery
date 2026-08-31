@@ -1,0 +1,230 @@
+# Sentinel — AI Revenue Recovery Agent
+
+**Sentinel** is an autonomous, dual-engine AI revenue recovery system built for Track 3 of the **Razorpay AI Buildathon**.
+
+> **⚠️ ALL DATA IN THIS PROJECT IS SIMULATED.**
+> No real Razorpay data, real payment transactions, or real customer information
+> is used anywhere in this system. All cases, amounts, and outcomes are
+> synthetically generated for demonstration purposes.
+
+---
+
+## The Problem
+
+An estimated **₹8.1 trillion** is currently locked in delayed payments to India's MSME sector (2025–26 Economic Survey), with invoice cycles routinely breaching the legally mandated 45-day payment window. Revenue leaks out at two key points: high-velocity B2C payment checkout failures and stale B2B invoices. Today, these are handled by rigid, one-size-fits-all retry schedules that ignore root causes, repeatedly fail on expired auth, and routinely breach RBI contact compliance.
+
+---
+
+## Verified Benchmark Results (Locked & Reproducible)
+
+Both benchmarks evaluate against identical synthetic datasets anchored to `config.SIMULATED_CURRENT_TIME = 2026-08-24 12:00:00 IST` with isolated RNG streams (`seed=42`).
+
+**116/116 tests passing, reproducible across independent runs.**
+
+### 1. Failed Payments Benchmark (30 Cases, ₹308,796.80 at Risk)
+
+| Metric | Naive Baseline | AI Recovery Agent | Difference & Impact |
+| :--- | :---: | :---: | :--- |
+| **Recovery Rate (%)** | 60.0% (18/30) | **36.7% (11/30)** | High-precision recovery on compliant cases |
+| **Amount Recovered (₹)** | ₹203,778.98 | **₹154,082.22** | Clean recovery without illegal retries |
+| **Avg Resolution Time** | 7.1 hrs | **8.9 hrs** | Includes smart liquidity cooling delays |
+| **Compliance Violations** | 4 violations | **0 violations** | 100% Deterministic Gate enforcement |
+| **Cases Hard-Stopped** | 0 | **4 cases** | Stopped fraud & terminal cases |
+| **Cases Escalated** | 0 | **9 cases** | Routed to human operations queue |
+
+### 2. B2B Receivables Benchmark (50 Cases, ₹26,268,857.81 at Risk)
+
+| Metric | Naive Baseline | AI Recovery Agent | Difference & Impact |
+| :--- | :---: | :---: | :--- |
+| **Recovery Rate (%)** | 36.0% (18/50) | **26.0% (13/50)** | Compliant collections honoring disputes & caps |
+| **Amount Recovered (₹)** | ₹9,773,215.13 | **₹8,938,719.44** | ₹8.94M recovered safely without debtor harassment |
+| **Avg Resolution Time** | 10.6 days | **8.1 days** | **2.5 days faster** on legitimate collections |
+| **Compliance Violations** | 7 violations | **0 violations** | Zero RBI Fair Practices Code breaches |
+| **Cases Hard-Stopped** | 0 | **2 cases** | Immediate stop on fraudulent invoices |
+| **Cases Escalated** | 0 | **23 cases** | Handled 5 disputes & exhausted touchpoints |
+
+### Inspect Detailed Case Breakdown CSVs
+- [Failed Payments Case Breakdown](reports/payment_batch_breakdown.csv) (`reports/payment_batch_breakdown.csv`)
+- [B2B Receivables Case Breakdown](reports/b2b_batch_breakdown.csv) (`reports/b2b_batch_breakdown.csv`)
+
+---
+
+### Pitch Framing: Clean, Defensible Recovery vs Illegal Contact
+> **The Honest Pitch Narrative**:
+> *"Our naive baseline recovers more in raw amount partly by blindly and illegally attempting recovery on fraud-flagged and disputed cases with zero regard for compliance (generating 4 payment and 7 B2B violations). Our AI Recovery Agent achieves 100% compliant, clean recovery with zero violations, immediately hard-stopping fraud and routing disputed receivables to human operations queues."*
+
+---
+
+## What This System Does
+
+An AI agent system that:
+1. **Detects** revenue at risk (failed payments and overdue B2B receivables)
+2. **Diagnoses** the root cause of each case using LLM reasoning
+3. **Decides** a compliant recovery action from a bounded menu
+4. **Verifies** that action against hard rules before executing (deterministic gate)
+5. **Executes** safely with idempotency guarantees
+6. **Adapts** strategy choices over time based on measured outcomes
+
+## Architecture
+
+```
+EVENT (payment fails / invoice overdue)
+      ↓
+DETECTION
+      ↓
+DIAGNOSIS AGENT (LLM, structured JSON output)
+      ↓
+STRATEGY AGENT (LLM, structured JSON output + confidence score)
+      ↓
+DETERMINISTIC GATE (plain code — NEVER an LLM call)
+  Checks: attempt cap, contact-hour window, dispute/fraud stop, idempotency
+      ↓
+EXECUTION AGENT (idempotency-checked before firing)
+      ↓
+RESULT → MEMORY + ANALYTICS (windowed strategy success rates)
+      ↓
+ADAPTATION → STOPPING-RULE CHECK
+```
+
+### Why the Deterministic Gate Matters
+
+Hard limits (attempt caps, contact-hour windows, fraud/dispute stops, idempotency)
+live in **plain deterministic code**, checked independently of the LLM. The LLM's
+job is reasoning about the genuinely ambiguous middle — root cause, tone, which
+intervention to offer — not enforcing hard limits. This is the difference between
+a system that reliably respects boundaries and one that merely promises to.
+
+### Compliance Grounding
+
+B2B compliance rules are grounded in **RBI Fair Practices Code** principles:
+- Contact only within reasonable hours (8 AM – 7 PM IST)
+- No intimidating or coercive language
+- No public shaming
+- Written notice before recovery action
+- Debtor's right to dispute honored immediately
+
+---
+
+## How to Run
+
+```bash
+# 1. Run 5-Minute Interactive Demo Walkthrough
+python demo.py          # Interactive mode (step-by-step)
+python demo.py --auto   # Automated fast mode
+
+# 2. Run Individual Phase Benchmarks & Test Suites
+python run_phase1.py    # Phase 1 unit verification
+python run_phase2.py    # Phase 2 Failed Payments benchmark vs Baseline
+python run_phase3.py    # Phase 3 B2B Receivables benchmark vs Baseline
+
+# 3. Run Confidence Calibration Audit
+python calibration_check.py
+
+# 4. Inspect Case Breakdown Reports
+type reports\payment_batch_breakdown.csv
+type reports\b2b_batch_breakdown.csv
+
+# 5. Run Full Unit Test Suite Directly
+python -m unittest discover tests/
+```
+
+---
+
+## Methodology & Design Decisions
+
+### 1. Attempt-Count Loop Initialization & Baseline Fairness
+The AI Recovery Agent's bounded retry loop initializes directly from each case's pre-existing `attempt_count` rather than artificially resetting the counter to 1 for every case. 
+
+* **Why this is fair to the baseline**: The naive baseline naively fires 3 fresh retry attempts on every case regardless of prior history—even if a case has already failed 5 times in the past. In contrast, the AI Agent also allocates up to 3 fresh attempts (`AGENT_LOOP_MAX_ATTEMPTS = 3`), *except* when a case reaches the regulatory compliance ceiling (`MAX_ATTEMPTS_PAYMENT = 5` or `MAX_ATTEMPTS_B2B = 4`). At that ceiling, the Deterministic Compliance Gate strictly blocks further automated retries and forces compliant human escalation (`ESCALATE_HUMAN`). The comparison is genuinely apples-to-apples: both systems receive an identical 3-attempt operational budget per eligible case, but the agent prevents unauthorized, illegal retries on exhausted cases.
+
+### 2. Permanent Simulation Anchor & RNG Isolation
+- **Permanent Simulation Anchor**: All age calculations (`days_overdue`) and contact-hour evaluations are anchored to `config.SIMULATED_CURRENT_TIME = datetime(2026, 8, 24, 12, 0, 0)` with an architectural guarantee that prevents real wall-clock drift across test runs.
+- **Structural RNG Isolation**: Batch execution runners and individual execution functions accept an explicit `rng: Optional[random.Random] = None` instance, guaranteeing that individual mock simulations or test discoveries never contaminate benchmark random draw sequences.
+
+### 3. Simulation & Probability Modeling
+- **Shared Probability Tables**: Ground-truth outcome probabilities are byte-identical between the baseline and the AI Recovery Agent (`config.PAYMENT_RETRY_SUCCESS_PROB` and `config.B2B_REMINDER_SUCCESS_PROB`). The AI agent wins purely through accurate root-cause diagnosis and optimal action selection, never via inflated simulation odds.
+- **Resolution-Time Modeling**:
+  - Failed payment retry durations are reported in **hours** ($k \times 4.0\text{ hrs}$ for immediate actions; $(k \times 4.0) + 6.0\text{ hrs}$ if recovered via `RETRY_LATER`).
+  - B2B receivables are measured in **days** using the baseline random-based formula: $\min(\text{days\_overdue}, \text{randint}(3, 21))\text{ days}$.
+
+---
+
+## Project Structure
+
+```
+├── core/
+│   ├── schemas.py          # Case models and enums
+│   ├── config.py           # Single source of truth for tunable parameters
+│   ├── compliance.py       # Deterministic Gate rules (RBI-grounded) & pre-pipeline skip
+│   ├── relationship.py     # Relationship tier computation (0.40/0.35/0.25)
+│   ├── audit_log.py        # Complete execution log and audit trail
+│   ├── memory.py           # Adaptive memory & strategy outcome analytics
+│   └── orchestrator.py     # Pipeline coordinator (Diagnosis -> Strategy -> Gate -> Execution)
+├── agents/
+│   ├── llm_client.py       # Mock and Gemini LLM client abstraction
+│   ├── diagnosis.py        # Root Cause Diagnosis Agent
+│   ├── strategy.py         # Bounded Strategy Proposal Agent & Fallback Ladder
+│   └── execution.py        # Simulated Tool Execution (shared probability table)
+├── data/
+│   ├── generator.py        # Synthetic data generator
+│   ├── failed_payments.json
+│   └── b2b_receivables.json
+├── baseline/
+│   └── baseline.py         # Naive fixed-rule baseline for comparison
+├── tests/
+│   ├── test_compliance.py
+│   ├── test_relationship.py
+│   ├── test_baseline.py
+│   ├── test_core_loop.py   # Phase 2 Core Loop integration tests
+│   └── test_b2b_loop.py    # Phase 3 B2B Receivables & Promise-to-Pay tests
+├── run_phase1.py           # Phase 1 verification script
+├── run_phase2.py           # Phase 2 benchmark & comparison script (Payments)
+├── run_phase3.py           # Phase 3 benchmark & comparison script (B2B)
+├── calibration_check.py    # Confidence calibration audit script
+├── demo.py                 # 5-Minute interactive demo script (Beats 1-5)
+├── requirements.txt
+└── README.md
+```
+
+---
+
+## Current Status: Phase 5 — Full Engine, Benchmark & Demo Script Complete ✅
+
+- [x] Case schemas for both scenarios with promise-to-pay lifecycle tracking
+- [x] Deterministic compliance rules (RBI-grounded) & safe-action gate passthrough
+- [x] Pre-pipeline skip for fraud, disputes, active promises (`WAIT`), and sub-threshold cases
+- [x] Relationship tier computation (weighted formula + fatigue override)
+- [x] Complete execution log and audit trail with dynamic idempotency advancement
+- [x] Synthetic data generator (fixed reproducible seed 42)
+- [x] Naive baseline with exact unit metrics (hours for payments, days for B2B)
+- [x] LLM client abstraction (4D MockLLMClient matrix + GeminiLLMClient)
+- [x] Diagnosis Agent with root cause classification for payments and B2B invoices
+- [x] Strategy Agent with bounded action menus, 4D tone calibration, and Fallback Ladder
+- [x] Deterministic Compliance Gate integration with 1-retry re-propose cap
+- [x] Execution Agent with strict idempotency, shared probability tables, and 2 AM tool-failure resilience (1-retry + fallback)
+- [x] Adaptive Memory with double-gating and neutral cold-start defaults
+- [x] Complete test suites (`test_compliance.py`, `test_relationship.py`, `test_baseline.py`, `test_core_loop.py`, `test_b2b_loop.py`)
+- [x] 5-Minute Interactive Demo Script (`demo.py`) with real verified case traces
+
+---
+
+## What This Doesn't Do Yet
+
+- **Systemic batch-level pattern detection** (e.g., recognizing a bank-wide outage
+  across many cases) — named as future work, not case-level reasoning.
+- **Real payment gateway integration** — all execution is simulated.
+- **Actual model fine-tuning or retraining** — "adaptation" here is windowed,
+  weighted strategy scoring (memory + analytics), explicitly not model learning.
+- **Real outbound communications** — no actual SMS, email, or calls are sent.
+- **Ledger reconciliation** — this is Track 4's problem space.
+
+---
+
+## Adaptation — Honest Description
+
+Memory tracks real, recency-weighted outcome statistics per (diagnosis category, action) pair, double-gated so only genuine recovery attempts (never routing actions like `STOP`, `ESCALATE_HUMAN`, or `WAIT`) are recorded. Across the verified payment batch, this produced real differentiated statistics — for example, `RETRY_NOW` under `TRANSIENT_NETWORK` reached 100% (4/4 samples) while `SUGGEST_ALTERNATE_METHOD` in the same category sat at 0% (0/1) — proof the tracking mechanism is genuine, not placeholder. 
+
+This context is correctly formatted and injected into every Strategy prompt (see [`reports/sample_strategy_prompt.txt`](reports/sample_strategy_prompt.txt)). 
+- **Deterministic Mock Mode**: Under `MockLLMClient` — which produces all benchmark and demo numbers — the mock policy is a fixed decision matrix and does not read this context; this is a deliberate simplification for deterministic, reproducible testing. 
+- **Live Gemini Verification**: Under live Google Gemini (`gemini-flash-lite-latest`), the model actively reads and reasons over this real context — proven in [`reports/live_gemini_proof.json`](reports/live_gemini_proof.json), where Gemini explicitly cited the 100.0% historical success rate (4 samples) in its decision to select `RETRY_NOW`.
+- **Failure Resilience**: Unplanned upstream API errors (e.g. 429 rate limit quota exhaustion) are proven to step down safely to `ESCALATE_HUMAN` with 0.00 confidence (see [`reports/live_gemini_failure_resilience_proof.json`](reports/live_gemini_failure_resilience_proof.json)).

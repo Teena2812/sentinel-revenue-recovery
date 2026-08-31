@@ -1,0 +1,29 @@
+STRATEGY PROPOSAL REQUEST
+Case ID: PAY-61b1cd22-628
+Case Type: FAILED_PAYMENT
+Amount: ₹34,985.01
+Failure Code: INSUFFICIENT_FUNDS
+Attempt Count: 5
+Relationship Tier: MEDIUM
+Diagnosed Root Cause: Insufficient funds at the time of charge attempt.
+Diagnosed Category: FUNDS_UNAVAILABLE
+Diagnosis Confidence: 0.88
+
+Historical Strategy Performance Context for category 'FUNDS_UNAVAILABLE':
+- RETRY_NOW: 50.0% expected success (Cold Start default, 0 prior samples)
+- SUGGEST_ALTERNATE_METHOD: 17.3% historical success (21 samples)
+- RETRY_LATER: 9.6% historical success (8 samples)
+- ESCALATE_TONE: 50.0% expected success (Cold Start default, 0 prior samples)
+- OFFER_PAYMENT_PLAN: 50.0% expected success (Cold Start default, 0 prior samples)
+- SEND_REMINDER: 50.0% expected success (Cold Start default, 0 prior samples)
+
+Bounded Action Menu:
+- RETRY_NOW: Immediate retry via alternate acquiring switch
+- RETRY_LATER: Schedule retry after liquidity/maintenance delay (e.g. +6h)
+- SUGGEST_ALTERNATE_METHOD: Send customer SMS/WhatsApp payment link for alternate method
+- WAIT: Stand down temporarily without contact
+- ESCALATE_HUMAN: Hand over case to human operations/risk queue
+- STOP: Terminate all recovery activity permanently
+
+Task: Propose exactly ONE action from the menu above.
+Provide confidence (0.0-1.0), reasoning, and risk assessment (LOW, MEDIUM, HIGH).

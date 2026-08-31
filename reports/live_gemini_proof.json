@@ -1,0 +1,18 @@
+{
+  "case_id": "PAY-6dadd6c7-95a",
+  "amount": 32866.95,
+  "failure_code": "GATEWAY_ERROR",
+  "model": "gemini-flash-lite-latest",
+  "diagnosis": {
+    "root_cause": "The payment failed specifically due to a GATEWAY_ERROR on the first attempt, despite the customer having a moderate transaction history and no fraud flags.",
+    "category": "TRANSIENT_NETWORK",
+    "confidence": 0.85,
+    "reasoning": "The failure code explicitly points to a GATEWAY_ERROR rather than insufficient funds or authentication issues. Since this is the first attempt with no fraud flagged and a reasonable customer history, it is most likely a temporary external communication or processing issue with the payment gateway."
+  },
+  "strategy": {
+    "proposed_action": "RETRY_NOW",
+    "confidence": 0.95,
+    "risk_assessment": "LOW",
+    "reasoning": "The failure was caused by a transient network gateway error on the first attempt for a customer with a medium relationship tier and no fraud flags. Historical performance for 'TRANSIENT_NETWORK' shows a 100.0% success rate for RETRY_NOW based on prior samples, making an immediate retry via an alternate acquiring switch the most effective and least intrusive recovery action."
+  }
+}

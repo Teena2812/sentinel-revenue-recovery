@@ -1,0 +1,20 @@
+{
+  "d58e59db4280dce849c0c3e78e1aca1bf2030b194d7ba27214787e289e1268c3": {
+    "root_cause": "The payment failed specifically due to a GATEWAY_ERROR on the first attempt, despite the customer having a moderate transaction history and no fraud flags.",
+    "category": "TRANSIENT_NETWORK",
+    "confidence": 0.85,
+    "reasoning": "The failure code explicitly points to a GATEWAY_ERROR rather than insufficient funds or authentication issues. Since this is the first attempt with no fraud flagged and a reasonable customer history, it is most likely a temporary external communication or processing issue with the payment gateway."
+  },
+  "e185bb604dec168744ab23772ddb1abe1aa2213062ac48d77963f528d4990061": {
+    "proposed_action": "RETRY_NOW",
+    "confidence": 0.95,
+    "reasoning": "The failure was caused by a transient network gateway error on the first attempt for a customer with a medium relationship tier and no fraud flags. Historical performance for 'TRANSIENT_NETWORK' shows a 100.0% success rate (4 samples) when utilizing RETRY_NOW via an alternate acquiring switch.",
+    "risk_assessment": "LOW"
+  },
+  "2ca2ef6431e47d7b91d86d046782cbda449b88d9bcda425d87d347783f186892": {
+    "proposed_action": "RETRY_NOW",
+    "confidence": 0.95,
+    "reasoning": "The failure was caused by a transient network gateway error on the first attempt for a customer with a medium relationship tier and no fraud flags. Historical performance for 'TRANSIENT_NETWORK' shows a 100.0% success rate for RETRY_NOW based on prior samples, making an immediate retry via an alternate acquiring switch the most effective and least intrusive recovery action.",
+    "risk_assessment": "LOW"
+  }
+}
