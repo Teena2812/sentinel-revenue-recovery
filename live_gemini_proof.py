@@ -5,6 +5,7 @@ Runs through GeminiLLMClient for Diagnosis and Strategy.
 Saves raw JSON responses to reports/live_gemini_proof.json.
 """
 
+import hashlib
 import json
 import os
 import sys
@@ -61,7 +62,20 @@ def main():
     client = GeminiLLMClient()
     memory = Memory("data/agent_memory.json")
 
+    # ── Cache transparency check ──────────────────────────────────────────────
+    # GeminiLLMClient silently serves cached responses for prompts it has seen
+    # before. Pre-check the cache so a reviewer can tell whether each step is
+    # a fresh network call or a stored hit.
+    def _is_cached(prompt: str) -> bool:
+        key = hashlib.sha256(prompt.encode("utf-8")).hexdigest()
+        return key in client._cache
+    # ─────────────────────────────────────────────────────────────────────────
+
     # 4. Live Diagnosis
+    from agents.diagnosis import _build_diagnosis_prompt
+    diag_prompt = _build_diagnosis_prompt(case)
+    if _is_cached(diag_prompt):
+        print("\n⚠️  [CACHE HIT — serving stored response, not a fresh Gemini call] (Diagnosis)")
     print("\n" + "-" * 70)
     print("STEP 1: LIVE DIAGNOSIS (Gemini Flash)")
     print("-" * 70)
@@ -81,11 +95,15 @@ def main():
     time.sleep(20)
 
     # 6. Live Strategy
+    from agents.strategy import _build_strategy_prompt
+    strategy_context = memory.get_strategy_context(diag.category)
+    strat_prompt = _build_strategy_prompt(case, diag, strategy_context)
+    if _is_cached(strat_prompt):
+        print("\n⚠️  [CACHE HIT — serving stored response, not a fresh Gemini call] (Strategy)")
     print("\n" + "-" * 70)
     print("STEP 2: LIVE STRATEGY PROPOSAL (Gemini Flash)")
     print("-" * 70)
     try:
-        strategy_context = memory.get_strategy_context(diag.category)
         strat = propose_strategy(case, diag, strategy_context, client)
         print(f"  Proposed Action: {strat.proposed_action.value}")
         print(f"  Confidence:      {strat.confidence:.2f}")

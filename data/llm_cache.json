@@ -16,5 +16,41 @@
     "confidence": 0.95,
     "reasoning": "The failure was caused by a transient network gateway error on the first attempt for a customer with a medium relationship tier and no fraud flags. Historical performance for 'TRANSIENT_NETWORK' shows a 100.0% success rate for RETRY_NOW based on prior samples, making an immediate retry via an alternate acquiring switch the most effective and least intrusive recovery action.",
     "risk_assessment": "LOW"
+  },
+  "aeeedea2b8ef1935bd320dfd911fbafb6e4810fa4f717226693beea4b58b3d8d": {
+    "proposed_action": "RETRY_NOW",
+    "confidence": 0.95,
+    "reasoning": "The root cause is a transient network gateway error on the first attempt for a customer with a medium relationship tier and no fraud flags. Historical performance for 'RETRY_NOW' on transient network issues shows a 100% success rate across prior samples, making an immediate retry via an alternate acquiring switch the most effective action.",
+    "risk_assessment": "LOW"
+  },
+  "eb8bac44552e0ddf21663d8ebf5675d14ebfff81dda8addabd91c788af09e634": {
+    "proposed_action": "RETRY_NOW",
+    "confidence": 0.85,
+    "reasoning": "The root cause is diagnosed as TRANSIENT_NETWORK due to a GATEWAY_ERROR on the first attempt. Historical performance for RETRY_NOW on this category shows a 100.0% success rate across 4 samples. The customer is in the medium relationship tier with no fraud flags, making an immediate automated retry via an alternate acquiring switch the most efficient and historically successful approach.",
+    "risk_assessment": "LOW"
+  },
+  "24f663a98414fc7b13911c4e8f8d198316e154640d162adc2e87d206e80e7b88": {
+    "proposed_action": "RETRY_NOW",
+    "confidence": 0.95,
+    "reasoning": "The root cause is diagnosed as a transient network error (GATEWAY_ERROR) on the first attempt for a customer with a medium relationship tier and no fraud flags. Historical performance for 'RETRY_NOW' under the transient network category shows a 100.0% success rate across 4 samples. Therefore, an immediate retry via an alternate acquiring switch is the most effective and least intrusive recovery action.",
+    "risk_assessment": "LOW"
+  },
+  "0aeef16869be47cb3cddf83b17977a9d1e2e69cf6a5e6656111050a0c0f2fc6c": {
+    "proposed_action": "RETRY_NOW",
+    "confidence": 0.85,
+    "reasoning": "The failure was caused by a transient network/gateway error on the first attempt for a customer with a medium relationship tier and no fraud flags. Historical strategy performance for 'TRANSIENT_NETWORK' shows a 100.0% success rate for immediate retries, making an immediate retry via an alternate acquiring switch the most effective approach.",
+    "risk_assessment": "LOW"
+  },
+  "d64899bfd64bb79143a10da9a33514146f42ab3f9e540f685dcdae6f8f9015e1": {
+    "proposed_action": "RETRY_NOW",
+    "confidence": 0.95,
+    "reasoning": "The payment failure was caused by a transient gateway error on the first attempt with a medium tier customer. Historical performance data for TRANSIENT_NETWORK issues shows a 100.0 percent success rate for immediate retries, making RETRY_NOW the most optimal and low-friction action.",
+    "risk_assessment": "LOW"
+  },
+  "72dd3d17557404857271f5e192930909b6aa4cc21be225cbf570932e5f7498bb": {
+    "proposed_action": "RETRY_NOW",
+    "confidence": 0.95,
+    "reasoning": "The failure was caused by a transient gateway error on the first attempt for a medium-tier customer with no fraud flags. Historical performance for RETRY_NOW on transient network issues shows a 100 percent success rate, making an immediate automated retry the most effective and least intrusive path.",
+    "risk_assessment": "LOW"
   }
 }

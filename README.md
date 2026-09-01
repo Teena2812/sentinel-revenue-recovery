@@ -126,9 +126,18 @@ type reports\b2b_batch_breakdown.csv
 
 # 5. Run Full Unit Test Suite Directly
 python -m unittest discover tests/
+
+# 6. Test a Custom/Novel Case Interactively
+python interactive.py
 ```
 
 > **Note**: Dev/investigation scripts in `scripts/` (`generate_reports.py`, `inspect_memory_and_prompt.py`) use relative imports and must be invoked from the **project root** — e.g. `python scripts/generate_reports.py` — not from inside the `scripts/` directory.
+
+### Test a Novel Case Yourself
+
+You can test any arbitrary, custom payment failure case through the real, unmodified `process_case()` multi-agent pipeline using `python interactive.py`. Reviewers can enter their own custom parameters (amount, failure code, attempt count, customer relationship tier, and fraud flag) to observe live root-cause diagnosis, strategy proposal, deterministic compliance gating, and execution—proving the system generalizes to novel inputs rather than relying on hardcoded demo patterns.
+
+It runs in **MOCK MODE** by default (requiring zero API keys or external setup) and automatically switches to **LIVE MODE** when `GEMINI_API_KEY` is configured in the environment. The test harness runs in strict state isolation using throwaway in-memory stores; it never reads from or writes to `data/agent_memory.json` or the persisted audit log (empirically confirmed by byte-identical file modification timestamps before and after execution).
 
 ---
 

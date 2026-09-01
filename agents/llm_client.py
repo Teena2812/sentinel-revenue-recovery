@@ -401,6 +401,27 @@ class MockLLMClient(LLMClient):
         return {"proposed_action": "SEND_REMINDER", "confidence": 0.88, "reasoning": "Standard reminder.", "risk_assessment": "LOW"}
 
 
+def _clean_gemini_schema(schema: Optional[dict[str, Any]]) -> Optional[dict[str, Any]]:
+    """Sanitize OpenAPI schema dict for Google Gemini API compatibility.
+    Gemini structured output supports type, properties, required, and enum,
+    but rejects validation bounds (minimum, maximum, format).
+    """
+    if not schema:
+        return None
+    UNSUPPORTED = {"minimum", "maximum", "minLength", "maxLength", "pattern", "default", "format"}
+    cleaned: dict[str, Any] = {}
+    for k, v in schema.items():
+        if k in UNSUPPORTED:
+            continue
+        if isinstance(v, dict):
+            cleaned[k] = _clean_gemini_schema(v)
+        elif isinstance(v, list):
+            cleaned[k] = [_clean_gemini_schema(item) if isinstance(item, dict) else item for item in v]
+        else:
+            cleaned[k] = v
+    return cleaned
+
+
 class GeminiLLMClient(LLMClient):
     """Live Google Gemini API client with caching and structured output."""
 
@@ -449,23 +470,28 @@ class GeminiLLMClient(LLMClient):
         try:
             import google.generativeai as genai
             genai.configure(api_key=self.api_key)
+
+            gen_config: dict[str, Any] = {"response_mime_type": "application/json"}
+            cleaned_schema = _clean_gemini_schema(schema)
+            if cleaned_schema:
+                gen_config["response_schema"] = cleaned_schema
+
             model = genai.GenerativeModel(
                 model_name=self.model_name,
-                generation_config={"response_mime_type": "application/json"},
+                generation_config=gen_config,
             )
 
-            full_prompt = (
-                f"{prompt}\n\nRespond ONLY with valid JSON matching this schema:\n"
-                f"{json.dumps(schema or {}, indent=2)}"
-            )
-
-            response = model.generate_content(full_prompt)
+            response = model.generate_content(prompt)
             result = json.loads(response.text)
             self._cache[cache_key] = result
             self._save_cache()
             return result
         except Exception as e:
-            err_str = str(e)
+            # Sanitize API key from error string before logging or re-raising.
+            # Some API error responses include the request key in their body;
+            # strip it to avoid accidental key exposure in logs.
+            _key = self.api_key or ""
+            err_str = str(e).replace(_key, "[REDACTED]") if _key else str(e)
             if "429" in err_str or "quota" in err_str.lower():
                 import re
                 import time
@@ -474,14 +500,15 @@ class GeminiLLMClient(LLMClient):
                 logger.warning("Gemini 429 Rate Limit encountered. Waiting %.1fs for quota window reset...", delay)
                 time.sleep(delay)
                 try:
-                    response = model.generate_content(full_prompt)
+                    response = model.generate_content(prompt)
                     result = json.loads(response.text)
                     self._cache[cache_key] = result
                     self._save_cache()
                     return result
                 except Exception as retry_e:
-                    raise LLMError(f"Gemini API call failed after rate-limit backoff: {retry_e}") from retry_e
-            raise LLMError(f"Gemini API call failed: {e}") from e
+                    safe_retry_err = str(retry_e).replace(_key, "[REDACTED]") if _key else str(retry_e)
+                    raise LLMError(f"Gemini API call failed after rate-limit backoff: {safe_retry_err}") from retry_e
+            raise LLMError(f"Gemini API call failed: {err_str}") from e
 
 
 def get_llm_client(mode: Optional[str] = None) -> LLMClient:

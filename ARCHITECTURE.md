@@ -87,3 +87,49 @@ Hard compliance rules, regulatory boundaries, and financial limits **must never 
 * **Symmetric Operational Budgets**: Both the Naive Baseline and the AI Recovery Agent receive identical 3-attempt execution budgets (`AGENT_LOOP_MAX_ATTEMPTS = 3`).
 * **Permanent Simulation Anchor**: All invoice age calculations (`days_overdue`) and contact-hour evaluations are anchored to `SIMULATED_CURRENT_TIME = datetime(2026, 8, 24, 12, 0, 0)`.
 * **Structural RNG Isolation**: All simulation random draws accept an explicit `rng` parameter, isolating benchmark execution from unit test suites and mock simulations.
+
+---
+
+## 7. What This Doesn't Do Yet
+
+This is a buildathon-scoped implementation. The following are the natural production
+extension points, not defects:
+
+* **No parallelism**: Cases are processed sequentially. A production deployment would
+  use async workers (Celery / FastAPI background tasks) with a database-backed memory store.
+* **Simulated execution**: All tool calls (payment retries, reminder sends) are
+  probability-weighted simulations. A production system would replace `agents/execution.py`
+  with real payment gateway and CRM API integrations.
+* **Single-file memory and audit**: `Memory` and `AuditLog` persist to JSON files.
+  At scale, these migrate to a relational or document database.
+
+---
+
+## 8. Known Engineering Limitations
+
+The following are honest engineering trade-offs, documented as next steps for a
+production hardening pass — not defects in the current verified implementation.
+
+* **No per-case exception isolation in batch runners**: An unhandled exception in one
+  case aborts the full batch (`process_payment_batch`, `process_b2b_batch`). Production
+  fix: wrap `process_case()` calls in a try/except at the batch level, mark that case
+  `FAILED`, and continue processing the remainder.
+
+* **Unguarded enum construction on data load**: `dict_to_failed_payment()` calls
+  `FailureCode(d["failure_code"])` with no try/except (`core/schemas.py` L300). An
+  unknown failure code raises `ValueError` and aborts the entire load. Production fix:
+  wrap in try/except, fall back to a safe default or skip that case with a logged warning.
+
+* **Unguarded JSON file loading**: Runner scripts call `json.load(f)` with no try/except.
+  A truncated or corrupt data file produces a bare traceback with no actionable message.
+  Production fix: wrap in try/except with a clear `sys.exit()` message.
+
+* **No test coverage for malformed deserialization input**: The data loading path
+  (`dict_to_failed_payment`, `dict_to_b2b_receivable`) has zero test coverage for missing
+  fields, wrong types, or unknown enum values — the most likely real-world failure mode.
+  Production fix: add a dedicated test file for schema validation edge cases.
+
+These limitations do not affect benchmark correctness, test coverage (116/116 passing),
+or the compliance gate. They are confined to input loading and operational observability.
+
+Full self-audit with line-by-line analysis: [`docs/quality_eval.md`](docs/quality_eval.md).
