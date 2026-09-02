@@ -1,5 +1,25 @@
 # Sentinel — AI Revenue Recovery Agent
 
+![Tests](https://img.shields.io/badge/Tests-116%2F116%20passing-brightgreen)
+![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
+![Buildathon](https://img.shields.io/badge/Razorpay%20AI%20Buildathon-Track%203-orange)
+
+## Table of Contents
+
+- [The Problem](#the-problem)
+- [Verified Benchmark Results](#verified-benchmark-results-locked--reproducible)
+- [What This System Does](#what-this-system-does)
+- [Architecture](#architecture)
+- [How to Run](#how-to-run)
+- [Test a Novel Case Yourself](#test-a-novel-case-yourself)
+- [Methodology & Design Decisions](#methodology--design-decisions)
+- [Project Structure](#project-structure)
+- [Current Status](#current-status-phase-5--full-engine-benchmark--demo-script-complete-)
+- [What This Doesn't Do Yet](#what-this-doesnt-do-yet)
+- [Adaptation](#adaptation--honest-description)
+
+---
+
 **Sentinel** is an autonomous, dual-engine AI revenue recovery system built for Track 3 of the **Razorpay AI Buildathon**.
 
 > **⚠️ ALL DATA IN THIS PROJECT IS SIMULATED.**
