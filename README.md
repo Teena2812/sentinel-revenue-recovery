@@ -4,6 +4,8 @@
 ![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
 ![Buildathon](https://img.shields.io/badge/Razorpay%20AI%20Buildathon-Track%203-orange)
 
+![Sentinel Architecture](docs/architecture-diagram.svg)
+
 ## Table of Contents
 
 - [The Problem](#the-problem)
@@ -40,6 +42,12 @@ An estimated **₹8.1 trillion** is currently locked in delayed payments to Indi
 Both benchmarks evaluate against identical synthetic datasets anchored to `config.SIMULATED_CURRENT_TIME = 2026-08-24 12:00:00 IST` with isolated RNG streams (`seed=42`).
 
 **116/116 tests passing, reproducible across independent runs.**
+
+### Benchmark Visualizations
+
+| Recovery Rate Comparison | Compliance Violations (Zero Breaches) |
+| :---: | :---: |
+| ![Recovery Comparison](reports/charts/recovery_comparison_light.png#gh-light-mode-only)![Recovery Comparison](reports/charts/recovery_comparison.png#gh-dark-mode-only) | ![Compliance Comparison](reports/charts/compliance_comparison_light.png#gh-light-mode-only)![Compliance Comparison](reports/charts/compliance_comparison.png#gh-dark-mode-only) |
 
 ### 1. Failed Payments Benchmark (30 Cases, ₹308,796.80 at Risk)
 
