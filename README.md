@@ -175,8 +175,8 @@ The AI Recovery Agent's bounded retry loop initializes directly from each case's
 ### 3. Simulation & Probability Modeling
 - **Shared Probability Tables**: Ground-truth outcome probabilities are byte-identical between the baseline and the AI Recovery Agent (`config.PAYMENT_RETRY_SUCCESS_PROB` and `config.B2B_REMINDER_SUCCESS_PROB`). The AI agent wins purely through accurate root-cause diagnosis and optimal action selection, never via inflated simulation odds.
 - **Resolution-Time Modeling**:
-  - Failed payment retry durations are reported in **hours** ($k \times 4.0\text{ hrs}$ for immediate actions; $(k \times 4.0) + 6.0\text{ hrs}$ if recovered via `RETRY_LATER`).
-  - B2B receivables are measured in **days** using the baseline random-based formula: $\min(\text{days\_overdue}, \text{randint}(3, 21))\text{ days}$.
+  - Failed payment retry durations are reported in **hours** (`k × 4.0 hrs` for immediate actions; `(k × 4.0) + 6.0 hrs` if recovered via `RETRY_LATER`).
+  - B2B receivables are measured in **days** using the baseline random-based formula: `min(days_overdue, randint(3, 21))` days.
 
 ---
 
