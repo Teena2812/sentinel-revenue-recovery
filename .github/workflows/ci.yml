@@ -1,0 +1,44 @@
+name: Sentinel CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    name: Test & Benchmark Verification
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Syntax check
+        run: |
+          python -m py_compile $(find core agents tests scripts -name "*.py")
+
+      - name: Run full unit test suite
+        run: |
+          python -m unittest discover tests -v
+
+      - name: Generate benchmark reports
+        run: |
+          python run_phase2.py
+          python run_phase3.py
+
+      - name: Assert benchmark recovery rates & zero violations
+        run: |
+          python scripts/assert_baseline.py

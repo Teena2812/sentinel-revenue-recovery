@@ -19,6 +19,7 @@ from agents.diagnosis import DiagnosisCategory, DiagnosisResult
 from agents.llm_client import LLMClient
 from core import config
 from core.compliance import GateDecision
+from core.schema_validation import SchemaValidationError, validate_strategy_output
 from core.schemas import (
     ActionType,
     B2BReceivableCase,
@@ -227,6 +228,10 @@ def propose_strategy(
             )
 
     try:
+        # validate_strategy_output raises SchemaValidationError (subclass of Exception)
+        # if the response has wrong types, missing fields, or invalid enum values.
+        # Caught by the enclosing except Exception below — same fallback path as unparseable JSON.
+        validate_strategy_output(raw_response)
         act_str = raw_response.get("proposed_action", "ESCALATE_HUMAN")
         is_out_of_menu = False
         try:
@@ -262,6 +267,14 @@ def propose_strategy(
             confidence=confidence,
             reasoning=str(raw_response.get("reasoning", "No reasoning provided.")),
             risk_assessment=risk,
+        )
+    except SchemaValidationError as schema_err:
+        logger.error("Strategy response schema invalid: %s. Falling back.", schema_err)
+        return StrategyProposal(
+            proposed_action=ActionType.ESCALATE_HUMAN,
+            confidence=0.0,
+            reasoning=f"LLM_RESPONSE_INVALID_SCHEMA: {schema_err}",
+            risk_assessment="HIGH",
         )
     except Exception as parse_err:
         logger.error("Failed to parse strategy output: %s. Falling back.", parse_err)

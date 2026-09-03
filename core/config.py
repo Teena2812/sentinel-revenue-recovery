@@ -9,6 +9,7 @@ ALL DATA IN THIS PROJECT IS SIMULATED — never imply real Razorpay data.
 """
 
 
+import json
 import os
 from datetime import datetime
 
@@ -35,6 +36,39 @@ def _load_dotenv() -> None:
 _load_dotenv()
 
 
+def _load_rules_config() -> dict:
+    """Load external business rules from config/rules_config.json.
+
+    Loaded once at startup — no hot-reload. Returns hardcoded defaults
+    if the file is missing or malformed, so the application always starts.
+    """
+    _DEFAULTS = {
+        "attempt_caps":    {"payment": 5, "b2b": 4},
+        "fatigue_caps":    {"payment": 2, "b2b": 3},
+        "cost_thresholds": {"payment_min_recovery": 500, "b2b_min_recovery": 5000},
+        "contact_hours":   {"start_hour": 8, "end_hour": 19},
+        "confidence":      {"threshold": 0.85},
+    }
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    config_path = os.path.join(base_dir, "config", "rules_config.json")
+    try:
+        with open(config_path, "r", encoding="utf-8") as f:
+            loaded = json.load(f)
+        # Merge: loaded values override defaults section-by-section
+        merged = {**_DEFAULTS}
+        for section, values in loaded.items():
+            if section.startswith("_"):
+                continue  # skip _comment keys
+            if isinstance(values, dict):
+                merged[section] = {**_DEFAULTS.get(section, {}), **values}
+        return merged
+    except (FileNotFoundError, json.JSONDecodeError):
+        return _DEFAULTS
+
+
+_RULES = _load_rules_config()
+
+
 # --- Simulation Time ---
 # PERMANENT ARBITRARY SIMULATION ANCHOR:
 # Fixed reference timestamp (2026-08-24 12:00:00 IST) for deterministic benchmark evaluation,
@@ -46,28 +80,31 @@ SIMULATED_CURRENT_TIME = datetime(2026, 8, 24, 12, 0, 0)
 # --- Confidence & Auto-Execute ---
 # Auto-execute only when ALL of: confidence >= threshold, no conflicting signal,
 # gate passes, action is reversible/low-risk. (Addendum §3)
+# NOTE: confidence.threshold is forward-provisioned in config/rules_config.json for Prompt 7.
+# It is NOT wired into any compliance gate here. Prompt 7 is the reviewed step where
+# gate enforcement is added consciously.
 CONFIDENCE_THRESHOLD = 0.85
 
-# --- Cost Thresholds ---
+# --- Cost Thresholds (backed by config/rules_config.json) ---
 # Below these amounts, skip the full LLM diagnosis pipeline — use cheap
 # automatic path only. Separate thresholds because the B2B invoice range
 # (₹10,000+) makes ₹500 meaningless for that scenario.
-MIN_RECOVERY_AMOUNT_PAYMENT = 500    # ₹ — for failed payment cases
-MIN_RECOVERY_AMOUNT_B2B = 5000       # ₹ — for B2B receivable cases
+MIN_RECOVERY_AMOUNT_PAYMENT = _RULES["cost_thresholds"]["payment_min_recovery"]
+MIN_RECOVERY_AMOUNT_B2B     = _RULES["cost_thresholds"]["b2b_min_recovery"]
 
-# --- Attempt / Retry Caps ---
-MAX_ATTEMPTS_PAYMENT = 5   # Maximum retry attempts for failed payments
-MAX_ATTEMPTS_B2B = 4       # Maximum recovery attempts for B2B receivables
+# --- Attempt / Retry Caps (backed by config/rules_config.json) ---
+MAX_ATTEMPTS_PAYMENT = _RULES["attempt_caps"]["payment"]
+MAX_ATTEMPTS_B2B     = _RULES["attempt_caps"]["b2b"]
 
-# --- Contact Hour Window (RBI Fair Practices Code) ---
-CONTACT_HOUR_START = 8     # 8:00 AM IST — earliest permitted contact
-CONTACT_HOUR_END = 19      # 7:00 PM IST — latest permitted contact
+# --- Contact Hour Window (backed by config/rules_config.json — RBI Fair Practices Code) ---
+CONTACT_HOUR_START = _RULES["contact_hours"]["start_hour"]
+CONTACT_HOUR_END   = _RULES["contact_hours"]["end_hour"]
 
-# --- Fatigue Override Caps ---
+# --- Fatigue Override Caps (backed by config/rules_config.json) ---
 # If a case's contact/retry count exceeds this cap, downgrade the
 # relationship tier by one level regardless of score. (Addendum §2)
-FATIGUE_CAP_PAYMENT = 2    # For failed payment cases
-FATIGUE_CAP_B2B = 3        # For B2B receivable cases
+FATIGUE_CAP_PAYMENT = _RULES["fatigue_caps"]["payment"]
+FATIGUE_CAP_B2B     = _RULES["fatigue_caps"]["b2b"]
 
 # --- Relationship Tier Weights & Cutoffs ---
 # Relationship Score (0–100) = W_V×V + W_H×H + W_T×T

@@ -1,0 +1,21 @@
+{
+  "attempt_caps": {
+    "payment": 5,
+    "b2b": 4
+  },
+  "fatigue_caps": {
+    "payment": 2,
+    "b2b": 3
+  },
+  "cost_thresholds": {
+    "payment_min_recovery": 500,
+    "b2b_min_recovery": 5000
+  },
+  "contact_hours": {
+    "start_hour": 8,
+    "end_hour": 19
+  },
+  "confidence": {
+    "threshold": 0.85
+  }
+}

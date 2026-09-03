@@ -1,6 +1,6 @@
 # Sentinel — AI Revenue Recovery Agent
 
-![Tests](https://img.shields.io/badge/Tests-121%2F121%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/Tests-133%2F133%20passing-brightgreen)
 ![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
 ![Buildathon](https://img.shields.io/badge/Razorpay%20AI%20Buildathon-Track%203-orange)
 
@@ -45,7 +45,7 @@ An estimated **₹8.1 trillion** is currently locked in delayed payments to Indi
 
 Both benchmarks evaluate against identical synthetic datasets anchored to `config.SIMULATED_CURRENT_TIME = 2026-08-24 12:00:00 IST` with isolated RNG streams (`seed=42`).
 
-**121/121 tests passing, reproducible across independent runs.**
+**133/133 tests passing, reproducible across independent runs.**
 
 ### Benchmark Visualizations
 
@@ -193,6 +193,9 @@ python -m unittest discover tests/
 
 # 6. Test a Custom/Novel Case Interactively
 python interactive.py
+
+# 7. Assert Benchmark Recovery Rates & Zero Violations
+python scripts/assert_baseline.py
 ```
 
 > **Note**: Dev/investigation scripts in `scripts/` (`generate_reports.py`, `inspect_memory_and_prompt.py`) use relative imports and must be invoked from the **project root** — e.g. `python scripts/generate_reports.py` — not from inside the `scripts/` directory.
@@ -227,12 +230,15 @@ The AI Recovery Agent's bounded retry loop initializes directly from each case's
 ## Project Structure
 
 ```
+├── config/
+│   └── rules_config.json   # Externalized business rules & policy thresholds (Rules-as-Data)
 ├── core/
 │   ├── schemas.py          # Case models and enums
+│   ├── schema_validation.py# Strict typed validation for LLM responses (SchemaValidationError)
 │   ├── config.py           # Single source of truth for tunable parameters
 │   ├── compliance.py       # Deterministic Gate rules (RBI-grounded) & pre-pipeline skip
 │   ├── relationship.py     # Relationship tier computation (0.40/0.35/0.25)
-│   ├── audit_log.py        # Complete execution log and audit trail
+│   ├── audit_log.py        # Complete execution log and audit trail (thread-safe atomic check-and-reserve)
 │   ├── memory.py           # Adaptive memory & strategy outcome analytics
 │   └── orchestrator.py     # Pipeline coordinator (Diagnosis -> Strategy -> Gate -> Execution)
 ├── agents/

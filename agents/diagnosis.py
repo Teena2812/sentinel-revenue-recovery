@@ -14,6 +14,7 @@ from dataclasses import dataclass
 from typing import Any, Optional, Union
 
 from agents.llm_client import LLMClient, LLMError
+from core.schema_validation import SchemaValidationError, validate_diagnosis_output
 from core.schemas import B2BReceivableCase, Case, CaseType, CustomerHistory, FailedPaymentCase
 
 logger = logging.getLogger(__name__)
@@ -153,6 +154,10 @@ def diagnose(case: Case, llm_client: LLMClient) -> DiagnosisResult:
 
     # Parse and validate schema fields
     try:
+        # validate_diagnosis_output raises SchemaValidationError (subclass of Exception)
+        # if the response has wrong types, missing fields, or invalid enum values.
+        # Caught by the enclosing except Exception below — same fallback path as unparseable JSON.
+        validate_diagnosis_output(raw_response)
         cat_str = raw_response.get("category", "UNKNOWN")
         try:
             category = DiagnosisCategory(cat_str)
@@ -169,6 +174,15 @@ def diagnose(case: Case, llm_client: LLMClient) -> DiagnosisResult:
             confidence=confidence,
             reasoning=str(raw_response.get("reasoning", "No reasoning provided.")),
         )
+    except SchemaValidationError as schema_err:
+        logger.error("Diagnosis response schema invalid: %s. Falling back.", schema_err)
+        return DiagnosisResult(
+            case_id=case.case_id,
+            root_cause="Diagnosis response schema validation failed.",
+            category=DiagnosisCategory.UNKNOWN,
+            confidence=0.0,
+            reasoning=f"LLM_RESPONSE_INVALID_SCHEMA: {schema_err}",
+        )
     except Exception as parse_err:
         logger.error("Failed to parse diagnosis output: %s. Falling back.", parse_err)
         return DiagnosisResult(
@@ -176,5 +190,5 @@ def diagnose(case: Case, llm_client: LLMClient) -> DiagnosisResult:
             root_cause="Diagnosis response parsing error.",
             category=DiagnosisCategory.UNKNOWN,
             confidence=0.0,
-            reasoning=f"Parsing error: {parse_err}",
+            reasoning=f"LLM_RESPONSE_UNPARSEABLE: Parsing error: {parse_err}",
         )
