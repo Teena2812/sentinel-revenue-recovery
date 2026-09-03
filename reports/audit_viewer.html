@@ -254,14 +254,14 @@
         <div class="kpi-subtext">RBI Fair Practices Guaranteed</div>
       </div>
       <div class="kpi-card" style="--kpi-color: #F87171;">
-        <div class="kpi-label">Safety Stops &amp; Gate Blocks</div>
-        <div class="kpi-value" id="kpi-gate-blocked">--</div>
-        <div class="kpi-subtext">Pre-pipeline stops &amp; gate intercepts</div>
+        <div class="kpi-label">Pre-Pipeline Safety Stops</div>
+        <div class="kpi-value" id="kpi-prepipe-stops">13</div>
+        <div class="kpi-subtext" id="kpi-prepipe-subtext">6 Fraud • 5 Disputes • 2 Caps</div>
       </div>
       <div class="kpi-card" style="--kpi-color: #F59E0B;">
-        <div class="kpi-label">Human Escalations</div>
-        <div class="kpi-value" id="kpi-escalated">--</div>
-        <div class="kpi-subtext">Disputed &amp; low confidence</div>
+        <div class="kpi-label">Mid-Flow Intercepts &amp; Escalations</div>
+        <div class="kpi-value" id="kpi-midflow-escalated">25</div>
+        <div class="kpi-subtext" id="kpi-midflow-subtext">10 Cap Blocks • 15 Policy/Conf</div>
       </div>
     </section>
 
@@ -275,8 +275,9 @@
         <button class="tab-btn active" data-filter="all">All (<span id="count-all">0</span>)</button>
         <button class="tab-btn" data-filter="PAYMENT">Payments (<span id="count-pay">0</span>)</button>
         <button class="tab-btn" data-filter="B2B">B2B (<span id="count-b2b">0</span>)</button>
-        <button class="tab-btn" data-filter="SAFETY_STOPS">Safety Stops &amp; Intercepts (<span id="count-blocked">0</span>)</button>
-        <button class="tab-btn" data-filter="ESCALATED">Escalated (<span id="count-esc">0</span>)</button>
+        <button class="tab-btn" data-filter="PREPIPE_STOP">Pre-Pipeline Stops (<span id="count-prepipe">0</span>)</button>
+        <button class="tab-btn" data-filter="GATE_INTERCEPT">Gate Intercepts (<span id="count-intercept">0</span>)</button>
+        <button class="tab-btn" data-filter="ESCALATED">Escalations (<span id="count-esc">0</span>)</button>
         <button class="tab-btn" data-filter="RECOVERED">Recovered (<span id="count-rec">0</span>)</button>
       </div>
     </div>
@@ -318,13 +319,11 @@
     // --- Formatters ---
     const formatINR = (val) => "₹" + Number(val).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-    // --- Safety Stop Classifier (Harmonizes fraud, dispute, and attempt-cap stops) ---
+    // --- Safety Stop & Gate Intercept Classifiers ---
     function getSafetyStopInfo(c) {
-      const isFraud = c.escalation_reason === 'fraud_stop_skip' || (c.status === 'STOPPED' && (c.diagnosis_category || '').includes('Skip'));
+      const isFraud = c.escalation_reason === 'fraud_stop_skip';
       const isDispute = c.escalation_reason === 'dispute_skip';
-      const isAttemptCapStart = c.escalation_reason === 'attempt_cap_reached_at_start' ||
-                                (c.initial_attempt_count >= 5 && c.case_type === 'FAILED_PAYMENT') ||
-                                (c.initial_attempt_count >= 4 && c.case_type === 'B2B_RECEIVABLE');
+      const isAttemptCapStart = c.escalation_reason === 'attempt_cap_reached_at_start';
       const isPromiseWait = c.escalation_reason === 'active_promise_wait_skip';
 
       if (isFraud) return { isStop: true, type: 'fraud', title: '⛔ PRE-PIPELINE STOP', desc: 'Fraud Hold (Outbound Contact Refused)' };
@@ -335,6 +334,21 @@
       return { isStop: false };
     }
 
+    function hasMidflowGateIntercept(c) {
+      const safety = getSafetyStopInfo(c);
+      if (safety.isStop) return false;
+      return (c.attempts || []).some(att => att.gate && att.gate.approved === false);
+    }
+
+    function getMidflowViolation(c) {
+      for (const att of (c.attempts || [])) {
+        if (att.gate && att.gate.approved === false && att.gate.violations && att.gate.violations.length > 0) {
+          return att.gate.violations[0];
+        }
+      }
+      return c.escalation_reason || 'Compliance violation';
+    }
+
     // --- 1. DYNAMIC KPI COMPUTATION AT RENDER TIME ---
     function computeAndRenderKPIs() {
       const total = AUDIT_DATA.length;
@@ -343,13 +357,18 @@
 
       const recovered = AUDIT_DATA.filter(c => c.status === 'RECOVERED');
       const escalated = AUDIT_DATA.filter(c => c.status === 'ESCALATED');
-      const safetyStops = AUDIT_DATA.filter(c =>
-        getSafetyStopInfo(c).isStop ||
-        !c.gate_approved ||
-        c.status === 'GATE_BLOCKED' ||
-        c.status === 'STOPPED' ||
-        (c.gate_violations && c.gate_violations.length > 0)
-      );
+
+      // Pre-pipeline safety stops (refused before loop: 6 fraud + 5 dispute + 2 initial cap = 13)
+      const prepipeStops = AUDIT_DATA.filter(c => {
+        const s = getSafetyStopInfo(c);
+        return s.isStop && s.type !== 'promise';
+      });
+
+      // Mid-flow gate intercepts (actions rejected mid-attempt by compliance gate = 7)
+      const gateIntercepts = AUDIT_DATA.filter(hasMidflowGateIntercept);
+
+      // Mid-flow adaptive escalations (cases that ran through the loop and compliantly escalated = 25)
+      const midflowEscalations = escalated.filter(c => !getSafetyStopInfo(c).isStop);
 
       const totalRecoveredINR = recovered.reduce((sum, c) => sum + (c.amount_recovered || 0), 0);
       const overallRecoveryRate = ((recovered.length / (total || 1)) * 100).toFixed(1) + "%";
@@ -359,14 +378,15 @@
       document.getElementById('kpi-case-split').textContent = `${paymentCount} Payments / ${b2bCount} B2B`;
       document.getElementById('kpi-revenue-recovered').textContent = formatINR(totalRecoveredINR);
       document.getElementById('kpi-recovery-rate').textContent = `${overallRecoveryRate} recovered (${recovered.length}/${total})`;
-      document.getElementById('kpi-gate-blocked').textContent = safetyStops.length;
-      document.getElementById('kpi-escalated').textContent = escalated.length;
+      document.getElementById('kpi-prepipe-stops').textContent = prepipeStops.length;
+      document.getElementById('kpi-midflow-escalated').textContent = midflowEscalations.length;
 
       // Tab Counts
       document.getElementById('count-all').textContent = total;
       document.getElementById('count-pay').textContent = paymentCount;
       document.getElementById('count-b2b').textContent = b2bCount;
-      document.getElementById('count-blocked').textContent = safetyStops.length;
+      document.getElementById('count-prepipe').textContent = prepipeStops.length;
+      document.getElementById('count-intercept').textContent = gateIntercepts.length;
       document.getElementById('count-esc').textContent = escalated.length;
       document.getElementById('count-rec').textContent = recovered.length;
     }
@@ -378,10 +398,14 @@
 
       const filtered = AUDIT_DATA.filter(c => {
         const safety = getSafetyStopInfo(c);
+        const isPrepipe = safety.isStop && safety.type !== 'promise';
+        const isMidflow = hasMidflowGateIntercept(c);
+
         // Tab Filter
         if (currentFilter === 'PAYMENT' && c.case_type !== 'FAILED_PAYMENT') return false;
         if (currentFilter === 'B2B' && c.case_type !== 'B2B_RECEIVABLE') return false;
-        if (currentFilter === 'SAFETY_STOPS' && !(safety.isStop || !c.gate_approved || c.status === 'GATE_BLOCKED' || (c.gate_violations && c.gate_violations.length > 0))) return false;
+        if (currentFilter === 'PREPIPE_STOP' && !isPrepipe) return false;
+        if (currentFilter === 'GATE_INTERCEPT' && !isMidflow) return false;
         if (currentFilter === 'ESCALATED' && c.status !== 'ESCALATED') return false;
         if (currentFilter === 'RECOVERED' && c.status !== 'RECOVERED') return false;
 
@@ -414,8 +438,8 @@
             <span class="${badgeClass}">${safety.title}</span>
             <div style="font-size: 11px; color: #FCA5A5; margin-top: 3px; font-weight: 600;">${safety.desc}</div>
           `;
-        } else if (!c.gate_approved || c.status === 'GATE_BLOCKED' || (c.gate_violations && c.gate_violations.length > 0)) {
-          const reasonSnippet = c.gate_violations && c.gate_violations.length > 0 ? c.gate_violations[0] : (c.escalation_reason || 'Compliance violation');
+        } else if (hasMidflowGateIntercept(c)) {
+          const reasonSnippet = getMidflowViolation(c);
           gateVerdictHtml = `
             <span class="badge-blocked-gate">⚠ GATE INTERCEPTED</span>
             <div style="font-size: 11px; color: #F87171; max-width: 220px; margin-top: 3px; font-weight: 600;">${reasonSnippet.substring(0, 50)}...</div>
