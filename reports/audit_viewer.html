@@ -180,8 +180,10 @@
     .badge-waiting { background: var(--blue-bg); color: var(--blue); border: 1px solid rgba(59, 130, 246, 0.3); }
     .badge-stopped { background: var(--red-bg); color: #F87171; border: 1px solid rgba(239, 68, 68, 0.3); }
 
-    .badge-approved-gate { background: rgba(16, 185, 129, 0.15); color: #34D399; font-size: 11px; padding: 3px 8px; border-radius: 4px; }
-    .badge-blocked-gate { background: rgba(239, 68, 68, 0.2); color: #F87171; font-size: 11px; padding: 3px 8px; border-radius: 4px; font-weight: 700; }
+    .badge-approved-gate { background: rgba(16, 185, 129, 0.15); color: #34D399; font-size: 11px; padding: 4px 9px; border-radius: 5px; font-weight: 700; border: 1px solid rgba(16, 185, 129, 0.4); }
+    .badge-blocked-gate { background: rgba(239, 68, 68, 0.2); color: #F87171; font-size: 11px; padding: 4px 9px; border-radius: 5px; font-weight: 800; border: 1px solid rgba(239, 68, 68, 0.5); }
+    .badge-prepipe-stop { background: rgba(239, 68, 68, 0.25); color: #FCA5A5; font-size: 11px; padding: 4px 9px; border-radius: 5px; font-weight: 800; border: 1px solid rgba(239, 68, 68, 0.6); letter-spacing: 0.02em; }
+    .badge-promise-wait { background: rgba(59, 130, 246, 0.2); color: #93C5FD; font-size: 11px; padding: 4px 9px; border-radius: 5px; font-weight: 700; border: 1px solid rgba(59, 130, 246, 0.5); }
 
     .case-id-code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 12px; font-weight: 700; color: #38BDF8; }
     .type-pill { font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; background: #1E293B; color: var(--text-dim); }
@@ -252,9 +254,9 @@
         <div class="kpi-subtext">RBI Fair Practices Guaranteed</div>
       </div>
       <div class="kpi-card" style="--kpi-color: #F87171;">
-        <div class="kpi-label">Gate Intercepts</div>
+        <div class="kpi-label">Safety Stops &amp; Gate Blocks</div>
         <div class="kpi-value" id="kpi-gate-blocked">--</div>
-        <div class="kpi-subtext">Fraud &amp; attempt-cap stops</div>
+        <div class="kpi-subtext">Pre-pipeline stops &amp; gate intercepts</div>
       </div>
       <div class="kpi-card" style="--kpi-color: #F59E0B;">
         <div class="kpi-label">Human Escalations</div>
@@ -273,7 +275,7 @@
         <button class="tab-btn active" data-filter="all">All (<span id="count-all">0</span>)</button>
         <button class="tab-btn" data-filter="PAYMENT">Payments (<span id="count-pay">0</span>)</button>
         <button class="tab-btn" data-filter="B2B">B2B (<span id="count-b2b">0</span>)</button>
-        <button class="tab-btn" data-filter="GATE_BLOCKED">Gate Intercepts (<span id="count-blocked">0</span>)</button>
+        <button class="tab-btn" data-filter="SAFETY_STOPS">Safety Stops &amp; Intercepts (<span id="count-blocked">0</span>)</button>
         <button class="tab-btn" data-filter="ESCALATED">Escalated (<span id="count-esc">0</span>)</button>
         <button class="tab-btn" data-filter="RECOVERED">Recovered (<span id="count-rec">0</span>)</button>
       </div>
@@ -316,6 +318,23 @@
     // --- Formatters ---
     const formatINR = (val) => "₹" + Number(val).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
+    // --- Safety Stop Classifier (Harmonizes fraud, dispute, and attempt-cap stops) ---
+    function getSafetyStopInfo(c) {
+      const isFraud = c.escalation_reason === 'fraud_stop_skip' || (c.status === 'STOPPED' && (c.diagnosis_category || '').includes('Skip'));
+      const isDispute = c.escalation_reason === 'dispute_skip';
+      const isAttemptCapStart = c.escalation_reason === 'attempt_cap_reached_at_start' ||
+                                (c.initial_attempt_count >= 5 && c.case_type === 'FAILED_PAYMENT') ||
+                                (c.initial_attempt_count >= 4 && c.case_type === 'B2B_RECEIVABLE');
+      const isPromiseWait = c.escalation_reason === 'active_promise_wait_skip';
+
+      if (isFraud) return { isStop: true, type: 'fraud', title: '⛔ PRE-PIPELINE STOP', desc: 'Fraud Hold (Outbound Contact Refused)' };
+      if (isDispute) return { isStop: true, type: 'dispute', title: '⛔ PRE-PIPELINE STOP', desc: 'Dispute Hold (RBI Right to Dispute)' };
+      if (isAttemptCapStart) return { isStop: true, type: 'cap', title: '⛔ PRE-PIPELINE STOP', desc: 'Attempt Cap Ceiling (Max Attempts Exhausted)' };
+      if (isPromiseWait) return { isStop: true, type: 'promise', title: '⏳ PRE-PIPELINE STAND-DOWN', desc: 'Active Promise-to-Pay Honored' };
+
+      return { isStop: false };
+    }
+
     // --- 1. DYNAMIC KPI COMPUTATION AT RENDER TIME ---
     function computeAndRenderKPIs() {
       const total = AUDIT_DATA.length;
@@ -324,7 +343,9 @@
 
       const recovered = AUDIT_DATA.filter(c => c.status === 'RECOVERED');
       const escalated = AUDIT_DATA.filter(c => c.status === 'ESCALATED');
-      const gateBlocked = AUDIT_DATA.filter(c =>
+      const safetyStops = AUDIT_DATA.filter(c =>
+        getSafetyStopInfo(c).isStop ||
+        !c.gate_approved ||
         c.status === 'GATE_BLOCKED' ||
         c.status === 'STOPPED' ||
         (c.gate_violations && c.gate_violations.length > 0)
@@ -338,14 +359,14 @@
       document.getElementById('kpi-case-split').textContent = `${paymentCount} Payments / ${b2bCount} B2B`;
       document.getElementById('kpi-revenue-recovered').textContent = formatINR(totalRecoveredINR);
       document.getElementById('kpi-recovery-rate').textContent = `${overallRecoveryRate} recovered (${recovered.length}/${total})`;
-      document.getElementById('kpi-gate-blocked').textContent = gateBlocked.length;
+      document.getElementById('kpi-gate-blocked').textContent = safetyStops.length;
       document.getElementById('kpi-escalated').textContent = escalated.length;
 
       // Tab Counts
       document.getElementById('count-all').textContent = total;
       document.getElementById('count-pay').textContent = paymentCount;
       document.getElementById('count-b2b').textContent = b2bCount;
-      document.getElementById('count-blocked').textContent = gateBlocked.length;
+      document.getElementById('count-blocked').textContent = safetyStops.length;
       document.getElementById('count-esc').textContent = escalated.length;
       document.getElementById('count-rec').textContent = recovered.length;
     }
@@ -356,10 +377,11 @@
       tbody.innerHTML = '';
 
       const filtered = AUDIT_DATA.filter(c => {
+        const safety = getSafetyStopInfo(c);
         // Tab Filter
         if (currentFilter === 'PAYMENT' && c.case_type !== 'FAILED_PAYMENT') return false;
         if (currentFilter === 'B2B' && c.case_type !== 'B2B_RECEIVABLE') return false;
-        if (currentFilter === 'GATE_BLOCKED' && !(c.status === 'GATE_BLOCKED' || c.status === 'STOPPED' || (c.gate_violations && c.gate_violations.length > 0))) return false;
+        if (currentFilter === 'SAFETY_STOPS' && !(safety.isStop || !c.gate_approved || c.status === 'GATE_BLOCKED' || (c.gate_violations && c.gate_violations.length > 0))) return false;
         if (currentFilter === 'ESCALATED' && c.status !== 'ESCALATED') return false;
         if (currentFilter === 'RECOVERED' && c.status !== 'RECOVERED') return false;
 
@@ -382,18 +404,46 @@
         tr.className = 'case-row';
         tr.dataset.caseId = c.case_id;
 
-        // Status Badge Style
-        let statusBadgeClass = 'badge-waiting';
-        let statusSymbol = '●';
-        if (c.status === 'RECOVERED') { statusBadgeClass = 'badge-recovered'; statusSymbol = '●'; }
-        else if (c.status === 'ESCALATED') { statusBadgeClass = 'badge-escalated'; statusSymbol = '▲'; }
-        else if (c.status === 'GATE_BLOCKED') { statusBadgeClass = 'badge-blocked'; statusSymbol = '✖'; }
-        else if (c.status === 'STOPPED') { statusBadgeClass = 'badge-stopped'; statusSymbol = '■'; }
+        const safety = getSafetyStopInfo(c);
 
-        // Gate Badge Style
-        const gateApproved = c.gate_approved;
-        const gateBadgeClass = gateApproved ? 'badge-approved-gate' : 'badge-blocked-gate';
-        const gateText = gateApproved ? '✓ APPROVED' : '⚠ BLOCKED';
+        // Compliance Gate Verdict HTML
+        let gateVerdictHtml = '';
+        if (safety.isStop) {
+          const badgeClass = safety.type === 'promise' ? 'badge-promise-wait' : 'badge-prepipe-stop';
+          gateVerdictHtml = `
+            <span class="${badgeClass}">${safety.title}</span>
+            <div style="font-size: 11px; color: #FCA5A5; margin-top: 3px; font-weight: 600;">${safety.desc}</div>
+          `;
+        } else if (!c.gate_approved || c.status === 'GATE_BLOCKED' || (c.gate_violations && c.gate_violations.length > 0)) {
+          const reasonSnippet = c.gate_violations && c.gate_violations.length > 0 ? c.gate_violations[0] : (c.escalation_reason || 'Compliance violation');
+          gateVerdictHtml = `
+            <span class="badge-blocked-gate">⚠ GATE INTERCEPTED</span>
+            <div style="font-size: 11px; color: #F87171; max-width: 220px; margin-top: 3px; font-weight: 600;">${reasonSnippet.substring(0, 50)}...</div>
+          `;
+        } else {
+          gateVerdictHtml = `
+            <span class="badge-approved-gate">✓ APPROVED</span>
+            <div style="font-size: 10px; color: var(--text-dim); margin-top: 3px;">Compliant with RBI &amp; Safety Rules</div>
+          `;
+        }
+
+        // Final Outcome HTML
+        let outcomeHtml = '';
+        if (c.status === 'RECOVERED') {
+          outcomeHtml = `<span class="badge badge-recovered">● RECOVERED</span>`;
+        } else if (c.status === 'STOPPED') {
+          outcomeHtml = `<span class="badge badge-stopped">■ STOPPED (FRAUD)</span>`;
+        } else if (c.status === 'WAITING') {
+          outcomeHtml = `<span class="badge badge-waiting">⏳ WAITING (PROMISE)</span>`;
+        } else if (c.status === 'ESCALATED') {
+          let escDetail = 'HUMAN QUEUE';
+          if (safety.type === 'dispute') escDetail = 'DISPUTE QUEUE';
+          else if (safety.type === 'cap' || (c.escalation_reason || '').includes('attempt_cap')) escDetail = 'CAP REACHED';
+          else if ((c.escalation_reason || '').includes('low_confidence')) escDetail = 'LOW CONFIDENCE';
+          outcomeHtml = `<span class="badge badge-escalated">▲ ESCALATED (${escDetail})</span>`;
+        } else {
+          outcomeHtml = `<span class="badge badge-blocked">✖ ${c.status}</span>`;
+        }
 
         // Type label
         const typeLabel = c.case_type === 'FAILED_PAYMENT' ? 'PAYMENT' : 'B2B';
@@ -415,11 +465,8 @@
               <div class="conf-bar"><div class="conf-fill" style="width: ${(c.strategy_confidence * 100).toFixed(0)}%;"></div></div>
             </div>
           </td>
-          <td>
-            <span class="${gateBadgeClass}">${gateText}</span>
-            ${!gateApproved && c.gate_violations.length > 0 ? `<div style="font-size: 10px; color: #F87171; max-width: 200px; margin-top: 3px;">${c.gate_violations[0].substring(0, 45)}...</div>` : ''}
-          </td>
-          <td><span class="badge ${statusBadgeClass}">${statusSymbol} ${c.status}</span></td>
+          <td>${gateVerdictHtml}</td>
+          <td>${outcomeHtml}</td>
           <td style="color: var(--text-dim); font-size: 12px;">${c.resolution_time}</td>
         `;
 
