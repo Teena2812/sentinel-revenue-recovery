@@ -218,6 +218,43 @@
     .step-section p { font-size: 12px; color: var(--text-main); }
     .violation-pill { background: rgba(239, 68, 68, 0.15); color: #FCA5A5; padding: 4px 8px; border-radius: 4px; font-size: 11px; margin-top: 4px; display: inline-block; }
 
+    .data-source-banner {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+      font-size: 11px;
+      color: #94A3B8;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      padding: 4px 12px;
+      border-radius: 6px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+    .pulse-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #10B981;
+      box-shadow: 0 0 8px #10B981;
+    }
+    .header-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px;
+    }
+    .badge-source {
+      background: rgba(0, 186, 242, 0.1);
+      color: #38BDF8;
+      border: 1px solid rgba(0, 186, 242, 0.3);
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
     /* Empty state */
     .empty-state { text-align: center; padding: 48px; color: var(--text-dim); }
   </style>
@@ -230,10 +267,17 @@
         <div class="brand-logo">S</div>
         <div class="brand-title">
           <h1>Sentinel Revenue Recovery Engine</h1>
-          <p>Deterministic Compliance Audit Trail & Multi-Attempt Case Lifecycle</p>
+          <p>Deterministic Compliance Audit Trail &amp; Multi-Attempt Case Lifecycle</p>
+          <div class="data-source-banner">
+            <span class="pulse-dot"></span>
+            <span><strong>Data source:</strong> Seeded Mock Benchmark (deterministic, MockLLMClient)</span>
+          </div>
         </div>
       </div>
-      <div class="badge-benchmark">Razorpay AI Buildathon — Track 3</div>
+      <div class="header-right">
+        <div class="badge-benchmark">Razorpay AI Buildathon — Track 3</div>
+        <div class="badge-source">Data source: Seeded Mock Benchmark (deterministic, MockLLMClient)</div>
+      </div>
     </header>
 
     <!-- KPI Ribbon (Values computed dynamically at render time by JS) -->
@@ -261,7 +305,7 @@
       <div class="kpi-card" style="--kpi-color: #F59E0B;">
         <div class="kpi-label">Mid-Flow Intercepts &amp; Escalations</div>
         <div class="kpi-value" id="kpi-midflow-escalated">25</div>
-        <div class="kpi-subtext" id="kpi-midflow-subtext">10 Cap Blocks • 15 Policy/Conf</div>
+        <div class="kpi-subtext" id="kpi-midflow-subtext">7 Gate Intercepts • 18 Policy/Conf</div>
       </div>
     </section>
 
@@ -380,6 +424,7 @@
       document.getElementById('kpi-recovery-rate').textContent = `${overallRecoveryRate} recovered (${recovered.length}/${total})`;
       document.getElementById('kpi-prepipe-stops').textContent = prepipeStops.length;
       document.getElementById('kpi-midflow-escalated').textContent = midflowEscalations.length;
+      document.getElementById('kpi-midflow-subtext').textContent = `${gateIntercepts.length} Gate Intercepts • ${midflowEscalations.length - gateIntercepts.length} Policy/Conf`;
 
       // Tab Counts
       document.getElementById('count-all').textContent = total;
