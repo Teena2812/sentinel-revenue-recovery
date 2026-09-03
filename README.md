@@ -1,6 +1,6 @@
 # Sentinel — AI Revenue Recovery Agent
 
-![Tests](https://img.shields.io/badge/Tests-116%2F116%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/Tests-121%2F121%20passing-brightgreen)
 ![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
 ![Buildathon](https://img.shields.io/badge/Razorpay%20AI%20Buildathon-Track%203-orange)
 
@@ -11,6 +11,7 @@
 - [The Problem](#the-problem)
 - [Verified Benchmark Results](#verified-benchmark-results-locked--reproducible)
 - [Live Google Gemini Validation](#3-live-google-gemini-validation-80-cases)
+- [How the Numbers Were Produced](#how-the-numbers-were-produced)
 - [What This System Does](#what-this-system-does)
 - [Architecture](#architecture)
 - [How to Run](#how-to-run)
@@ -20,10 +21,12 @@
 - [Current Status](#current-status-phase-5--full-engine-benchmark--demo-script-complete-)
 - [What This Doesn't Do Yet](#what-this-doesnt-do-yet)
 - [Adaptation](#adaptation--honest-description)
+- [What "Learning" Means in This System](#what-learning-means-in-this-system)
+- [Failure Modes — What Breaks and What We Do About It](#failure-modes--what-breaks-and-what-we-do-about-it)
 
 ---
 
-**Sentinel** is an autonomous, dual-engine AI revenue recovery system built for Track 3 of the **Razorpay AI Buildathon**.
+**Sentinel** is an autonomous, dual-engine AI revenue recovery system built for Track 3 of the **Razorpay AI Buildathon**. Tested across N=30 payment-failure cases and N=50 B2B receivable cases (80 total).
 
 > **⚠️ ALL DATA IN THIS PROJECT IS SIMULATED.**
 > No real Razorpay data, real payment transactions, or real customer information
@@ -42,7 +45,7 @@ An estimated **₹8.1 trillion** is currently locked in delayed payments to Indi
 
 Both benchmarks evaluate against identical synthetic datasets anchored to `config.SIMULATED_CURRENT_TIME = 2026-08-24 12:00:00 IST` with isolated RNG streams (`seed=42`).
 
-**116/116 tests passing, reproducible across independent runs.**
+**121/121 tests passing, reproducible across independent runs.**
 
 ### Benchmark Visualizations
 
@@ -97,6 +100,16 @@ To verify that the recovery engine generalizes beyond the deterministic mock mat
 > 2. **Strategy vs. Terminal Outcome Agreement (45.9% vs. 73.8%)**: Fine-grained strategy agreement was 45.9%, yet coarse terminal outcomes agreed 73.8%. This occurs because terminal outcome states are coarse (`RECOVERED`, `FAILED`, `ESCALATED`, `STOPPED`, `WAITING`). Different valid intermediate actions (e.g. proposing `SUGGEST_ALTERNATE_METHOD` vs. `RETRY_LATER`) frequently converge to the same final recovery or escalation state.
 > 3. **B2B Rupee Dynamics**: Live Gemini recovered more individual invoices (15 vs. 13) at a higher rate (30% vs. 26%), but slightly less gross amount (₹8.76M vs. ₹8.94M). This demonstrates healthy risk calibration: Gemini exercised greater caution on massive, high-risk chronic-delinquency invoices (routing them to human escalation rather than automated debtor contact), while successfully resolving more small-to-mid commercial balances.
 > 4. **Simulation RNG Offset Caveat**: The mock and live runs used identical seed-42 random generators initialized per batch. Because the two models diverged on intermediate actions in 33 cases (drawing different numbers of simulated coin flips), subsequent random draws experienced natural offset. Accordingly, the higher live recovery rate (43.3% vs. 36.7%) illustrates robust performance across a realistic run rather than a strict ceteris paribus causal proof.
+
+### How the Numbers Were Produced
+
+The headline recovery-rate benchmark (N=30 payment-failure, N=50 B2B receivable cases) runs entirely through `MockLLMClient` (`run_phase2.py`, `run_phase3.py`), with a seeded RNG (`random.Random(42)`) and frozen simulated time (`config.SIMULATED_CURRENT_TIME = 2026-08-24 12:00:00 IST`). This is what makes the benchmark byte-identical across repeated runs.
+
+**What `MockLLMClient` actually does:** It is a four-dimensional expert policy matrix — keyed on `(failure_code, relationship_tier, attempt_count)` for payments and `(diagnosis_category, relationship_tier, attempt_count, has_broken_promise)` for B2B receivables — that returns structured, category-appropriate diagnosis and strategy responses. It approximates realistic domain-expert reasoning (e.g., a `BANK_TIMEOUT` for a `HIGH`-tier customer yields a high-confidence `TRANSIENT_NETWORK` diagnosis with specific reasoning, not a generic stub), but it is fully deterministic: the same inputs always produce the same outputs. The mock policy matrix does not consume the recency-weighted memory statistics injected into the prompt — that layer is only exercised in live runs.
+
+Execution outcomes (did the retry succeed?) are drawn from configured probability tables (`config.PAYMENT_RETRY_SUCCESS_PROB` and `config.B2B_REMINDER_SUCCESS_PROB`) via the seeded RNG — not from any real payment gateway or collection rail. Both the naive baseline and the AI agent share these identical probability tables; the agent wins purely through accurate root-cause diagnosis and optimal action selection.
+
+The live Gemini validation (`scripts/run_live_validation.py`, results in [`reports/live_vs_mock_comparison.json`](reports/live_vs_mock_comparison.json)) is a separate, non-reproducible-by-nature run of the same 80 cases through the real `GeminiLLMClient` against `gemini-flash-lite-latest`. This run validates that the live model's diagnosis and decision quality integrates correctly at scale — including real rate-limit failures and correct escalation — but execution outcomes remain simulated (no real gateway exists to hit), so it does not produce independently "real" recovery numbers.
 
 ---
 
@@ -290,3 +303,37 @@ This context is correctly formatted and injected into every Strategy prompt (see
 - **Deterministic Mock Mode**: The 80-case benchmark evaluates our deterministic compliance gate, state machine lifecycle, and fallback ladder against a parameterized expert policy matrix (`MockLLMClient`). While the mock policy models realistic multi-attempt and tier-sensitive recovery behavior, live generative reasoning over dynamic outcome memory is separately validated on Google Gemini Flash Lite. The memory/statistics layer is exercised in live runs; the mock policy matrix does not consume it, since it is deterministic by design. 
 - **Live Gemini Verification**: Under live Google Gemini (`gemini-flash-lite-latest`), the model actively reads and reasons over this real context — proven in [`reports/live_gemini_proof.json`](reports/live_gemini_proof.json), where Gemini explicitly cited the 100.0% historical success rate (4 samples) in its decision to select `RETRY_NOW`.
 - **Failure Resilience**: Unplanned upstream API errors (e.g. 429 rate limit quota exhaustion) are proven to step down safely to `ESCALATE_HUMAN` with 0.00 confidence (see [`reports/live_gemini_failure_resilience_proof.json`](reports/live_gemini_failure_resilience_proof.json)).
+
+---
+
+## What "Learning" Means in This System
+
+In Sentinel, **"learning" has an explicit and bounded definition**:
+
+- **Lookup Table Updates, Not Weight Updates**: Learning in this system strictly means updating a per-(category, action) win-rate lookup table (`core/memory.py`) from observed historical outcomes. It **does not** fine-tune or retrain the underlying LLM, nor does it modify any model weights.
+- **Human Engineering Required for New Categories**: The system does not autonomously invent new classification labels. Introducing a genuinely new case category or failure scenario requires an engineer to explicitly define it in `DiagnosisCategory` (`agents/diagnosis.py`) and update the corresponding policy matrices in `MockLLMClient` (`agents/llm_client.py`).
+- **Prompt Injection in Live Runs**: The recency-weighted statistics computed from this lookup table are formatted and injected as dynamic context into strategy generation prompts for live models (see [How the Numbers Were Produced](#how-the-numbers-were-produced) for how this differs between the deterministic mock benchmark and live runs).
+
+---
+
+## Failure Modes — What Breaks and What We Do About It
+
+In a production revenue recovery engine, resilience is measured by how safely the system fails under stress. Rather than assuming ideal conditions, Sentinel is engineered with multi-layered defenses verified against four deliberately induced failure scenarios in `tests/test_failure_modes.py`:
+
+1. **Unapproved or Toxic AI Suggestions (`INVALID_ACTION_REJECTED`)**  
+   *What happens:* Generative AI models can occasionally hallucinate aggressive, unapproved, or legally non-compliant actions (such as sending coercive communications or debtor harassment).  
+   *What Sentinel does:* Out-of-menu proposals are intercepted at two independent architectural layers: first, the Strategy agent detects the unapproved string and zeroes its confidence score; second, the Deterministic Compliance Gate independently blocks any action outside the strict regulatory menu (`check_allowed_action`). The action is never dispatched, and the case is safely routed to a human operations queue with the explicit, greppable reason code `INVALID_ACTION_REJECTED`.
+
+2. **Malformed or Truncated LLM Payloads (`LLM_RESPONSE_UNPARSEABLE`)**  
+   *What happens:* Upstream LLMs can return malformed JSON, cut off in mid-sentence due to context limits, or omit required schema keys.  
+   *What Sentinel does:* The pipeline catches decoding and schema errors without crashing. It executes an automated retry with an intensified JSON schema instruction. If the response remains invalid, Sentinel gracefully degrades through its Fallback Ladder directly into human review with `confidence = 0.0` and logs `LLM_RESPONSE_UNPARSEABLE`, ensuring the system never "guesses" or executes corrupted instructions.
+
+3. **Upstream API Timeouts and Gateway Hangs (`LLM_TIMEOUT`)**  
+   *What happens:* Cloud LLM endpoints or payment provider networks can experience latency spikes, gateway timeouts, or temporary outages.  
+   *What Sentinel does:* Outbound requests are protected by bounded timeouts. When an API call hangs or raises a socket timeout, Sentinel catches the failure cleanly, logs `LLM_TIMEOUT`, and immediately steps down to a safe standby state (`ESCALATE_HUMAN`) rather than blocking worker threads or silently failing in the dark.
+
+4. **Near-Simultaneous Double-Processing Race Conditions (`CONCURRENT_EXECUTION_BLOCKED`)**  
+   *What happens:* Webhook delivery retries or multiple distributed worker nodes may attempt to process the exact same invoice or failed transaction at the exact same millisecond.  
+   *What Sentinel does:* Sentinel enforces thread-safe atomic check-and-reserve idempotency under a re-entrant lock (`check_and_reserve_idempotency`). The first arriving thread atomically claims the case attempt and marks it `IN_FLIGHT`. Any competing thread reaching the gate at the identical instant is immediately blocked with `CONCURRENT_EXECUTION_BLOCKED` before firing duplicate debit attempts or harassing debtor reminders.
+
+

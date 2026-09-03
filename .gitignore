@@ -15,6 +15,7 @@ venv/
 # Temporary / local runtime artifacts
 data/tmp_*.json
 *.tmp
+powershell.bat
 .DS_Store
 Thumbs.db
 

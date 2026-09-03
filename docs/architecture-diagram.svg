@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 720" font-family="'Segoe UI', Inter, Arial, sans-serif">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0f0c29"/>
+      <stop offset="50%" stop-color="#1a1a3e"/>
+      <stop offset="100%" stop-color="#24243e"/>
+    </linearGradient>
+    <linearGradient id="llmGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#667eea"/>
+      <stop offset="100%" stop-color="#764ba2"/>
+    </linearGradient>
+    <linearGradient id="gateGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f093fb"/>
+      <stop offset="100%" stop-color="#f5576c"/>
+    </linearGradient>
+    <linearGradient id="execGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#4facfe"/>
+      <stop offset="100%" stop-color="#00f2fe"/>
+    </linearGradient>
+    <linearGradient id="memGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#43e97b"/>
+      <stop offset="100%" stop-color="#38f9d7"/>
+    </linearGradient>
+    <linearGradient id="eventGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fa709a"/>
+      <stop offset="100%" stop-color="#fee140"/>
+    </linearGradient>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="900" height="720" fill="url(#bgGrad)" rx="12"/>
+
+  <!-- Title -->
+  <text x="450" y="42" text-anchor="middle" fill="#fff" font-size="22" font-weight="700" letter-spacing="1">SENTINEL — AI Revenue Recovery Pipeline</text>
+  <text x="450" y="64" text-anchor="middle" fill="#aaa" font-size="12">Dual-Engine Architecture · Razorpay AI Buildathon Track 3</text>
+
+  <!-- ===== EVENT BOX ===== -->
+  <rect x="300" y="82" width="300" height="44" rx="8" fill="url(#eventGrad)" filter="url(#shadow)"/>
+  <text x="450" y="110" text-anchor="middle" fill="#1a1a2e" font-size="14" font-weight="700">EVENT</text>
+  <text x="450" y="140" text-anchor="middle" fill="#ccc" font-size="10">Payment Failure  ·  Invoice Overdue</text>
+
+  <!-- Arrow -->
+  <line x1="450" y1="126" x2="450" y2="156" stroke="#888" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <defs><marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#888"/></marker></defs>
+
+  <!-- ===== PRE-PIPELINE GATE ===== -->
+  <rect x="225" y="156" width="450" height="40" rx="8" fill="#2a2a4a" stroke="#555" stroke-width="1" filter="url(#shadow)"/>
+  <text x="450" y="181" text-anchor="middle" fill="#ddd" font-size="12" font-weight="600">PRE-PIPELINE GATE</text>
+  <text x="450" y="206" text-anchor="middle" fill="#999" font-size="9">Cost Threshold · Active Promise · Fraud/Dispute Hard-Stops</text>
+
+  <line x1="450" y1="196" x2="450" y2="226" stroke="#888" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+  <!-- ===== DIAGNOSIS AGENT ===== -->
+  <rect x="250" y="226" width="400" height="52" rx="10" fill="url(#llmGrad)" filter="url(#shadow)"/>
+  <text x="450" y="249" text-anchor="middle" fill="#fff" font-size="14" font-weight="700">1. DIAGNOSIS AGENT</text>
+  <text x="450" y="268" text-anchor="middle" fill="#e0d0ff" font-size="11">LLM Root-Cause Analysis → Category &amp; Confidence</text>
+
+  <line x1="450" y1="278" x2="450" y2="306" stroke="#888" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+  <!-- ===== STRATEGY AGENT ===== -->
+  <rect x="250" y="306" width="400" height="52" rx="10" fill="url(#llmGrad)" filter="url(#shadow)"/>
+  <text x="450" y="329" text-anchor="middle" fill="#fff" font-size="14" font-weight="700">2. STRATEGY AGENT</text>
+  <text x="450" y="348" text-anchor="middle" fill="#e0d0ff" font-size="11">Bounded Menu + 4D Tone Calibration + Memory Context</text>
+
+  <line x1="450" y1="358" x2="450" y2="386" stroke="#888" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+  <!-- ===== CONFIDENCE GATE ===== -->
+  <rect x="250" y="386" width="400" height="44" rx="10" fill="#2a2a4a" stroke="#f5576c" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="450" y="407" text-anchor="middle" fill="#f5576c" font-size="12" font-weight="700">CONFIDENCE GATE &amp; FALLBACK LADDER</text>
+  <text x="450" y="423" text-anchor="middle" fill="#ccc" font-size="10">Step-Down if Conf &lt; 0.85 or Conflicting Signals</text>
+
+  <line x1="450" y1="430" x2="450" y2="456" stroke="#888" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+  <!-- ===== DETERMINISTIC COMPLIANCE GATE ===== -->
+  <rect x="200" y="456" width="500" height="56" rx="10" fill="url(#gateGrad)" filter="url(#shadow)"/>
+  <text x="450" y="479" text-anchor="middle" fill="#fff" font-size="14" font-weight="700">3. DETERMINISTIC COMPLIANCE GATE</text>
+  <text x="450" y="498" text-anchor="middle" fill="#ffe0e6" font-size="11">Plain Code — NEVER an LLM Call · RBI Fair Practices Enforced</text>
+
+  <!-- Gate branches -->
+  <!-- REJECTED branch (left) -->
+  <line x1="330" y1="512" x2="330" y2="536" stroke="#f5576c" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <rect x="230" y="536" width="200" height="34" rx="6" fill="#3a1a2a" stroke="#f5576c" stroke-width="1"/>
+  <text x="330" y="558" text-anchor="middle" fill="#f5576c" font-size="11" font-weight="600">REJECTED → 1-Retry Re-Propose</text>
+
+  <!-- APPROVED branch (right) -->
+  <line x1="560" y1="512" x2="560" y2="536" stroke="#43e97b" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+  <!-- ===== EXECUTION AGENT ===== -->
+  <rect x="430" y="536" width="260" height="52" rx="10" fill="url(#execGrad)" filter="url(#shadow)"/>
+  <text x="560" y="559" text-anchor="middle" fill="#1a1a2e" font-size="14" font-weight="700">4. EXECUTION</text>
+  <text x="560" y="578" text-anchor="middle" fill="#0a3a5a" font-size="10">Idempotency · 2 AM Tool Resilience</text>
+
+  <line x1="560" y1="588" x2="560" y2="616" stroke="#888" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+  <!-- ===== MEMORY UPDATE ===== -->
+  <rect x="400" y="616" width="320" height="44" rx="10" fill="url(#memGrad)" filter="url(#shadow)"/>
+  <text x="560" y="637" text-anchor="middle" fill="#1a2a1a" font-size="13" font-weight="700">5. ADAPTIVE MEMORY</text>
+  <text x="560" y="653" text-anchor="middle" fill="#1a3a2a" font-size="10">Double-Gated · Recency-Weighted · Terminal Outcomes Only</text>
+
+  <!-- Memory feedback arrow back to Strategy -->
+  <line x1="720" y1="638" x2="750" y2="638" stroke="#43e97b" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <line x1="750" y1="638" x2="750" y2="330" stroke="#43e97b" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <line x1="750" y1="330" x2="650" y2="330" stroke="#43e97b" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrowhead)"/>
+  <text x="762" y="490" fill="#43e97b" font-size="9" transform="rotate(-90,762,490)">Memory Feedback Loop</text>
+
+  <!-- ===== AUDIT TRAIL ===== -->
+  <rect x="400" y="668" width="320" height="36" rx="8" fill="#2a2a4a" stroke="#667eea" stroke-width="1"/>
+  <text x="560" y="691" text-anchor="middle" fill="#aac" font-size="12" font-weight="600">6. IMMUTABLE AUDIT TRAIL</text>
+
+  <!-- Legend -->
+  <rect x="20" y="668" width="14" height="14" rx="3" fill="url(#llmGrad)"/>
+  <text x="40" y="680" fill="#ccc" font-size="10">LLM Agent</text>
+  <rect x="110" y="668" width="14" height="14" rx="3" fill="url(#gateGrad)"/>
+  <text x="130" y="680" fill="#ccc" font-size="10">Deterministic Gate</text>
+  <rect x="240" y="668" width="14" height="14" rx="3" fill="url(#execGrad)"/>
+  <text x="260" y="680" fill="#ccc" font-size="10">Execution</text>
+  <rect x="330" y="668" width="14" height="14" rx="3" fill="url(#memGrad)"/>
+  <text x="350" y="680" fill="#ccc" font-size="10">Memory</text>
+
+  <!-- ALL DATA SIMULATED footer -->
+  <text x="450" y="714" text-anchor="middle" fill="#666" font-size="9">⚠️ ALL DATA IN THIS SYSTEM IS SIMULATED</text>
+</svg>

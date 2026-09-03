@@ -196,27 +196,60 @@ def propose_strategy(
     try:
         raw_response = llm_client.call(prompt, STRATEGY_SCHEMA)
     except Exception as e:
+        is_timeout = isinstance(e, TimeoutError) or "timeout" in str(e).lower()
+        if is_timeout:
+            logger.error("Strategy LLM call timed out: %s. Escalating.", e)
+            return StrategyProposal(
+                proposed_action=ActionType.ESCALATE_HUMAN,
+                confidence=0.0,
+                reasoning=f"LLM_TIMEOUT: Upstream Strategy LLM call timed out: {e}",
+                risk_assessment="HIGH",
+            )
         logger.warning("Strategy LLM call attempt 1 failed: %s. Retrying...", e)
         retry_prompt = prompt + "\n\nCRITICAL: Respond ONLY with valid JSON conforming to the schema."
         try:
             raw_response = llm_client.call(retry_prompt, STRATEGY_SCHEMA)
         except Exception as retry_err:
+            is_retry_timeout = isinstance(retry_err, TimeoutError) or "timeout" in str(retry_err).lower()
+            if is_retry_timeout:
+                return StrategyProposal(
+                    proposed_action=ActionType.ESCALATE_HUMAN,
+                    confidence=0.0,
+                    reasoning=f"LLM_TIMEOUT: Upstream Strategy LLM retry timed out: {retry_err}",
+                    risk_assessment="HIGH",
+                )
             logger.error("Strategy LLM retry failed: %s. Falling back to ladder.", retry_err)
             return StrategyProposal(
                 proposed_action=ActionType.ESCALATE_HUMAN,
                 confidence=0.0,
-                reasoning="Automated fallback to human queue due to Strategy LLM error.",
+                reasoning=f"LLM_RESPONSE_UNPARSEABLE: Automated fallback due to Strategy LLM error: {retry_err}",
                 risk_assessment="LOW",
             )
 
     try:
         act_str = raw_response.get("proposed_action", "ESCALATE_HUMAN")
+        is_out_of_menu = False
         try:
             action = ActionType(act_str)
             if action not in allowed_menu:
-                action = ActionType.ESCALATE_HUMAN
+                is_out_of_menu = True
         except ValueError:
-            action = ActionType.ESCALATE_HUMAN
+            is_out_of_menu = True
+
+        if is_out_of_menu:
+            logger.warning(
+                "Unrecognized or out-of-menu action '%s' rejected for %s. Escalating.",
+                act_str, case.case_type.value,
+            )
+            return StrategyProposal(
+                proposed_action=ActionType.ESCALATE_HUMAN,
+                confidence=0.0,
+                reasoning=(
+                    f"INVALID_ACTION_REJECTED: Proposed action '{act_str}' is not permitted "
+                    f"in the bounded action menu for {case.case_type.value}."
+                ),
+                risk_assessment="HIGH",
+            )
 
         confidence = float(raw_response.get("confidence", 0.0))
         confidence = max(0.0, min(1.0, confidence))
@@ -235,7 +268,7 @@ def propose_strategy(
         return StrategyProposal(
             proposed_action=ActionType.ESCALATE_HUMAN,
             confidence=0.0,
-            reasoning=f"Parsing error fallback: {parse_err}",
+            reasoning=f"LLM_RESPONSE_UNPARSEABLE: Parsing error fallback: {parse_err}",
             risk_assessment="LOW",
         )
 

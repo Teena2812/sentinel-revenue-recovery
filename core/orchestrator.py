@@ -251,10 +251,25 @@ def process_case(
         fallback_trigger = ""
         if proposal.confidence < config.CONFIDENCE_THRESHOLD or has_conflicts:
             fallback_used = True
-            fallback_trigger = "conflicting_signals" if has_conflicts else "low_confidence"
-            proposal = apply_fallback_ladder(case, proposal)
-            last_proposal = proposal
+            if proposal.reasoning.startswith("INVALID_ACTION_REJECTED"):
+                fallback_trigger = "invalid_action_rejected"
+                last_esc_reason = "INVALID_ACTION_REJECTED"
+            elif proposal.reasoning.startswith("LLM_RESPONSE_UNPARSEABLE"):
+                fallback_trigger = "llm_response_unparseable"
+                last_esc_reason = "LLM_RESPONSE_UNPARSEABLE"
+            elif proposal.reasoning.startswith("LLM_TIMEOUT"):
+                fallback_trigger = "llm_timeout"
+                last_esc_reason = "LLM_TIMEOUT"
+            else:
+                fallback_trigger = "conflicting_signals" if has_conflicts else "low_confidence"
+
             if proposal.proposed_action == ActionType.ESCALATE_HUMAN:
+                # Already escalated due to invalid action, unparseable response, or timeout
+                pass
+            else:
+                proposal = apply_fallback_ladder(case, proposal)
+                last_proposal = proposal
+            if proposal.proposed_action == ActionType.ESCALATE_HUMAN and not last_esc_reason:
                 last_esc_reason = f"fallback_ladder_{fallback_trigger}"
 
         audit_log.record_strategy(StrategyEntry(
@@ -274,16 +289,46 @@ def process_case(
         initial_gate_violation: Optional[str] = None
 
         while True:
-            gate = run_all_checks(case, proposal.proposed_action, audit_log.get_execution_log(), current_time=sim_time)
+            # Atomic check-and-reserve on the proposed recovery action under single lock acquisition
+            should_reserve = proposal.proposed_action not in {ActionType.WAIT, ActionType.STOP, ActionType.ESCALATE_HUMAN}
+            gate = run_all_checks(
+                case,
+                proposal.proposed_action,
+                audit_log,
+                current_time=sim_time,
+                reserve_idempotency=should_reserve,
+            )
             audit_log.record_gate_decision(_gate_decision_to_entry(gate))
             final_gate = gate
+
+            # Check if this case was blocked by concurrent in-flight execution
+            if not gate.approved and any("CONCURRENT_EXECUTION_BLOCKED" in v.reason for v in gate.violations):
+                return CaseOutcome(
+                    case_id=case.case_id,
+                    status="GATE_BLOCKED",
+                    final_action=proposal.proposed_action,
+                    amount=case.amount,
+                    amount_recovered=0.0,
+                    resolution_time=None,
+                    resolution_unit=res_unit,
+                    attempts_made=loop_iter + 1,
+                    initial_attempt_count=case_initial_attempts,
+                    diagnosis=diagnosis,
+                    strategy=proposal,
+                    gate_decision=gate,
+                    escalation_reason="CONCURRENT_EXECUTION_BLOCKED",
+                    reasoning_summary="Execution blocked: duplicate concurrent action is already in-flight for this case attempt.",
+                )
 
             if gate.approved:
                 break
 
             if not initial_gate_violation and gate.violations:
                 viol_name = gate.violations[0].rule_name
-                if viol_name == "attempt_cap":
+                viol_reason = gate.violations[0].reason
+                if "INVALID_ACTION_REJECTED" in viol_reason:
+                    initial_gate_violation = "INVALID_ACTION_REJECTED"
+                elif viol_name == "attempt_cap":
                     initial_gate_violation = f"attempt_cap_reached_on_attempt_{case.attempt_count}"
                 else:
                     initial_gate_violation = f"gate_rejection_{viol_name}"
@@ -341,9 +386,15 @@ def process_case(
         elif proposal.proposed_action == ActionType.ESCALATE_HUMAN and not last_esc_reason:
             last_esc_reason = "strategy_policy_escalation"
 
-        # Step 5: Simulated Execution
-        exec_res = execute(case, proposal.proposed_action, audit_log, rng=active_rng)
-        last_execution = exec_res
+        # Step 5: Simulated Execution with unconditional exception-safety guarantee
+        executed_successfully = False
+        try:
+            exec_res = execute(case, proposal.proposed_action, audit_log, rng=active_rng)
+            last_execution = exec_res
+            executed_successfully = True
+        finally:
+            if not executed_successfully:
+                audit_log.release_reservation(case.idempotency_key, "FAILED")
 
         # Step 6: Memory Recording (Double-gated)
         memory.record_outcome(diagnosis.category, proposal.proposed_action, exec_res.status)

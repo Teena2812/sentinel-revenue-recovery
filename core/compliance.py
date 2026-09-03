@@ -25,7 +25,7 @@ from __future__ import annotations
 import logging
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Optional, Union
+from typing import Any, Optional, Union
 
 from core import config
 from core.schemas import (
@@ -37,6 +37,29 @@ from core.schemas import (
 )
 
 logger = logging.getLogger(__name__)
+
+
+# ---------------------------------------------------------------------------
+# Allowed Action Menus per Vertical
+# ---------------------------------------------------------------------------
+
+PAYMENT_ALLOWED_ACTIONS: set[ActionType] = {
+    ActionType.RETRY_NOW,
+    ActionType.RETRY_LATER,
+    ActionType.SUGGEST_ALTERNATE_METHOD,
+    ActionType.WAIT,
+    ActionType.ESCALATE_HUMAN,
+    ActionType.STOP,
+}
+
+B2B_ALLOWED_ACTIONS: set[ActionType] = {
+    ActionType.SEND_REMINDER,
+    ActionType.OFFER_PAYMENT_PLAN,
+    ActionType.ESCALATE_TONE,
+    ActionType.WAIT,
+    ActionType.ESCALATE_HUMAN,
+    ActionType.STOP,
+}
 
 
 @dataclass
@@ -68,6 +91,35 @@ class GateDecision:
 # ---------------------------------------------------------------------------
 # Individual Rule Checks
 # ---------------------------------------------------------------------------
+
+def check_allowed_action(
+    case: Case,
+    proposed_action: ActionType,
+) -> ComplianceResult:
+    """Verify that the proposed action exists within the bounded action menu for the case vertical.
+
+    Rejects unapproved, out-of-menu, or toxic actions (e.g. SEND_THREATENING_NOTICE)
+    at the deterministic gate layer, regardless of model output.
+    """
+    allowed = (
+        PAYMENT_ALLOWED_ACTIONS
+        if case.case_type == CaseType.FAILED_PAYMENT
+        else B2B_ALLOWED_ACTIONS
+    )
+    if proposed_action not in allowed:
+        return ComplianceResult(
+            passed=False,
+            rule_name="allowed_action",
+            reason=(
+                f"INVALID_ACTION_REJECTED: Action '{proposed_action.value if hasattr(proposed_action, 'value') else proposed_action}' "
+                f"is not permitted in the bounded action menu for {case.case_type.value}."
+            ),
+        )
+    return ComplianceResult(
+        passed=True,
+        rule_name="allowed_action",
+        reason=f"Action '{proposed_action.value}' is permitted in {case.case_type.value} action menu.",
+    )
 
 def check_contact_hours(current_time: Optional[datetime] = None) -> ComplianceResult:
     """RBI Fair Practices: contact only between 8 AM and 7 PM IST.
@@ -301,17 +353,36 @@ def should_use_cheap_path(case: Case) -> tuple[bool, str]:
 
 def check_idempotency(
     case: Case,
-    execution_log: dict[str, dict],
+    execution_log: Union[dict[str, dict], Any],
+    reserve: bool = False,
+    action: Optional[ActionType] = None,
 ) -> ComplianceResult:
     """Prevent duplicate execution of the same action for the same case+attempt.
 
-    execution_log: a dict keyed by idempotency_key, where each value contains
-    at minimum {"status": "SUCCESS" | "FAILED" | "PENDING", ...}.
-
-    A prior successful execution for this key blocks re-execution.
+    Supports both:
+    1. Read-only audit check against a plain execution_log dict (for backward compatibility).
+    2. Atomic check-and-reserve if an AuditLog instance is passed with reserve=True,
+       eliminating check-then-act race conditions (TOCTOU) across concurrent threads.
     """
     key = case.idempotency_key
-    prior = execution_log.get(key)
+
+    # Atomic check-and-reserve path if AuditLog instance provided
+    if reserve and hasattr(execution_log, "check_and_reserve_idempotency"):
+        act_name = action.value if action and hasattr(action, "value") else str(action or "UNKNOWN")
+        passed, reason = execution_log.check_and_reserve_idempotency(key, act_name)
+        return ComplianceResult(
+            passed=passed,
+            rule_name="idempotency",
+            reason=reason,
+        )
+
+    # Dictionary lookup path
+    exec_dict = (
+        execution_log.get_execution_log()
+        if hasattr(execution_log, "get_execution_log")
+        else execution_log
+    )
+    prior = exec_dict.get(key) if isinstance(exec_dict, dict) else None
 
     if prior is None:
         return ComplianceResult(
@@ -320,21 +391,29 @@ def check_idempotency(
             reason=f"No prior execution found for key '{key}'. Safe to proceed.",
         )
 
-    if prior.get("status") == "SUCCESS":
+    status = prior.get("status")
+    if status == "SUCCESS":
         return ComplianceResult(
             passed=False,
             rule_name="idempotency",
-            reason=f"BLOCKED: Action already successfully executed for key '{key}'. "
+            reason=f"CONCURRENT_EXECUTION_BLOCKED: Action already successfully executed for key '{key}'. "
                    f"Re-execution would risk a duplicate action (e.g. double-charge). "
                    f"Prior execution: {prior}",
         )
 
-    # Prior execution exists but was not successful — allow retry
+    if status in {"IN_FLIGHT", "PENDING"}:
+        return ComplianceResult(
+            passed=False,
+            rule_name="idempotency",
+            reason=f"CONCURRENT_EXECUTION_BLOCKED: Action is already in-flight for key '{key}'.",
+        )
+
+    # Prior execution exists but was not successful (e.g. FAILED) — allow retry
     return ComplianceResult(
         passed=True,
         rule_name="idempotency",
         reason=f"Prior execution for key '{key}' exists but status is "
-               f"'{prior.get('status')}' — retry is permitted.",
+               f"'{status}' — retry is permitted.",
     )
 
 
@@ -361,8 +440,9 @@ CONTACT_ACTIONS = {
 def run_all_checks(
     case: Case,
     proposed_action: ActionType,
-    execution_log: dict[str, dict],
+    execution_log: Union[dict[str, dict], Any],
     current_time: Optional[datetime] = None,
+    reserve_idempotency: bool = False,
 ) -> GateDecision:
     """Run every applicable compliance check for a proposed action.
 
@@ -372,6 +452,9 @@ def run_all_checks(
     Returns a GateDecision with all results and an overall approved/rejected verdict.
     """
     results: list[ComplianceResult] = []
+
+    # 0. Allowed action menu check (always checked first — independent compliance defense)
+    results.append(check_allowed_action(case, proposed_action))
 
     # 1. Fraud hard stop (always checked — but STOP/ESCALATE_HUMAN pass through)
     results.append(check_fraud_stop(case, proposed_action))
@@ -387,17 +470,18 @@ def run_all_checks(
     if proposed_action in CONTACT_ACTIONS:
         results.append(check_contact_hours(current_time))
 
-    # 5. Idempotency (always checked)
-    #
-    # NOTE: check_cost_threshold is deliberately NOT here. It runs pre-pipeline
-    # in the orchestrator via should_use_cheap_path(), before any LLM calls.
-    # Including it here would (a) fire after we've already paid for the LLM
-    # calls it's supposed to avoid, and (b) permanently block every action on
-    # low-value cases since amount never changes. See check_cost_threshold's
-    # docstring for the full rationale.
-    results.append(check_idempotency(case, execution_log))
+    # 5. Idempotency (always checked, optionally with atomic reservation)
+    results.append(check_idempotency(case, execution_log, reserve=reserve_idempotency, action=proposed_action))
 
     approved = all(r.passed for r in results)
+
+    # If gate rejected due to another compliance rule (e.g. attempt cap) after reservation,
+    # cleanly release the reservation so re-proposals or escalations are not self-blocked
+    if not approved and reserve_idempotency:
+        if hasattr(execution_log, "release_reservation"):
+            idempotency_result = next((r for r in results if r.rule_name == "idempotency"), None)
+            if idempotency_result and idempotency_result.passed:
+                execution_log.release_reservation(case.idempotency_key, "REJECTED_BY_GATE")
 
     decision = GateDecision(
         approved=approved,

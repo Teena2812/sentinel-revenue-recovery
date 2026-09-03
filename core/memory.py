@@ -92,6 +92,10 @@ class Memory:
             }
 
         entry = self._stats[cat_key][act_key]
+        # "Learning" in Sentinel means updating this per-(category, action) win-rate lookup table
+        # from observed outcomes; it does NOT retrain the model or update weights. Introducing a
+        # genuinely new case category requires an engineer to add it to DiagnosisCategory and
+        # MockLLMClient explicitly.
         entry["total"] += 1
         is_success = 1 if status == "SUCCESS" else 0
         if is_success:
