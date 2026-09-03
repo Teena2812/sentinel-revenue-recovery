@@ -105,6 +105,9 @@ Each block below is a **self-contained prompt** you can paste directly into Anti
 
 **Acceptance check:** Run the benchmark and confirm the log shows at least a few cases where self-consistency disagreed (if zero ever disagree, either the check isn't wired correctly or your synthetic data is too easy — investigate before moving on).
 
+> [!IMPORTANT]
+> **Viewer Checkpoint**: Immediately after completing Prompts 7 & 6, execute `python scripts/generate_audit_viewer.py` to refresh `reports/audit_viewer.html` with the new confidence-gated audit trails before moving on to video recording (Prompt 15).
+
 ---
 
 ## Prompt 7 — Confidence-gated auto-escalation (~30–45 min)

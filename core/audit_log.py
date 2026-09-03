@@ -273,6 +273,11 @@ class AuditLog:
         with self._lock:
             return list(self._case_trails.keys())
 
+    def get_all_case_trails(self) -> dict[str, CaseAuditTrail]:
+        """Return a copy of all case trails."""
+        with self._lock:
+            return dict(self._case_trails)
+
     # --- Trail initialization ---
 
     def init_case_trail(
