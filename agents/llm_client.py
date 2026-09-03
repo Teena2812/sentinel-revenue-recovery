@@ -434,6 +434,8 @@ class GeminiLLMClient(LLMClient):
             "llm_cache.json",
         )
         self._cache: dict[str, Any] = self._load_cache()
+        self._last_call_time: float = 0.0
+        self._min_call_interval: float = 4.2  # Guarantees <= 14.2 RPM, staying under the 15 RPM free tier ceiling
 
     def _load_cache(self) -> dict[str, Any]:
         if os.path.exists(self.cache_path):
@@ -468,6 +470,7 @@ class GeminiLLMClient(LLMClient):
             )
 
         try:
+            import time
             import google.generativeai as genai
             genai.configure(api_key=self.api_key)
 
@@ -480,6 +483,14 @@ class GeminiLLMClient(LLMClient):
                 model_name=self.model_name,
                 generation_config=gen_config,
             )
+
+            # Proactive rate-limiting: pace outbound API calls to stay strictly under 15 RPM
+            now = time.time()
+            elapsed = now - self._last_call_time
+            if elapsed < self._min_call_interval:
+                sleep_needed = self._min_call_interval - elapsed
+                time.sleep(sleep_needed)
+            self._last_call_time = time.time()
 
             response = model.generate_content(prompt)
             result = json.loads(response.text)

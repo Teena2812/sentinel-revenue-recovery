@@ -1,0 +1,1734 @@
+{
+  "timestamp": "2026-09-03T11:29:11.162825",
+  "mode": "full_validation",
+  "model": "gemini-flash-lite-latest",
+  "total_cases": 80,
+  "payment_cases": 30,
+  "b2b_cases": 50,
+  "benchmarks": {
+    "mock": {
+      "payments_recovery_rate_pct": 36.67,
+      "payments_recovered_amount": 154082.21999999997,
+      "b2b_recovery_rate_pct": 26.0,
+      "b2b_recovered_amount": 8938719.44,
+      "total_compliance_violations": 0
+    },
+    "live_gemini": {
+      "payments_recovery_rate_pct": 43.33,
+      "payments_recovered_amount": 169508.21000000002,
+      "b2b_recovery_rate_pct": 30.0,
+      "b2b_recovered_amount": 8755547.100000001,
+      "total_compliance_violations": 0
+    }
+  },
+  "decision_alignment": {
+    "total_cases_evaluated": 80,
+    "cases_reaching_llm": 61,
+    "pre_pipeline_skipped_cases": 19,
+    "diagnosis_agreements": 36,
+    "diagnosis_agreement_pct": 59.0,
+    "strategy_agreements": 28,
+    "strategy_agreement_pct": 45.9,
+    "terminal_outcome_agreements": 59,
+    "terminal_outcome_agreement_pct": 73.8,
+    "divergence_clusters": [
+      {
+        "cluster": "low_confidence_fallback",
+        "count": 8,
+        "pct_of_divergences": 24.2
+      },
+      {
+        "cluster": "alternative_recovery_action",
+        "count": 16,
+        "pct_of_divergences": 48.5
+      },
+      {
+        "cluster": "live_attempted_recovery",
+        "count": 9,
+        "pct_of_divergences": 27.3
+      }
+    ]
+  },
+  "case_comparisons": [
+    {
+      "case_id": "PAY-b3aa7efe-445",
+      "amount": 81.92,
+      "reached_llm": false,
+      "mock": {
+        "diagnosis_category": "PRE_PIPELINE_SKIP",
+        "diagnosis_confidence": null,
+        "final_action": "ESCALATE_HUMAN",
+        "status": "ESCALATED"
+      },
+      "live": {
+        "diagnosis_category": "PRE_PIPELINE_SKIP",
+        "diagnosis_confidence": null,
+        "final_action": "ESCALATE_HUMAN",
+        "status": "ESCALATED"
+      },
+      "diagnosis_match": true,
+      "strategy_match": true,
+      "status_match": true,
+      "divergence_cluster": "NONE"
+    },
+    {
+      "case_id": "PAY-451b4cf3-612",
+      "amount": 424.66,
+      "reached_llm": false,
+      "mock": {
+        "diagnosis_category": "PRE_PIPELINE_SKIP",
+        "diagnosis_confidence": null,
+        "final_action": "ESCALATE_HUMAN",
+        "status": "ESCALATED"
+      },
+      "live": {
+        "diagnosis_category": "PRE_PIPELINE_SKIP",
+        "diagnosis_confidence": null,
+        "final_action": "ESCALATE_HUMAN",
+        "status": "ESCALATED"
+      },
+      "diagnosis_match": true,
+      "strategy_match": true,
+      "status_match": true,
+      "divergence_cluster": "NONE"
+    },
+    {
+      "case_id": "PAY-9132b63e-f16",
+      "amount": 445.81,
+      "reached_llm": false,
+      "mock": {
+        "diagnosis_category": "PRE_PIPELINE_SKIP",
+        "diagnosis_confidence": null,
+        "final_action": "RETRY_NOW",
+        "status": "FAILED"
+      },
+      "live": {
+        "diagnosis_category": "PRE_PIPELINE_SKIP",
+        "diagnosis_confidence": null,
+        "final_action": "RETRY_NOW",
+        "status": "FAILED"
+      },
+      "diagnosis_match": true,
+      "strategy_match": true,
+      "status_match": true,
+      "divergence_cluster": "NONE"
+    },
+    {
+      "case_id": "PAY-6dadd6c7-95a",
+      "amount": 32866.95,
+      "reached_llm": true,
+      "mock": {
+        "diagnosis_category": "TRANSIENT_NETWORK",
+        "diagnosis_confidence": 0.91,
+        "final_action": "RETRY_NOW",
+        "status": "RECOVERED"
+      },
+      "live": {
+        "diagnosis_category": "TRANSIENT_NETWORK",
+        "diagnosis_confidence": 0.85,
+        "final_action": "RETRY_NOW",
+        "status": "RECOVERED"
+      },
+      "diagnosis_match": true,
+      "strategy_match": true,
+      "status_match": true,
+      "divergence_cluster": "NONE"
+    },
+    {
+      "case_id": "PAY-61b1cd22-628",
+      "amount": 34985.01,
+      "reached_llm": true,
+      "mock": {
+        "diagnosis_category": "FUNDS_UNAVAILABLE",
+        "diagnosis_confidence": 0.88,
+        "final_action": "ESCALATE_HUMAN",
+        "status": "ESCALATED"
+      },
+      "live": {
+        "diagnosis_category": "FUNDS_UNAVAILABLE",
+        "diagnosis_confidence": 1.0,
+        "final_action": "ESCALATE_HUMAN",
+        "status": "ESCALATED"
+      },
+      "diagnosis_match": true,
+      "strategy_match": true,
+      "status_match": true,
+      "divergence_cluster": "NONE"
+    },
+    {
+      "case_id": "PAY-287d06ca-6f4",
+      "amount": 14361.0,
+      "reached_llm": true,
+      "mock": {
+        "diagnosis_category": "FUNDS_UNAVAILABLE",
+        "diagnosis_confidence": 0.88,
+        "final_action": "SUGGEST_ALTERNATE_METHOD",
+        "status": "FAILED"
+      },
+      "live": {
+        "diagnosis_category": "FUNDS_UNAVAILABLE",
+        "diagnosis_confidence": 0.99,
+        "final_action": "SUGGEST_ALTERNATE_METHOD",
+        "status": "FAILED"
+      },
+      "diagnosis_match": true,
+      "strategy_match": true,
+      "status_match": true,
+      "divergence_cluster": "NONE"
+    },
+    {
+      "case_id": "PAY-5fb8d16c-272",
+      "amount": 4792.17,
+      "reached_llm": false,
+      "mock": {
+        "diagnosis_category": "PRE_PIPELINE_SKIP",
+        "diagnosis_confidence": null,
+        "final_action": "STOP",
+        "status": "STOPPED"
+      },
+      "live": {
+        "diagnosis_category": "PRE_PIPELINE_SKIP",
+        "diagnosis_confidence": null,
+        "final_action": "STOP",
+        "status": "STOPPED"
+      },
+      "diagnosis_match": true,
+      "strategy_match": true,
+      "status_match": true,
+      "divergence_cluster": "NONE"
+    },
+    {
+      "case_id": "PAY-e0c53cb8-3da",
+      "amount": 15787.58,
+      "reached_llm": false,
+      "mock": {
+        "diagnosis_category": "PRE_PIPELINE_SKIP",
+        "diagnosis_confidence": null,
+        "final_action": "STOP",
+        "status": "STOPPED"
+      },
+      "live": {
+        "diagnosis_category": "PRE_PIPELINE_SKIP",
+        "diagnosis_confidence": null,
+        "final_action": "STOP",
+        "status": "STOPPED"
+      },
+      "diagnosis_match": true,
+      "strategy_match": true,
+      "status_match": true,
+      "divergence_cluster": "NONE"
+    },
+    {
+      "case_id": "PAY-43dac043-2a4",
+      "amount": 6575.14,
+      "reached_llm": false,
+      "mock": {
+        "diagnosis_category": "PRE_PIPELINE_SKIP",
+        "diagnosis_confidence": null,
+        "final_action": "STOP",
+        "status": "STOPPED"
+      },
+      "live": {
+        "diagnosis_category": "PRE_PIPELINE_SKIP",
+        "diagnosis_confidence": null,
+        "final_action": "STOP",
+        "status": "STOPPED"
+      },
+      "diagnosis_match": true,
+      "strategy_match": true,
+      "status_match": true,
+      "divergence_cluster": "NONE"
+    },
+    {
+      "case_id": "PAY-3985c3cf-3f7",
+      "amount": 17131.88,
+      "reached_llm": true,
+      "mock": {
+        "diagnosis_category": "FUNDS_UNAVAILABLE",
+        "diagnosis_confidence": 0.92,
+        "final_action": "RETRY_LATER",
+        "status": "RECOVERED"
+      },
+      "live": {
+        "diagnosis_category": "FUNDS_UNAVAILABLE",
+        "diagnosis_confidence": 1.0,
+        "final_action": "SUGGEST_ALTERNATE_METHOD",
+        "status": "RECOVERED"
+      },
+      "diagnosis_match": true,
+      "strategy_match": false,
+      "status_match": true,
+      "divergence_cluster": "low_confidence_fallback"
+    },
+    {
+      "case_id": "PAY-5496f63c-dc1",
+      "amount": 594.65,
+      "reached_llm": true,
+      "mock": {
+        "diagnosis_category": "AUTH_EXPIRED",
+        "diagnosis_confidence": 0.8,
+        "final_action": "ESCALATE_HUMAN",
+        "status": "ESCALATED"
+      },
+      "live": {
+        "diagnosis_category": "AUTH_EXPIRED",
+        "diagnosis_confidence": 0.85,
+        "final_action": "ESCALATE_HUMAN",
+        "status": "ESCALATED"
+      },
+      "diagnosis_match": true,
+      "strategy_match": true,
+      "status_match": true,
+      "divergence_cluster": "NONE"
+    },
+    {
+      "case_id": "PAY-6e595ed3-a8b",
+      "amount": 1571.02,
+      "reached_llm": true,
+      "mock": {
+        "diagnosis_category": "TRANSIENT_NETWORK",
+        "diagnosis_confidence": 0.91,
+        "final_action": "RETRY_NOW",
+        "status": "RECOVERED"
+      },
+      "live": {
+        "diagnosis_category": "TRANSIENT_NETWORK",
+        "diagnosis_confidence": 0.85,
+        "final_action": "RETRY_NOW",
+        "status": "RECOVERED"
+      },
+      "diagnosis_match": true,
+      "strategy_match": true,
+      "status_match": true,
+      "divergence_cluster": "NONE"
+    },
+    {
+      "case_id": "PAY-dc96925e-ccf",
+      "amount": 2349.96,
+      "reached_llm": false,
+      "mock": {
+        "diagnosis_category": "PRE_PIPELINE_SKIP",
+        "diagnosis_confidence": null,
+        "final_action": "STOP",
+        "status": "STOPPED"
+      },
+      "live": {
+        "diagnosis_category": "PRE_PIPELINE_SKIP",
+        "diagnosis_confidence": null,
+        "final_action": "STOP",
+        "status": "STOPPED"
+      },
+      "diagnosis_match": true,
+      "strategy_match": true,
+      "status_match": true,
+      "divergence_cluster": "NONE"
+    },
+    {
+      "case_id": "PAY-ffd0f9d5-a6f",
+      "amount": 1362.16,
+      "reached_llm": true,
+      "mock": {
+        "diagnosis_category": "AUTH_EXPIRED",
+        "diagnosis_confidence": 0.86,
+        "final_action": "RETRY_LATER",
+        "status": "RECOVERED"
+      },
+      "live": {
+        "diagnosis_category": "AUTH_EXPIRED",
+        "diagnosis_confidence": 0.85,
+        "final_action": "SUGGEST_ALTERNATE_METHOD",
+        "status": "RECOVERED"
+      },
+      "diagnosis_match": true,
+      "strategy_match": false,
+      "status_match": true,
+      "divergence_cluster": "alternative_recovery_action"
+    },
+    {
+      "case_id": "PAY-63f2ae24-fc3",
+      "amount": 5295.16,
+      "reached_llm": true,
+      "mock": {
+        "diagnosis_category": "FUNDS_UNAVAILABLE",
+        "diagnosis_confidence": 0.88,
+        "final_action": "SUGGEST_ALTERNATE_METHOD",
+        "status": "RECOVERED"
+      },
+      "live": {
+        "diagnosis_category": "FUNDS_UNAVAILABLE",
+        "diagnosis_confidence": 1.0,
+        "final_action": "ESCALATE_HUMAN",
+        "status": "ESCALATED"
+      },
+      "diagnosis_match": true,
+      "strategy_match": false,
+      "status_match": false,
+      "divergence_cluster": "low_confidence_fallback"
+    },
+    {
+      "case_id": "PAY-0f9aea4b-8ac",
+      "amount": 4028.32,
+      "reached_llm": true,
+      "mock": {
+        "diagnosis_category": "TRANSIENT_NETWORK",
+        "diagnosis_confidence": 0.92,
+        "final_action": "ESCALATE_HUMAN",
+        "status": "ESCALATED"
+      },
+      "live": {
+        "diagnosis_category": "TRANSIENT_NETWORK",
+        "diagnosis_confidence": 0.95,
+        "final_action": "ESCALATE_HUMAN",
+        "status": "ESCALATED"
+      },
+      "diagnosis_match": true,
+      "strategy_match": true,
+      "status_match": true,
+      "divergence_cluster": "NONE"
+    },
+    {
+      "case_id": "PAY-118a9d29-2f9",
+      "amount": 6143.31,
+      "reached_llm": true,
+      "mock": {
+        "diagnosis_category": "AUTH_EXPIRED",
+        "diagnosis_confidence": 0.86,
+        "final_action": "RETRY_LATER",
+        "status": "RECOVERED"
+      },
+      "live": {
+        "diagnosis_category": "AUTH_EXPIRED",
+        "diagnosis_confidence": 0.85,
+        "final_action": "SUGGEST_ALTERNATE_METHOD",
+        "status": "RECOVERED"
+      },
+      "diagnosis_match": true,
+      "strategy_match": false,
+      "status_match": true,
+      "divergence_cluster": "alternative_recovery_action"
+    },
+    {
+      "case_id": "PAY-42c18a62-ef4",
+      "amount": 18504.25,
+      "reached_llm": true,
+      "mock": {
+        "diagnosis_category": "FUNDS_UNAVAILABLE",
+        "diagnosis_confidence": 0.92,
+        "final_action": "SUGGEST_ALTERNATE_METHOD",
+        "status": "FAILED"
+      },
+      "live": {
+        "diagnosis_category": "FUNDS_UNAVAILABLE",
+        "diagnosis_confidence": 0.99,
+        "final_action": "SUGGEST_ALTERNATE_METHOD",
+        "status": "RECOVERED"
+      },
+      "diagnosis_match": true,
+      "strategy_match": true,
+      "status_match": false,
+      "divergence_cluster": "NONE"
+    },
+    {
+      "case_id": "PAY-89a2688b-12c",
+      "amount": 3722.86,
+      "reached_llm": true,
+      "mock": {
+        "diagnosis_category": "FUNDS_UNAVAILABLE",
+        "diagnosis_confidence": 0.82,
+        "final_action": "ESCALATE_HUMAN",
+        "status": "ESCALATED"
+      },
+      "live": {
+        "diagnosis_category": "FUNDS_UNAVAILABLE",
+        "diagnosis_confidence": 1.0,
+        "final_action": "SUGGEST_ALTERNATE_METHOD",
+        "status": "RECOVERED"
+      },
+      "diagnosis_match": true,
+      "strategy_match": false,
+      "status_match": false,
+      "divergence_cluster": "live_attempted_recovery"
+    },
+    {
+      "case_id": "PAY-8dfa6a56-d12",
+      "amount": 1693.4,
+      "reached_llm": true,
+      "mock": {
+        "diagnosis_category": "TRANSIENT_NETWORK",
+        "diagnosis_confidence": 0.92,
+        "final_action": "RETRY_NOW",
+        "status": "RECOVERED"
+      },
+      "live": {
+        "diagnosis_category": "TRANSIENT_NETWORK",
+        "diagnosis_confidence": 0.95,
+        "final_action": "RETRY_NOW",
+        "status": "RECOVERED"
+      },
+      "diagnosis_match": true,
+      "strategy_match": true,
+      "status_match": true,
+      "divergence_cluster": "NONE"
+    },
+    {
+      "case_id": "PAY-57c700aa-b7b",
+      "amount": 3485.25,
+      "reached_llm": true,
+      "mock": {
+        "diagnosis_category": "FUNDS_UNAVAILABLE",
+        "diagnosis_confidence": 0.82,
+        "final_action": "ESCALATE_HUMAN",
+        "status": "ESCALATED"
+      },
+      "live": {
+        "diagnosis_category": "FUNDS_UNAVAILABLE",
+        "diagnosis_confidence": 1.0,
+        "final_action": "SUGGEST_ALTERNATE_METHOD",
+        "status": "FAILED"
+      },
+      "diagnosis_match": true,
+      "strategy_match": false,
+      "status_match": false,
+      "divergence_cluster": "live_attempted_recovery"
+    },
+    {
+      "case_id": "PAY-295d6fbf-430",
+      "amount": 3354.07,
+      "reached_llm": true,
+      "mock": {
+        "diagnosis_category": "FUNDS_UNAVAILABLE",
+        "diagnosis_confidence": 0.88,
+        "final_action": "SUGGEST_ALTERNATE_METHOD",
+        "status": "RECOVERED"
+      },
+      "live": {
+        "diagnosis_category": "FUNDS_UNAVAILABLE",
+        "diagnosis_confidence": 0.99,
+        "final_action": "SUGGEST_ALTERNATE_METHOD",
+        "status": "RECOVERED"
+      },
+      "diagnosis_match": true,
+      "strategy_match": true,
+      "status_match": true,
+      "divergence_cluster": "NONE"
+    },
+    {
+      "case_id": "PAY-5d59cd2a-4ee",
+      "amount": 16033.61,
+      "reached_llm": true,
+      "mock": {
+        "diagnosis_category": "TRANSIENT_NETWORK",
+        "diagnosis_confidence": 0.92,
+        "final_action": "ESCALATE_HUMAN",
+        "status": "ESCALATED"
+      },
+      "live": {
+        "diagnosis_category": "TRANSIENT_NETWORK",
+        "diagnosis_confidence": 0.92,
+        "final_action": "ESCALATE_HUMAN",
+        "status": "ESCALATED"
+      },
+      "diagnosis_match": true,
+      "strategy_match": true,
+      "status_match": true,
+      "divergence_cluster": "NONE"
+    },
+    {
+      "case_id": "PAY-f94d6204-680",
+      "amount": 44903.06,
+      "reached_llm": true,
+      "mock": {
+        "diagnosis_category": "FUNDS_UNAVAILABLE",
+        "diagnosis_confidence": 0.88,
+        "final_action": "SUGGEST_ALTERNATE_METHOD",
+        "status": "RECOVERED"
+      },
+      "live": {
+        "diagnosis_category": "FUNDS_UNAVAILABLE",
+        "diagnosis_confidence": 1.0,
+        "final_action": "SUGGEST_ALTERNATE_METHOD",
+        "status": "RECOVERED"
+      },
+      "diagnosis_match": true,
+      "strategy_match": true,
+      "status_match": true,
+      "divergence_cluster": "NONE"
+    },
+    {
+      "case_id": "PAY-bc2cbb0d-dd3",
+      "amount": 8091.07,
+      "reached_llm": true,
+      "mock": {
+        "diagnosis_category": "FUNDS_UNAVAILABLE",
+        "diagnosis_confidence": 0.88,
+        "final_action": "SUGGEST_ALTERNATE_METHOD",
+        "status": "RECOVERED"
+      },
+      "live": {
+        "diagnosis_category": "FUNDS_UNAVAILABLE",
+        "diagnosis_confidence": 1.0,
+        "final_action": "ESCALATE_HUMAN",
+        "status": "ESCALATED"
+      },
+      "diagnosis_match": true,
+      "strategy_match": false,
+      "status_match": false,
+      "divergence_cluster": "low_confidence_fallback"
+    },
+    {
+      "case_id": "PAY-3170f437-a8f",
+      "amount": 31670.14,
+      "reached_llm": true,
+      "mock": {
+        "diagnosis_category": "TRANSIENT_NETWORK",
+        "diagnosis_confidence": 0.94,
+        "final_action": "RETRY_NOW",
+        "status": "RECOVERED"
+      },
+      "live": {
+        "diagnosis_category": "TRANSIENT_NETWORK",
+        "diagnosis_confidence": 0.9,
+        "final_action": "RETRY_NOW",
+        "status": "RECOVERED"
+      },
+      "diagnosis_match": true,
+      "strategy_match": true,
+      "status_match": true,
+      "divergence_cluster": "NONE"
+    },
+    {
+      "case_id": "PAY-42deffcc-f86",
+      "amount": 1753.71,
+      "reached_llm": true,
+      "mock": {
+        "diagnosis_category": "FUNDS_UNAVAILABLE",
+        "diagnosis_confidence": 0.82,
+        "final_action": "ESCALATE_HUMAN",
+        "status": "ESCALATED"
+      },
+      "live": {
+        "diagnosis_category": "FUNDS_UNAVAILABLE",
+        "diagnosis_confidence": 1.0,
+        "final_action": "SUGGEST_ALTERNATE_METHOD",
+        "status": "RECOVERED"
+      },
+      "diagnosis_match": true,
+      "strategy_match": false,
+      "status_match": false,
+      "divergence_cluster": "live_attempted_recovery"
+    },
+    {
+      "case_id": "PAY-30a900ad-939",
+      "amount": 4831.4,
+      "reached_llm": true,
+      "mock": {
+        "diagnosis_category": "FUNDS_UNAVAILABLE",
+        "diagnosis_confidence": 0.88,
+        "final_action": "SUGGEST_ALTERNATE_METHOD",
+        "status": "FAILED"
+      },
+      "live": {
+        "diagnosis_category": "FUNDS_UNAVAILABLE",
+        "diagnosis_confidence": 1.0,
+        "final_action": "SUGGEST_ALTERNATE_METHOD",
+        "status": "RECOVERED"
+      },
+      "diagnosis_match": true,
+      "strategy_match": true,
+      "status_match": false,
+      "divergence_cluster": "NONE"
+    },
+    {
+      "case_id": "PAY-5487fd4f-ebb",
+      "amount": 3689.53,
+      "reached_llm": true,
+      "mock": {
+        "diagnosis_category": "FUNDS_UNAVAILABLE",
+        "diagnosis_confidence": 0.88,
+        "final_action": "SUGGEST_ALTERNATE_METHOD",
+        "status": "FAILED"
+      },
+      "live": {
+        "diagnosis_category": "FUNDS_UNAVAILABLE",
+        "diagnosis_confidence": 1.0,
+        "final_action": "SUGGEST_ALTERNATE_METHOD",
+        "status": "FAILED"
+      },
+      "diagnosis_match": true,
+      "strategy_match": true,
+      "status_match": true,
+      "divergence_cluster": "NONE"
+    },
+    {
+      "case_id": "PAY-610faa3f-f0b",
+      "amount": 18267.75,
+      "reached_llm": true,
+      "mock": {
+        "diagnosis_category": "FUNDS_UNAVAILABLE",
+        "diagnosis_confidence": 0.88,
+        "final_action": "SUGGEST_ALTERNATE_METHOD",
+        "status": "FAILED"
+      },
+      "live": {
+        "diagnosis_category": "FUNDS_UNAVAILABLE",
+        "diagnosis_confidence": 1.0,
+        "final_action": "SUGGEST_ALTERNATE_METHOD",
+        "status": "FAILED"
+      },
+      "diagnosis_match": true,
+      "strategy_match": true,
+      "status_match": true,
+      "divergence_cluster": "NONE"
+    },
+    {
+      "case_id": "B2B-709b7d97-464",
+      "amount": 2917.55,
+      "reached_llm": false,
+      "mock": {
+        "diagnosis_category": "PRE_PIPELINE_SKIP",
+        "diagnosis_confidence": null,
+        "final_action": "ESCALATE_HUMAN",
+        "status": "ESCALATED"
+      },
+      "live": {
+        "diagnosis_category": "PRE_PIPELINE_SKIP",
+        "diagnosis_confidence": null,
+        "final_action": "ESCALATE_HUMAN",
+        "status": "ESCALATED"
+      },
+      "diagnosis_match": true,
+      "strategy_match": true,
+      "status_match": true,
+      "divergence_cluster": "NONE"
+    },
+    {
+      "case_id": "B2B-6a34c854-107",
+      "amount": 1951.0,
+      "reached_llm": false,
+      "mock": {
+        "diagnosis_category": "PRE_PIPELINE_SKIP",
+        "diagnosis_confidence": null,
+        "final_action": "ESCALATE_HUMAN",
+        "status": "ESCALATED"
+      },
+      "live": {
+        "diagnosis_category": "PRE_PIPELINE_SKIP",
+        "diagnosis_confidence": null,
+        "final_action": "ESCALATE_HUMAN",
+        "status": "ESCALATED"
+      },
+      "diagnosis_match": true,
+      "strategy_match": true,
+      "status_match": true,
+      "divergence_cluster": "NONE"
+    },
+    {
+      "case_id": "B2B-5a0cdd7c-f15",
+      "amount": 2455.21,
+      "reached_llm": false,
+      "mock": {
+        "diagnosis_category": "PRE_PIPELINE_SKIP",
+        "diagnosis_confidence": null,
+        "final_action": "ESCALATE_HUMAN",
+        "status": "ESCALATED"
+      },
+      "live": {
+        "diagnosis_category": "PRE_PIPELINE_SKIP",
+        "diagnosis_confidence": null,
+        "final_action": "ESCALATE_HUMAN",
+        "status": "ESCALATED"
+      },
+      "diagnosis_match": true,
+      "strategy_match": true,
+      "status_match": true,
+      "divergence_cluster": "NONE"
+    },
+    {
+      "case_id": "B2B-cc530e36-add",
+      "amount": 1753593.01,
+      "reached_llm": false,
+      "mock": {
+        "diagnosis_category": "PRE_PIPELINE_SKIP",
+        "diagnosis_confidence": null,
+        "final_action": "ESCALATE_HUMAN",
+        "status": "ESCALATED"
+      },
+      "live": {
+        "diagnosis_category": "PRE_PIPELINE_SKIP",
+        "diagnosis_confidence": null,
+        "final_action": "ESCALATE_HUMAN",
+        "status": "ESCALATED"
+      },
+      "diagnosis_match": true,
+      "strategy_match": true,
+      "status_match": true,
+      "divergence_cluster": "NONE"
+    },
+    {
+      "case_id": "B2B-53cd6268-610",
+      "amount": 151051.12,
+      "reached_llm": false,
+      "mock": {
+        "diagnosis_category": "PRE_PIPELINE_SKIP",
+        "diagnosis_confidence": null,
+        "final_action": "ESCALATE_HUMAN",
+        "status": "ESCALATED"
+      },
+      "live": {
+        "diagnosis_category": "PRE_PIPELINE_SKIP",
+        "diagnosis_confidence": null,
+        "final_action": "ESCALATE_HUMAN",
+        "status": "ESCALATED"
+      },
+      "diagnosis_match": true,
+      "strategy_match": true,
+      "status_match": true,
+      "divergence_cluster": "NONE"
+    },
+    {
+      "case_id": "B2B-f510ab53-c7f",
+      "amount": 1068689.32,
+      "reached_llm": true,
+      "mock": {
+        "diagnosis_category": "CASH_FLOW_MISMATCH",
+        "diagnosis_confidence": 0.88,
+        "final_action": "ESCALATE_HUMAN",
+        "status": "ESCALATED"
+      },
+      "live": {
+        "diagnosis_category": "CHRONIC_DELINQUENCY",
+        "diagnosis_confidence": 0.9,
+        "final_action": "ESCALATE_HUMAN",
+        "status": "ESCALATED"
+      },
+      "diagnosis_match": false,
+      "strategy_match": true,
+      "status_match": true,
+      "divergence_cluster": "NONE"
+    },
+    {
+      "case_id": "B2B-c4536f1d-419",
+      "amount": 2598082.05,
+      "reached_llm": true,
+      "mock": {
+        "diagnosis_category": "CASH_FLOW_MISMATCH",
+        "diagnosis_confidence": 0.88,
+        "final_action": "ESCALATE_TONE",
+        "status": "RECOVERED"
+      },
+      "live": {
+        "diagnosis_category": "ADMINISTRATIVE_DELAY",
+        "diagnosis_confidence": 0.85,
+        "final_action": "SEND_REMINDER",
+        "status": "RECOVERED"
+      },
+      "diagnosis_match": false,
+      "strategy_match": false,
+      "status_match": true,
+      "divergence_cluster": "alternative_recovery_action"
+    },
+    {
+      "case_id": "B2B-13748146-32c",
+      "amount": 4155071.69,
+      "reached_llm": false,
+      "mock": {
+        "diagnosis_category": "PRE_PIPELINE_SKIP",
+        "diagnosis_confidence": null,
+        "final_action": "STOP",
+        "status": "STOPPED"
+      },
+      "live": {
+        "diagnosis_category": "PRE_PIPELINE_SKIP",
+        "diagnosis_confidence": null,
+        "final_action": "STOP",
+        "status": "STOPPED"
+      },
+      "diagnosis_match": true,
+      "strategy_match": true,
+      "status_match": true,
+      "divergence_cluster": "NONE"
+    },
+    {
+      "case_id": "B2B-a5c5650c-818",
+      "amount": 72747.37,
+      "reached_llm": false,
+      "mock": {
+        "diagnosis_category": "PRE_PIPELINE_SKIP",
+        "diagnosis_confidence": null,
+        "final_action": "STOP",
+        "status": "STOPPED"
+      },
+      "live": {
+        "diagnosis_category": "PRE_PIPELINE_SKIP",
+        "diagnosis_confidence": null,
+        "final_action": "STOP",
+        "status": "STOPPED"
+      },
+      "diagnosis_match": true,
+      "strategy_match": true,
+      "status_match": true,
+      "divergence_cluster": "NONE"
+    },
+    {
+      "case_id": "B2B-c64ee6e3-89c",
+      "amount": 658308.31,
+      "reached_llm": true,
+      "mock": {
+        "diagnosis_category": "CASH_FLOW_MISMATCH",
+        "diagnosis_confidence": 0.88,
+        "final_action": "OFFER_PAYMENT_PLAN",
+        "status": "RECOVERED"
+      },
+      "live": {
+        "diagnosis_category": "CHRONIC_DELINQUENCY",
+        "diagnosis_confidence": 0.85,
+        "final_action": "ESCALATE_TONE",
+        "status": "RECOVERED"
+      },
+      "diagnosis_match": false,
+      "strategy_match": false,
+      "status_match": true,
+      "divergence_cluster": "alternative_recovery_action"
+    },
+    {
+      "case_id": "B2B-6105716b-ab0",
+      "amount": 207358.22,
+      "reached_llm": true,
+      "mock": {
+        "diagnosis_category": "ADMINISTRATIVE_DELAY",
+        "diagnosis_confidence": 0.9,
+        "final_action": "ESCALATE_HUMAN",
+        "status": "ESCALATED"
+      },
+      "live": {
+        "diagnosis_category": "ADMINISTRATIVE_DELAY",
+        "diagnosis_confidence": 0.85,
+        "final_action": "SEND_REMINDER",
+        "status": "FAILED"
+      },
+      "diagnosis_match": true,
+      "strategy_match": false,
+      "status_match": false,
+      "divergence_cluster": "live_attempted_recovery"
+    },
+    {
+      "case_id": "B2B-7d137018-680",
+      "amount": 53879.49,
+      "reached_llm": true,
+      "mock": {
+        "diagnosis_category": "CASH_FLOW_MISMATCH",
+        "diagnosis_confidence": 0.88,
+        "final_action": "ESCALATE_TONE",
+        "status": "RECOVERED"
+      },
+      "live": {
+        "diagnosis_category": "ADMINISTRATIVE_DELAY",
+        "diagnosis_confidence": 0.8,
+        "final_action": "SEND_REMINDER",
+        "status": "RECOVERED"
+      },
+      "diagnosis_match": false,
+      "strategy_match": false,
+      "status_match": true,
+      "divergence_cluster": "alternative_recovery_action"
+    },
+    {
+      "case_id": "B2B-ff233d5f-6ce",
+      "amount": 384736.96,
+      "reached_llm": true,
+      "mock": {
+        "diagnosis_category": "CASH_FLOW_MISMATCH",
+        "diagnosis_confidence": 0.88,
+        "final_action": "OFFER_PAYMENT_PLAN",
+        "status": "RECOVERED"
+      },
+      "live": {
+        "diagnosis_category": "CHRONIC_DELINQUENCY",
+        "diagnosis_confidence": 0.85,
+        "final_action": "ESCALATE_TONE",
+        "status": "RECOVERED"
+      },
+      "diagnosis_match": false,
+      "strategy_match": false,
+      "status_match": true,
+      "divergence_cluster": "alternative_recovery_action"
+    },
+    {
+      "case_id": "B2B-b97e6703-46c",
+      "amount": 208366.57,
+      "reached_llm": true,
+      "mock": {
+        "diagnosis_category": "ADMINISTRATIVE_DELAY",
+        "diagnosis_confidence": 0.9,
+        "final_action": "SEND_REMINDER",
+        "status": "RECOVERED"
+      },
+      "live": {
+        "diagnosis_category": "CHRONIC_DELINQUENCY",
+        "diagnosis_confidence": 0.85,
+        "final_action": "ESCALATE_TONE",
+        "status": "RECOVERED"
+      },
+      "diagnosis_match": false,
+      "strategy_match": false,
+      "status_match": true,
+      "divergence_cluster": "alternative_recovery_action"
+    },
+    {
+      "case_id": "B2B-2053da42-f1a",
+      "amount": 492204.25,
+      "reached_llm": true,
+      "mock": {
+        "diagnosis_category": "ADMINISTRATIVE_DELAY",
+        "diagnosis_confidence": 0.9,
+        "final_action": "ESCALATE_TONE",
+        "status": "FAILED"
+      },
+      "live": {
+        "diagnosis_category": "CHRONIC_DELINQUENCY",
+        "diagnosis_confidence": 0.85,
+        "final_action": "ESCALATE_TONE",
+        "status": "FAILED"
+      },
+      "diagnosis_match": false,
+      "strategy_match": true,
+      "status_match": true,
+      "divergence_cluster": "NONE"
+    },
+    {
+      "case_id": "B2B-a1235a8c-93b",
+      "amount": 11103.89,
+      "reached_llm": true,
+      "mock": {
+        "diagnosis_category": "CASH_FLOW_MISMATCH",
+        "diagnosis_confidence": 0.88,
+        "final_action": "ESCALATE_TONE",
+        "status": "FAILED"
+      },
+      "live": {
+        "diagnosis_category": "ADMINISTRATIVE_DELAY",
+        "diagnosis_confidence": 0.85,
+        "final_action": "SEND_REMINDER",
+        "status": "FAILED"
+      },
+      "diagnosis_match": false,
+      "strategy_match": false,
+      "status_match": true,
+      "divergence_cluster": "alternative_recovery_action"
+    },
+    {
+      "case_id": "B2B-4c1f55ab-715",
+      "amount": 1923688.46,
+      "reached_llm": true,
+      "mock": {
+        "diagnosis_category": "CASH_FLOW_MISMATCH",
+        "diagnosis_confidence": 0.88,
+        "final_action": "ESCALATE_HUMAN",
+        "status": "ESCALATED"
+      },
+      "live": {
+        "diagnosis_category": "CHRONIC_DELINQUENCY",
+        "diagnosis_confidence": 0.85,
+        "final_action": "ESCALATE_HUMAN",
+        "status": "ESCALATED"
+      },
+      "diagnosis_match": false,
+      "strategy_match": true,
+      "status_match": true,
+      "divergence_cluster": "NONE"
+    },
+    {
+      "case_id": "B2B-00af5b3a-281",
+      "amount": 65892.46,
+      "reached_llm": true,
+      "mock": {
+        "diagnosis_category": "CASH_FLOW_MISMATCH",
+        "diagnosis_confidence": 0.88,
+        "final_action": "ESCALATE_HUMAN",
+        "status": "ESCALATED"
+      },
+      "live": {
+        "diagnosis_category": "CHRONIC_DELINQUENCY",
+        "diagnosis_confidence": 0.95,
+        "final_action": "ESCALATE_HUMAN",
+        "status": "ESCALATED"
+      },
+      "diagnosis_match": false,
+      "strategy_match": true,
+      "status_match": true,
+      "divergence_cluster": "NONE"
+    },
+    {
+      "case_id": "B2B-32a447b2-ef0",
+      "amount": 113055.94,
+      "reached_llm": true,
+      "mock": {
+        "diagnosis_category": "CASH_FLOW_MISMATCH",
+        "diagnosis_confidence": 0.88,
+        "final_action": "ESCALATE_HUMAN",
+        "status": "ESCALATED"
+      },
+      "live": {
+        "diagnosis_category": "CHRONIC_DELINQUENCY",
+        "diagnosis_confidence": 0.85,
+        "final_action": "ESCALATE_HUMAN",
+        "status": "ESCALATED"
+      },
+      "diagnosis_match": false,
+      "strategy_match": true,
+      "status_match": true,
+      "divergence_cluster": "NONE"
+    },
+    {
+      "case_id": "B2B-b321bf21-4dd",
+      "amount": 463364.58,
+      "reached_llm": true,
+      "mock": {
+        "diagnosis_category": "ADMINISTRATIVE_DELAY",
+        "diagnosis_confidence": 0.9,
+        "final_action": "SEND_REMINDER",
+        "status": "RECOVERED"
+      },
+      "live": {
+        "diagnosis_category": "CHRONIC_DELINQUENCY",
+        "diagnosis_confidence": 0.75,
+        "final_action": "SEND_REMINDER",
+        "status": "RECOVERED"
+      },
+      "diagnosis_match": false,
+      "strategy_match": true,
+      "status_match": true,
+      "divergence_cluster": "NONE"
+    },
+    {
+      "case_id": "B2B-c19ad58c-c35",
+      "amount": 275103.55,
+      "reached_llm": true,
+      "mock": {
+        "diagnosis_category": "CASH_FLOW_MISMATCH",
+        "diagnosis_confidence": 0.92,
+        "final_action": "ESCALATE_HUMAN",
+        "status": "ESCALATED"
+      },
+      "live": {
+        "diagnosis_category": "CASH_FLOW_MISMATCH",
+        "diagnosis_confidence": 0.85,
+        "final_action": "OFFER_PAYMENT_PLAN",
+        "status": "RECOVERED"
+      },
+      "diagnosis_match": true,
+      "strategy_match": false,
+      "status_match": false,
+      "divergence_cluster": "live_attempted_recovery"
+    },
+    {
+      "case_id": "B2B-a99f1318-49c",
+      "amount": 211262.63,
+      "reached_llm": true,
+      "mock": {
+        "diagnosis_category": "CASH_FLOW_MISMATCH",
+        "diagnosis_confidence": 0.92,
+        "final_action": "ESCALATE_HUMAN",
+        "status": "ESCALATED"
+      },
+      "live": {
+        "diagnosis_category": "CHRONIC_DELINQUENCY",
+        "diagnosis_confidence": 0.9,
+        "final_action": "ESCALATE_TONE",
+        "status": "RECOVERED"
+      },
+      "diagnosis_match": false,
+      "strategy_match": false,
+      "status_match": false,
+      "divergence_cluster": "live_attempted_recovery"
+    },
+    {
+      "case_id": "B2B-c1a6423b-9f6",
+      "amount": 281930.36,
+      "reached_llm": true,
+      "mock": {
+        "diagnosis_category": "CASH_FLOW_MISMATCH",
+        "diagnosis_confidence": 0.92,
+        "final_action": "ESCALATE_HUMAN",
+        "status": "ESCALATED"
+      },
+      "live": {
+        "diagnosis_category": "CASH_FLOW_MISMATCH",
+        "diagnosis_confidence": 0.85,
+        "final_action": "ESCALATE_HUMAN",
+        "status": "ESCALATED"
+      },
+      "diagnosis_match": true,
+      "strategy_match": true,
+      "status_match": true,
+      "divergence_cluster": "NONE"
+    },
+    {
+      "case_id": "B2B-8d605936-038",
+      "amount": 34035.06,
+      "reached_llm": false,
+      "mock": {
+        "diagnosis_category": "PRE_PIPELINE_SKIP",
+        "diagnosis_confidence": null,
+        "final_action": "WAIT",
+        "status": "WAITING"
+      },
+      "live": {
+        "diagnosis_category": "PRE_PIPELINE_SKIP",
+        "diagnosis_confidence": null,
+        "final_action": "WAIT",
+        "status": "WAITING"
+      },
+      "diagnosis_match": true,
+      "strategy_match": true,
+      "status_match": true,
+      "divergence_cluster": "NONE"
+    },
+    {
+      "case_id": "B2B-6232b17a-250",
+      "amount": 670191.68,
+      "reached_llm": false,
+      "mock": {
+        "diagnosis_category": "PRE_PIPELINE_SKIP",
+        "diagnosis_confidence": null,
+        "final_action": "WAIT",
+        "status": "WAITING"
+      },
+      "live": {
+        "diagnosis_category": "PRE_PIPELINE_SKIP",
+        "diagnosis_confidence": null,
+        "final_action": "WAIT",
+        "status": "WAITING"
+      },
+      "diagnosis_match": true,
+      "strategy_match": true,
+      "status_match": true,
+      "divergence_cluster": "NONE"
+    },
+    {
+      "case_id": "B2B-dd81b7f5-7d5",
+      "amount": 154603.34,
+      "reached_llm": false,
+      "mock": {
+        "diagnosis_category": "PRE_PIPELINE_SKIP",
+        "diagnosis_confidence": null,
+        "final_action": "WAIT",
+        "status": "WAITING"
+      },
+      "live": {
+        "diagnosis_category": "PRE_PIPELINE_SKIP",
+        "diagnosis_confidence": null,
+        "final_action": "WAIT",
+        "status": "WAITING"
+      },
+      "diagnosis_match": true,
+      "strategy_match": true,
+      "status_match": true,
+      "divergence_cluster": "NONE"
+    },
+    {
+      "case_id": "B2B-e9d68f23-b48",
+      "amount": 59672.57,
+      "reached_llm": false,
+      "mock": {
+        "diagnosis_category": "PRE_PIPELINE_SKIP",
+        "diagnosis_confidence": null,
+        "final_action": "WAIT",
+        "status": "WAITING"
+      },
+      "live": {
+        "diagnosis_category": "PRE_PIPELINE_SKIP",
+        "diagnosis_confidence": null,
+        "final_action": "WAIT",
+        "status": "WAITING"
+      },
+      "diagnosis_match": true,
+      "strategy_match": true,
+      "status_match": true,
+      "divergence_cluster": "NONE"
+    },
+    {
+      "case_id": "B2B-74f93d17-e91",
+      "amount": 428299.02,
+      "reached_llm": false,
+      "mock": {
+        "diagnosis_category": "PRE_PIPELINE_SKIP",
+        "diagnosis_confidence": null,
+        "final_action": "WAIT",
+        "status": "WAITING"
+      },
+      "live": {
+        "diagnosis_category": "PRE_PIPELINE_SKIP",
+        "diagnosis_confidence": null,
+        "final_action": "WAIT",
+        "status": "WAITING"
+      },
+      "diagnosis_match": true,
+      "strategy_match": true,
+      "status_match": true,
+      "divergence_cluster": "NONE"
+    },
+    {
+      "case_id": "B2B-a075e927-511",
+      "amount": 1954935.19,
+      "reached_llm": true,
+      "mock": {
+        "diagnosis_category": "CASH_FLOW_MISMATCH",
+        "diagnosis_confidence": 0.88,
+        "final_action": "OFFER_PAYMENT_PLAN",
+        "status": "RECOVERED"
+      },
+      "live": {
+        "diagnosis_category": "CASH_FLOW_MISMATCH",
+        "diagnosis_confidence": 0.85,
+        "final_action": "OFFER_PAYMENT_PLAN",
+        "status": "RECOVERED"
+      },
+      "diagnosis_match": true,
+      "strategy_match": true,
+      "status_match": true,
+      "divergence_cluster": "NONE"
+    },
+    {
+      "case_id": "B2B-2a96e1e2-719",
+      "amount": 553848.65,
+      "reached_llm": true,
+      "mock": {
+        "diagnosis_category": "ADMINISTRATIVE_DELAY",
+        "diagnosis_confidence": 0.9,
+        "final_action": "SEND_REMINDER",
+        "status": "RECOVERED"
+      },
+      "live": {
+        "diagnosis_category": "ADMINISTRATIVE_DELAY",
+        "diagnosis_confidence": 0.85,
+        "final_action": "WAIT",
+        "status": "WAITING"
+      },
+      "diagnosis_match": true,
+      "strategy_match": false,
+      "status_match": false,
+      "divergence_cluster": "alternative_recovery_action"
+    },
+    {
+      "case_id": "B2B-2cd1586a-2b8",
+      "amount": 81652.91,
+      "reached_llm": true,
+      "mock": {
+        "diagnosis_category": "CASH_FLOW_MISMATCH",
+        "diagnosis_confidence": 0.88,
+        "final_action": "ESCALATE_HUMAN",
+        "status": "ESCALATED"
+      },
+      "live": {
+        "diagnosis_category": "ADMINISTRATIVE_DELAY",
+        "diagnosis_confidence": 0.75,
+        "final_action": "SEND_REMINDER",
+        "status": "RECOVERED"
+      },
+      "diagnosis_match": false,
+      "strategy_match": false,
+      "status_match": false,
+      "divergence_cluster": "live_attempted_recovery"
+    },
+    {
+      "case_id": "B2B-12e89d10-287",
+      "amount": 196331.92,
+      "reached_llm": true,
+      "mock": {
+        "diagnosis_category": "CASH_FLOW_MISMATCH",
+        "diagnosis_confidence": 0.88,
+        "final_action": "OFFER_PAYMENT_PLAN",
+        "status": "RECOVERED"
+      },
+      "live": {
+        "diagnosis_category": "CHRONIC_DELINQUENCY",
+        "diagnosis_confidence": 0.85,
+        "final_action": "ESCALATE_TONE",
+        "status": "FAILED"
+      },
+      "diagnosis_match": false,
+      "strategy_match": false,
+      "status_match": false,
+      "divergence_cluster": "alternative_recovery_action"
+    },
+    {
+      "case_id": "B2B-fe2110d0-4bb",
+      "amount": 355575.48,
+      "reached_llm": true,
+      "mock": {
+        "diagnosis_category": "CASH_FLOW_MISMATCH",
+        "diagnosis_confidence": 0.88,
+        "final_action": "ESCALATE_HUMAN",
+        "status": "ESCALATED"
+      },
+      "live": {
+        "diagnosis_category": "CHRONIC_DELINQUENCY",
+        "diagnosis_confidence": 0.85,
+        "final_action": "ESCALATE_HUMAN",
+        "status": "ESCALATED"
+      },
+      "diagnosis_match": false,
+      "strategy_match": true,
+      "status_match": true,
+      "divergence_cluster": "NONE"
+    },
+    {
+      "case_id": "B2B-3810ae66-5a3",
+      "amount": 1093708.61,
+      "reached_llm": true,
+      "mock": {
+        "diagnosis_category": "CASH_FLOW_MISMATCH",
+        "diagnosis_confidence": 0.88,
+        "final_action": "ESCALATE_TONE",
+        "status": "FAILED"
+      },
+      "live": {
+        "diagnosis_category": "ADMINISTRATIVE_DELAY",
+        "diagnosis_confidence": 0.85,
+        "final_action": "SEND_REMINDER",
+        "status": "FAILED"
+      },
+      "diagnosis_match": false,
+      "strategy_match": false,
+      "status_match": true,
+      "divergence_cluster": "alternative_recovery_action"
+    },
+    {
+      "case_id": "B2B-1712fb16-21a",
+      "amount": 388371.35,
+      "reached_llm": true,
+      "mock": {
+        "diagnosis_category": "CASH_FLOW_MISMATCH",
+        "diagnosis_confidence": 0.88,
+        "final_action": "ESCALATE_TONE",
+        "status": "FAILED"
+      },
+      "live": {
+        "diagnosis_category": "CASH_FLOW_MISMATCH",
+        "diagnosis_confidence": 0.85,
+        "final_action": "OFFER_PAYMENT_PLAN",
+        "status": "FAILED"
+      },
+      "diagnosis_match": true,
+      "strategy_match": false,
+      "status_match": true,
+      "divergence_cluster": "alternative_recovery_action"
+    },
+    {
+      "case_id": "B2B-cde22f1c-56b",
+      "amount": 180317.92,
+      "reached_llm": true,
+      "mock": {
+        "diagnosis_category": "CASH_FLOW_MISMATCH",
+        "diagnosis_confidence": 0.88,
+        "final_action": "ESCALATE_HUMAN",
+        "status": "ESCALATED"
+      },
+      "live": {
+        "diagnosis_category": "ADMINISTRATIVE_DELAY",
+        "diagnosis_confidence": 0.85,
+        "final_action": "ESCALATE_HUMAN",
+        "status": "ESCALATED"
+      },
+      "diagnosis_match": false,
+      "strategy_match": true,
+      "status_match": true,
+      "divergence_cluster": "NONE"
+    },
+    {
+      "case_id": "B2B-5e5ba13d-746",
+      "amount": 96985.02,
+      "reached_llm": true,
+      "mock": {
+        "diagnosis_category": "CASH_FLOW_MISMATCH",
+        "diagnosis_confidence": 0.88,
+        "final_action": "ESCALATE_TONE",
+        "status": "FAILED"
+      },
+      "live": {
+        "diagnosis_category": "ADMINISTRATIVE_DELAY",
+        "diagnosis_confidence": 0.85,
+        "final_action": "SEND_REMINDER",
+        "status": "FAILED"
+      },
+      "diagnosis_match": false,
+      "strategy_match": false,
+      "status_match": true,
+      "divergence_cluster": "alternative_recovery_action"
+    },
+    {
+      "case_id": "B2B-e8cda0cc-76d",
+      "amount": 428966.92,
+      "reached_llm": true,
+      "mock": {
+        "diagnosis_category": "ADMINISTRATIVE_DELAY",
+        "diagnosis_confidence": 0.9,
+        "final_action": "ESCALATE_HUMAN",
+        "status": "ESCALATED"
+      },
+      "live": {
+        "diagnosis_category": "ADMINISTRATIVE_DELAY",
+        "diagnosis_confidence": 0.85,
+        "final_action": "WAIT",
+        "status": "WAITING"
+      },
+      "diagnosis_match": true,
+      "strategy_match": false,
+      "status_match": false,
+      "divergence_cluster": "live_attempted_recovery"
+    },
+    {
+      "case_id": "B2B-aba4fc03-5ef",
+      "amount": 14081.21,
+      "reached_llm": true,
+      "mock": {
+        "diagnosis_category": "ADMINISTRATIVE_DELAY",
+        "diagnosis_confidence": 0.9,
+        "final_action": "ESCALATE_HUMAN",
+        "status": "ESCALATED"
+      },
+      "live": {
+        "diagnosis_category": "ADMINISTRATIVE_DELAY",
+        "diagnosis_confidence": 0.85,
+        "final_action": "SEND_REMINDER",
+        "status": "RECOVERED"
+      },
+      "diagnosis_match": true,
+      "strategy_match": false,
+      "status_match": false,
+      "divergence_cluster": "live_attempted_recovery"
+    },
+    {
+      "case_id": "B2B-71d79665-718",
+      "amount": 334936.14,
+      "reached_llm": true,
+      "mock": {
+        "diagnosis_category": "ADMINISTRATIVE_DELAY",
+        "diagnosis_confidence": 0.9,
+        "final_action": "SEND_REMINDER",
+        "status": "RECOVERED"
+      },
+      "live": {
+        "diagnosis_category": "ADMINISTRATIVE_DELAY",
+        "diagnosis_confidence": 0.85,
+        "final_action": "WAIT",
+        "status": "WAITING"
+      },
+      "diagnosis_match": true,
+      "strategy_match": false,
+      "status_match": false,
+      "divergence_cluster": "alternative_recovery_action"
+    },
+    {
+      "case_id": "B2B-a3b5cece-a44",
+      "amount": 71711.22,
+      "reached_llm": true,
+      "mock": {
+        "diagnosis_category": "CASH_FLOW_MISMATCH",
+        "diagnosis_confidence": 0.88,
+        "final_action": "ESCALATE_HUMAN",
+        "status": "ESCALATED"
+      },
+      "live": {
+        "diagnosis_category": "CHRONIC_DELINQUENCY",
+        "diagnosis_confidence": 0.85,
+        "final_action": "SEND_REMINDER",
+        "status": "FAILED"
+      },
+      "diagnosis_match": false,
+      "strategy_match": false,
+      "status_match": false,
+      "divergence_cluster": "low_confidence_fallback"
+    },
+    {
+      "case_id": "B2B-3ba5cd2f-dea",
+      "amount": 865353.35,
+      "reached_llm": true,
+      "mock": {
+        "diagnosis_category": "CASH_FLOW_MISMATCH",
+        "diagnosis_confidence": 0.88,
+        "final_action": "ESCALATE_TONE",
+        "status": "FAILED"
+      },
+      "live": {
+        "diagnosis_category": "ADMINISTRATIVE_DELAY",
+        "diagnosis_confidence": 0.75,
+        "final_action": "ESCALATE_HUMAN",
+        "status": "ESCALATED"
+      },
+      "diagnosis_match": false,
+      "strategy_match": false,
+      "status_match": false,
+      "divergence_cluster": "low_confidence_fallback"
+    },
+    {
+      "case_id": "B2B-96bf10ab-3ce",
+      "amount": 504253.33,
+      "reached_llm": true,
+      "mock": {
+        "diagnosis_category": "CASH_FLOW_MISMATCH",
+        "diagnosis_confidence": 0.88,
+        "final_action": "ESCALATE_HUMAN",
+        "status": "ESCALATED"
+      },
+      "live": {
+        "diagnosis_category": "CASH_FLOW_MISMATCH",
+        "diagnosis_confidence": 0.85,
+        "final_action": "ESCALATE_HUMAN",
+        "status": "ESCALATED"
+      },
+      "diagnosis_match": true,
+      "strategy_match": true,
+      "status_match": true,
+      "divergence_cluster": "NONE"
+    },
+    {
+      "case_id": "B2B-e8a3f341-c88",
+      "amount": 76754.63,
+      "reached_llm": true,
+      "mock": {
+        "diagnosis_category": "ADMINISTRATIVE_DELAY",
+        "diagnosis_confidence": 0.9,
+        "final_action": "ESCALATE_TONE",
+        "status": "RECOVERED"
+      },
+      "live": {
+        "diagnosis_category": "ADMINISTRATIVE_DELAY",
+        "diagnosis_confidence": 0.85,
+        "final_action": "WAIT",
+        "status": "WAITING"
+      },
+      "diagnosis_match": true,
+      "strategy_match": false,
+      "status_match": false,
+      "divergence_cluster": "alternative_recovery_action"
+    },
+    {
+      "case_id": "B2B-204e178c-10d",
+      "amount": 485610.47,
+      "reached_llm": true,
+      "mock": {
+        "diagnosis_category": "CASH_FLOW_MISMATCH",
+        "diagnosis_confidence": 0.88,
+        "final_action": "ESCALATE_TONE",
+        "status": "FAILED"
+      },
+      "live": {
+        "diagnosis_category": "CASH_FLOW_MISMATCH",
+        "diagnosis_confidence": 0.82,
+        "final_action": "OFFER_PAYMENT_PLAN",
+        "status": "FAILED"
+      },
+      "diagnosis_match": true,
+      "strategy_match": false,
+      "status_match": true,
+      "divergence_cluster": "alternative_recovery_action"
+    },
+    {
+      "case_id": "B2B-73991a47-6e1",
+      "amount": 230074.18,
+      "reached_llm": true,
+      "mock": {
+        "diagnosis_category": "CASH_FLOW_MISMATCH",
+        "diagnosis_confidence": 0.88,
+        "final_action": "ESCALATE_HUMAN",
+        "status": "ESCALATED"
+      },
+      "live": {
+        "diagnosis_category": "CHRONIC_DELINQUENCY",
+        "diagnosis_confidence": 0.85,
+        "final_action": "ESCALATE_HUMAN",
+        "status": "ESCALATED"
+      },
+      "diagnosis_match": false,
+      "strategy_match": true,
+      "status_match": true,
+      "divergence_cluster": "NONE"
+    },
+    {
+      "case_id": "B2B-be9d61ee-18b",
+      "amount": 1098095.28,
+      "reached_llm": true,
+      "mock": {
+        "diagnosis_category": "ADMINISTRATIVE_DELAY",
+        "diagnosis_confidence": 0.9,
+        "final_action": "SEND_REMINDER",
+        "status": "RECOVERED"
+      },
+      "live": {
+        "diagnosis_category": "CHRONIC_DELINQUENCY",
+        "diagnosis_confidence": 0.85,
+        "final_action": "SEND_REMINDER",
+        "status": "RECOVERED"
+      },
+      "diagnosis_match": false,
+      "strategy_match": true,
+      "status_match": true,
+      "divergence_cluster": "NONE"
+    },
+    {
+      "case_id": "B2B-0d2b91ef-b89",
+      "amount": 334586.03,
+      "reached_llm": true,
+      "mock": {
+        "diagnosis_category": "CASH_FLOW_MISMATCH",
+        "diagnosis_confidence": 0.88,
+        "final_action": "ESCALATE_HUMAN",
+        "status": "ESCALATED"
+      },
+      "live": {
+        "diagnosis_category": "CASH_FLOW_MISMATCH",
+        "diagnosis_confidence": 0.75,
+        "final_action": "SEND_REMINDER",
+        "status": "RECOVERED"
+      },
+      "diagnosis_match": true,
+      "strategy_match": false,
+      "status_match": false,
+      "divergence_cluster": "low_confidence_fallback"
+    },
+    {
+      "case_id": "B2B-8f9b72ae-d85",
+      "amount": 62012.67,
+      "reached_llm": true,
+      "mock": {
+        "diagnosis_category": "ADMINISTRATIVE_DELAY",
+        "diagnosis_confidence": 0.9,
+        "final_action": "ESCALATE_HUMAN",
+        "status": "ESCALATED"
+      },
+      "live": {
+        "diagnosis_category": "CHRONIC_DELINQUENCY",
+        "diagnosis_confidence": 0.85,
+        "final_action": "SEND_REMINDER",
+        "status": "RECOVERED"
+      },
+      "diagnosis_match": false,
+      "strategy_match": false,
+      "status_match": false,
+      "divergence_cluster": "low_confidence_fallback"
+    },
+    {
+      "case_id": "B2B-24ac2130-dea",
+      "amount": 357079.67,
+      "reached_llm": true,
+      "mock": {
+        "diagnosis_category": "CASH_FLOW_MISMATCH",
+        "diagnosis_confidence": 0.88,
+        "final_action": "OFFER_PAYMENT_PLAN",
+        "status": "RECOVERED"
+      },
+      "live": {
+        "diagnosis_category": "CHRONIC_DELINQUENCY",
+        "diagnosis_confidence": 0.85,
+        "final_action": "SEND_REMINDER",
+        "status": "RECOVERED"
+      },
+      "diagnosis_match": false,
+      "strategy_match": false,
+      "status_match": true,
+      "divergence_cluster": "low_confidence_fallback"
+    }
+  ]
+}

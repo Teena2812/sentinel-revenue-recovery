@@ -9,7 +9,30 @@ ALL DATA IN THIS PROJECT IS SIMULATED — never imply real Razorpay data.
 """
 
 
+import os
 from datetime import datetime
+
+
+def _load_dotenv() -> None:
+    """Auto-load variables from .env into os.environ if present, without overriding existing vars."""
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    env_file = os.path.join(base_dir, ".env")
+    if os.path.exists(env_file):
+        try:
+            with open(env_file, "r", encoding="utf-8") as f:
+                for line in f:
+                    line = line.strip()
+                    if line and not line.startswith("#") and "=" in line:
+                        k, v = line.split("=", 1)
+                        k = k.strip()
+                        v = v.strip().strip("'\"")
+                        if k and k not in os.environ:
+                            os.environ[k] = v
+        except Exception:
+            pass
+
+
+_load_dotenv()
 
 
 # --- Simulation Time ---

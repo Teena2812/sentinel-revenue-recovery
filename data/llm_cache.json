@@ -52,5 +52,1385 @@
     "confidence": 0.95,
     "reasoning": "The failure was caused by a transient gateway error on the first attempt for a medium-tier customer with no fraud flags. Historical performance for RETRY_NOW on transient network issues shows a 100 percent success rate, making an immediate automated retry the most effective and least intrusive path.",
     "risk_assessment": "LOW"
+  },
+  "8e88eb8f21445d47dd0df7efba106a69db6df8598c22f669bffe09a1bbfddde9": {
+    "proposed_action": "RETRY_NOW",
+    "confidence": 0.85,
+    "reasoning": "The payment failure was caused by a transient gateway error on the first attempt with no fraud flags. Since it is a network-related issue rather than insufficient funds or customer refusal, an immediate retry via an alternate acquiring switch has a high likelihood of success.",
+    "risk_assessment": "LOW"
+  },
+  "52ecfd379bb240dbf2e0ee006cf8596b43d7a104206acfaf7b8cca8b267d9704": {
+    "root_cause": "Payment gateway reported a technical failure (GATEWAY_ERROR) during transaction processing.",
+    "category": "TRANSIENT_NETWORK",
+    "confidence": 0.85,
+    "reasoning": "The failure code 'GATEWAY_ERROR' explicitly points to an issue with the payment gateway or routing network rather than insufficient funds or authentication expiration. Given the customer's moderate reliability history and multiple attempts, it is likely a temporary infrastructural glitch."
+  },
+  "8dc20fcd2813403901bd5786ebfbc563195808de30677cf61801ac26201fa5b7": {
+    "proposed_action": "RETRY_LATER",
+    "confidence": 0.85,
+    "reasoning": "The failure code GATEWAY_ERROR and category TRANSIENT_NETWORK indicate a temporary infrastructure issue with the payment gateway. Since an immediate retry has already failed once, attempting another immediate retry is likely to fail. Scheduling a retry for later allows time for the gateway issue to resolve while minimizing customer friction.",
+    "risk_assessment": "LOW"
+  },
+  "5b4c2997b8132cdff58750e3cb4c9f49a5712efc2eaae7580c746680bbcf0390": {
+    "root_cause": "The payment attempt failed because the customer's account did not have enough balance to cover the transaction amount of \u20b934,985.01, as explicitly indicated by the failure code INSUFFICIENT_FUNDS after multiple attempts.",
+    "category": "FUNDS_UNAVAILABLE",
+    "confidence": 1.0,
+    "reasoning": "The gateway explicitly returned the failure code INSUFFICIENT_FUNDS, which directly corresponds to the FUNDS_UNAVAILABLE category. The customer history indicates a generally reliable profile, so this is likely a temporary liquidity issue rather than fraud or chronic delinquency."
+  },
+  "9ccfc1cd8eccb0383578f357ea51bcf3c4d172bd96cfdcbe441a4a621294b761": {
+    "proposed_action": "SUGGEST_ALTERNATE_METHOD",
+    "confidence": 0.85,
+    "reasoning": "The payment has failed three times due to insufficient funds in the customer's account. Immediate or delayed automated retries will likely fail again. Offering an alternate payment method via SMS or WhatsApp gives the customer flexibility to use a different source, such as a credit card or UPI with a credit line.",
+    "risk_assessment": "LOW"
+  },
+  "daef8facd7d50f5cbbcd92897a51807c55c18a544a21d366e70e14916bd1bda6": {
+    "root_cause": "The payment attempt failed because the customer's account lacked sufficient funds, confirmed by the 'INSUFFICIENT_FUNDS' failure code after 4 attempts.",
+    "category": "FUNDS_UNAVAILABLE",
+    "confidence": 0.99,
+    "reasoning": "The explicit failure code provided is 'INSUFFICIENT_FUNDS', which directly indicates that the customer does not have enough balance to cover the transaction amount of \u20b934,985.01. Multiple attempts (4) further suggest repeated unsuccessful tries due to this lack of liquidity."
+  },
+  "89538b84a4d44048613a2588da79dab97282e4492f850d792d527f06f0898c78": {
+    "proposed_action": "RETRY_LATER",
+    "confidence": 0.85,
+    "reasoning": "The payment has failed four times due to insufficient funds. Immediate retries or alternate methods are unlikely to succeed until the customer has time to replenish their account. Scheduling a retry later (e.g., after 24 to 48 hours, or aligning with typical payday cycles) minimizes friction and avoids premature escalation.",
+    "risk_assessment": "MEDIUM"
+  },
+  "1563a6b4eec6545936695d905978713d2208d6ac4940cd98766654e1c5eaaa11": {
+    "root_cause": "The payment failed because the customer's account did not have enough balance to cover the transaction amount of \u20b934,985.01, as explicitly indicated by the failure code INSUFFICIENT_FUNDS.",
+    "category": "FUNDS_UNAVAILABLE",
+    "confidence": 1.0,
+    "reasoning": "The explicit failure code 'INSUFFICIENT_FUNDS' directly points to a lack of available balance in the customer's funding source at the time of the transaction, despite multiple retry attempts."
+  },
+  "9d7d4300bbc13dfaf929886ba3043b4b70ba30272c726ee5385477c0cf9c1f0b": {
+    "proposed_action": "SUGGEST_ALTERNATE_METHOD",
+    "confidence": 0.85,
+    "reasoning": "The payment has failed 5 times due to insufficient funds. Immediately retrying or scheduling an automated retry will likely continue to fail since the account balance is depleted. The best approach is to suggest an alternate payment method or offer a payment plan via an interactive link so the customer can use a different funding source.",
+    "risk_assessment": "MEDIUM"
+  },
+  "bb177784eedc1d9c0af274ab7ed60a88ecd255c15553795d0dc84f09d2698b64": {
+    "proposed_action": "OFFER_PAYMENT_PLAN",
+    "confidence": 0.95,
+    "reasoning": "The maximum retry limit of 5 has been reached and the failure is due to insufficient funds (INSUFFICIENT_FUNDS). Further automated payment attempts are blocked by compliance rules. Offering a payment plan is the next logical, compliant step to help the customer manage the high transaction amount of \u20b934,985.01 in smaller increments.",
+    "risk_assessment": "LOW"
+  },
+  "7f7110f221a175613faaa4693d065d02be78878a2c3c3eaadbdeab502ea808b9": {
+    "root_cause": "The payment failed because the customer's account had insufficient funds to cover the transaction amount of \u20b914,361.00.",
+    "category": "FUNDS_UNAVAILABLE",
+    "confidence": 1.0,
+    "reasoning": "The payment gateway returned the explicit failure code 'INSUFFICIENT_FUNDS', which directly indicates a lack of available balance in the payer's account at the time of the attempt."
+  },
+  "226144b823a6687fca267605ec26b170d49c08793b79aa56b03a702fff1f7cc0": {
+    "proposed_action": "SUGGEST_ALTERNATE_METHOD",
+    "confidence": 0.85,
+    "reasoning": "Since the payment failed due to insufficient funds on the first attempt, immediately retrying or waiting is unlikely to succeed. Suggesting an alternate payment method via SMS or WhatsApp gives the customer the flexibility to use a different source (like a credit card or UPI) to complete the transaction of \u20b914,361.00.",
+    "risk_assessment": "LOW"
+  },
+  "7c3cf0bff10840b0598e074b2e04aef78e232770bfb69d5c8061f6c1fde6fd1f": {
+    "root_cause": "The payment failed because the customer's account did not have enough balance to cover the transaction amount of \u20b914,361.00, as indicated by the INSUFFICIENT_FUNDS failure code.",
+    "category": "FUNDS_UNAVAILABLE",
+    "confidence": 1.0,
+    "reasoning": "The explicit failure code 'INSUFFICIENT_FUNDS' directly points to a lack of available funds in the customer's account at the time of the transaction attempt."
+  },
+  "3427e31db053053d350dda8573cd1664cea4d6e954f381decdd65e15fc7b17f0": {
+    "proposed_action": "RETRY_LATER",
+    "confidence": 0.75,
+    "reasoning": "The payment failed due to insufficient funds on the second attempt. Immediate retry is not recommended, but scheduling a retry later allows time for the customer to deposit funds or for a salary cycle update, while avoiding immediate harsh escalation for a medium tier customer.",
+    "risk_assessment": "LOW"
+  },
+  "f238a0652089c4948d5869ab4a6076f657b13a92505908586fc5fba72c3e456a": {
+    "root_cause": "The debtor has a low reliability score of 0.17 and the invoice is 75 days overdue with multiple failed collection attempts and contacts, indicating a persistent pattern of late payments rather than a one-off administrative error or dispute.",
+    "category": "CHRONIC_DELINQUENCY",
+    "confidence": 0.9,
+    "reasoning": "With 75 days overdue, 4 attempts, and a very low debtor reliability score (0.17) in the absence of a dispute flag or communication breakdown, the behavior strongly aligns with chronic delinquency."
+  },
+  "080b57f507ec5b8dec97dec7598329c5019e95322262452d4a898d328d671ef9": {
+    "proposed_action": "ESCALATE_HUMAN",
+    "confidence": 0.88,
+    "reasoning": "The invoice is 75 days overdue with multiple failed attempts and contacts, alongside a very low debtor reliability score of 0.17. Standard automated follow-ups have been ineffective against this chronic delinquency, requiring manual intervention and human-led collections or dispute resolution.",
+    "risk_assessment": "MEDIUM"
+  },
+  "835638b97244a49be80642091df68a5174b35524c71ed1ee5055460d3bbe9961": {
+    "root_cause": "The invoice is 24 days overdue with a medium relationship tier, zero contact attempts, and no prior history or dispute, indicating a standard administrative delay or processing lag on the debtor's end.",
+    "category": "ADMINISTRATIVE_DELAY",
+    "confidence": 0.75,
+    "reasoning": "Given the absence of disputes, fraud indicators, or previous delinquency, coupled with zero outreach attempts so far, the delay is most likely due to internal administrative processing on the buyer's accounts payable side."
+  },
+  "ce9629db5623cba4e29ca44383bbde6c30547460009e96fcd73185b94c0aaab3": {
+    "proposed_action": "SEND_REMINDER",
+    "confidence": 0.85,
+    "reasoning": "The invoice is 24 days overdue with zero prior contact attempts and a medium relationship tier, pointing towards an administrative delay. Sending a professional reminder with the attached invoice copy is the standard, low-friction initial step to prompt payment without damaging the business relationship.",
+    "risk_assessment": "LOW"
+  },
+  "a4fa7c91336c5721d80f2a5cd7bf9b05aaae98ab511f8fe2a058318505d07b15": {
+    "root_cause": "The invoice is 24 days overdue with no prior history of delinquency and only a single contact attempt, suggesting the delay is likely due to standard administrative processing lag or a minor internal payment cycle review by the debtor.",
+    "category": "ADMINISTRATIVE_DELAY",
+    "confidence": 0.85,
+    "reasoning": "The debtor has no chronic delinquency history, there is no dispute or fraud flag raised, and low contact volume (1 attempt) indicates outreach is still in the early stages, fitting the profile of a standard administrative delay."
+  },
+  "f6091bdea0dc2aa1e12586b4d8b0e482707788d082fa4e76714da4af76100ad3": {
+    "proposed_action": "WAIT",
+    "confidence": 0.85,
+    "reasoning": "The invoice is only 24 days overdue for a medium tier relationship with a diagnosed administrative delay and only one previous contact attempt. Since standard processing lags are common, standing down with a WAIT action for a cooling-off window avoids premature escalation while allowing internal payment cycles to complete.",
+    "risk_assessment": "LOW"
+  },
+  "6793f5e615a98c6d6c8b16f4c67c4275bc344271b7eb6b97feec335cb6aa4066": {
+    "proposed_action": "RETRY_NOW",
+    "confidence": 0.85,
+    "reasoning": "The payment failure was caused by a transient gateway error on the first attempt for a medium-tier customer with no fraud flags. Since it is a technical network issue rather than insufficient funds or customer intent, an immediate retry via an alternate acquiring switch has a high likelihood of success without friction.",
+    "risk_assessment": "LOW"
+  },
+  "a50365f86728c83cf107717d52f1accd9edd5a60fc6e3fc4723c64b9dc21d3c1": {
+    "proposed_action": "SUGGEST_ALTERNATE_METHOD",
+    "confidence": 0.85,
+    "reasoning": "The payment has failed three times due to insufficient funds. Continuing to retry automatically or scheduling retries will likely fail again. Since the amount is moderately high (\u20b934,985.01) and the relationship tier is medium, sending an alternate payment method link via SMS or WhatsApp gives the customer flexibility to use a different source such as a credit card or UPI.",
+    "risk_assessment": "MEDIUM"
+  },
+  "0b8b0007d71be4fa92b92d3175646c8d6ba386437a26c6993f3b5b52393e3d26": {
+    "proposed_action": "RETRY_LATER",
+    "confidence": 0.85,
+    "reasoning": "With 4 failed attempts due to insufficient funds, immediate retries are likely to fail again. Scheduling a retry later allows time for the customer to receive funds or paycheck deposits, mitigating the risk of churn or account fatigue.",
+    "risk_assessment": "MEDIUM"
+  },
+  "ea5b466fc5760673b2def3dafbe62575dbf119d5d54c8c9c04cdc952561fbf76": {
+    "proposed_action": "OFFER_PAYMENT_PLAN",
+    "confidence": 0.85,
+    "reasoning": "The payment has failed 5 times due to insufficient funds for a relatively high amount of \u20b934,985.01. Immediate retries or waiting will not resolve the underlying liquidity issue. Offering a payment plan helps break down the high amount into manageable installments for a medium-tier customer.",
+    "risk_assessment": "MEDIUM"
+  },
+  "7ca586a039e5a4aad3dd4f29b6bcf00184b246dd0a069652bec2905102ac4989": {
+    "proposed_action": "SUGGEST_ALTERNATE_METHOD",
+    "confidence": 0.85,
+    "reasoning": "Since the payment failed due to insufficient funds on the first attempt, immediately retrying will likely fail again. Suggesting an alternate payment method via SMS or WhatsApp allows the customer to use a different funding source, such as a credit card or UPI, which has a higher likelihood of success for this amount.",
+    "risk_assessment": "LOW"
+  },
+  "84bdd0ea3fd1a86ad421e696962246fecfd4982c44ba05620f0e1a11aad0ab0b": {
+    "proposed_action": "RETRY_LATER",
+    "confidence": 0.85,
+    "reasoning": "The failure code INSUFFICIENT_FUNDS indicates a temporary lack of liquidity on the customer's account for this specific attempt. Given that it is only the second attempt and the relationship tier is medium, an immediate retry is likely to fail again. Scheduling a retry for later allows time for the customer to receive funds or wages, while avoiding immediate escalation or customer annoyance.",
+    "risk_assessment": "LOW"
+  },
+  "fc42f3df7dd9d41e4a5085d450cda4a996792aa5e72e69504d87527b49477f4e": {
+    "root_cause": "The payment failed because the customer's account did not have enough balance to cover the requested amount of \u20b914,361.00 after multiple attempts.",
+    "category": "FUNDS_UNAVAILABLE",
+    "confidence": 0.99,
+    "reasoning": "The failure code explicitly states 'INSUFFICIENT_FUNDS' and multiple attempts were made, which directly corresponds to the FUNDS_UNAVAILABLE category in the classification schema."
+  },
+  "3ae47e614c32fa648d12d742c8f37fdb5cc022e7407ac9b434687d5360b4a453": {
+    "proposed_action": "SUGGEST_ALTERNATE_METHOD",
+    "confidence": 0.85,
+    "reasoning": "The payment has failed three times due to insufficient funds, indicating that immediate retries or waiting without intervention are unlikely to succeed. Offering an alternate payment method via SMS or WhatsApp allows the customer to choose a different funding source or UPI handle to complete the transaction.",
+    "risk_assessment": "LOW"
+  },
+  "b90cb9b6339a5387fbc3d7ef5162879aabd1778a78c6f32598ab418901f41b09": {
+    "root_cause": "The payment failed because the customer's account did not have sufficient funds to complete the transaction of \u20b917,131.88.",
+    "category": "FUNDS_UNAVAILABLE",
+    "confidence": 1.0,
+    "reasoning": "The gateway explicitly returned the failure code 'INSUFFICIENT_FUNDS', which directly correlates to a lack of available balance in the payer's account at the time of the transaction attempt."
+  },
+  "59cd8880b3a1e32d35729816f50f3a20908f19b6939f55d59c909d95349c232a": {
+    "proposed_action": "RETRY_LATER",
+    "confidence": 0.75,
+    "reasoning": "The failure was due to insufficient funds on the first attempt for a high-tier customer. Since immediate retries often fail for insufficient funds and historical alternate methods show low success, scheduling a retry later gives the customer time to replenish their balance without alienating them through aggressive escalation.",
+    "risk_assessment": "LOW"
+  },
+  "be40fecd7544110669b6b067d4b19a5a8dc35c84feffe97c4b7784510be80212": {
+    "root_cause": "The payment failed due to an authentication failure (AUTH_FAILURE) on the second attempt, indicating that the transaction could not be authorized by the issuing bank or payment gateway.",
+    "category": "AUTH_EXPIRED",
+    "confidence": 0.85,
+    "reasoning": "The specific failure code AUTH_FAILURE strongly suggests an authentication or credential authorization issue during the processing of the payment. Given there is no prior history, it points directly towards an authentication challenge failure rather than a systemic risk or transient network issue."
+  },
+  "43659a9033bb22bae11876d33cf7d7931c20c2d3d807f9cbe3d9eba4d7e026e0": {
+    "proposed_action": "SUGGEST_ALTERNATE_METHOD",
+    "confidence": 0.82,
+    "reasoning": "Since the transaction has failed twice due to authentication issues (AUTH_FAILURE), simply retrying immediately is likely to hit the same authorization barrier. Suggesting an alternate payment method via a payment link gives the user flexibility to complete the transaction using a different instrument that might bypass the authentication hurdle.",
+    "risk_assessment": "LOW"
+  },
+  "2d27d96a3119cc04f395bc433fe438d63c6ebe5eef9675daec003a585a000772": {
+    "root_cause": "The payment failed due to a temporary gateway error returned by the payment processor during the transaction attempt.",
+    "category": "TRANSIENT_NETWORK",
+    "confidence": 0.85,
+    "reasoning": "The failure code explicitly indicates a GATEWAY_ERROR on the first attempt for a customer with a moderate reliability score and no fraud flags, which typically points to a temporary external network or processing glitch rather than insufficient funds or authentication expiration."
+  },
+  "aeed294ed2dba8228b3f3d540fb3efa71c9c361cae88c48ce4ff26e60379b302": {
+    "proposed_action": "RETRY_NOW",
+    "confidence": 0.95,
+    "reasoning": "The failure was caused by a transient network/gateway error with high historical success rate for immediate retries. Since this is the first attempt and a temporary issue, attempting an immediate retry via an alternate acquiring switch is the most efficient and least intrusive action.",
+    "risk_assessment": "LOW"
+  },
+  "605e8119379720dbfe67b18e29def126ff95fbf3c805ac63f9dc00f0511193b5": {
+    "root_cause": "The payment failed due to an explicit authorization failure (AUTH_FAILURE), suggesting that the authentication credentials provided by the customer or the bank session verification failed during the transaction attempt.",
+    "category": "AUTH_EXPIRED",
+    "confidence": 0.85,
+    "reasoning": "The specific failure code 'AUTH_FAILURE' directly points to authentication issues, which frequently happen when an authentication token, session, or 3DS verification expires or is rejected by the issuing bank during the single attempt."
+  },
+  "04a52ae38790ed168c53a2d984bed8a007a59025e4ffc19c9df5e41595a1642f": {
+    "proposed_action": "SUGGEST_ALTERNATE_METHOD",
+    "confidence": 0.85,
+    "reasoning": "The payment failed due to an authorization failure (AUTH_FAILURE / AUTH_EXPIRED), indicating that a simple immediate retry without updated credentials will likely fail again. Suggesting an alternate payment method via notification allows the customer to use a fresh session or different instrument.",
+    "risk_assessment": "LOW"
+  },
+  "5fddba8afa40133521fbee99664f597819ce5bbb3aaae4b873861e36c32bbca5": {
+    "root_cause": "The payment failed because the customer's account lacked sufficient funds at the time of the transaction attempt.",
+    "category": "FUNDS_UNAVAILABLE",
+    "confidence": 1.0,
+    "reasoning": "The explicit failure code provided is INSUFFICIENT_FUNDS, which directly indicates that the transaction could not be processed due to a lack of available money in the customer's account."
+  },
+  "014abc47fb21ed18c60073910bdb04c96ef5b89e65dd2a817b40cc78977841d5": {
+    "proposed_action": "RETRY_NOW",
+    "confidence": 0.5,
+    "reasoning": "Since this is the first attempt and the failure code is INSUFFICIENT_FUNDS with no prior historical failures recorded in this category, attempting an immediate retry via an alternate acquiring switch is a standard cold-start baseline action.",
+    "risk_assessment": "LOW"
+  },
+  "9f270a88a5855407aefc841d1656c005a9b77026b8b6d621bb5bef7aabf65399": {
+    "root_cause": "The payment attempt failed due to a BANK_TIMEOUT error during the transaction process on the first attempt.",
+    "category": "TRANSIENT_NETWORK",
+    "confidence": 0.95,
+    "reasoning": "The specific failure code 'BANK_TIMEOUT' indicates a temporary communication issue or timeout between the payment gateway and the banking network, which is characteristic of a transient network problem rather than an account-specific or risk-based issue."
+  },
+  "1239eafe201672752e792a4aad49457d2ffe5d8509f784a34309668dbcd09571": {
+    "proposed_action": "RETRY_NOW",
+    "confidence": 0.95,
+    "reasoning": "The payment failure was caused by a transient network bank timeout on the first attempt. Historical performance for TRANSIENT_NETWORK issues shows 100 percent success with an immediate retry using an alternate acquiring switch.",
+    "risk_assessment": "LOW"
+  },
+  "ba5cc1ed5c7cedb311f34918bc3b0ee2fb2438da3c7151f0546ec42779ece105": {
+    "root_cause": "The payment failed due to an explicit authentication failure (AUTH_FAILURE) during the initial attempt, which is commonly associated with an expired authentication session or an incorrect authorization input by the user.",
+    "category": "AUTH_EXPIRED",
+    "confidence": 0.85,
+    "reasoning": "The failure code explicitly states 'AUTH_FAILURE' on attempt count 1 for a customer with no prior history and no fraud flags, suggesting that the authentication token or session expired or failed validation at the gateway."
+  },
+  "070bf8c24fb705f455a9680cbe6b85a8876da15cc5abbe5606a3ea811f2c4e46": {
+    "proposed_action": "SUGGEST_ALTERNATE_METHOD",
+    "confidence": 0.85,
+    "reasoning": "The failure was caused by an explicit authentication failure (AUTH_EXPIRED). Historical strategy performance shows a 100.0% success rate for suggesting an alternate method on this category, making it the most reliable approach to resolve authentication hurdles without risking immediate card retry declines.",
+    "risk_assessment": "LOW"
+  },
+  "74feba4a7b1c07d9daff168ce5f250b9c6b5cfc57f37af28597d281b5761201c": {
+    "root_cause": "The payment failed because the customer's account did not have enough funds to complete the transaction of \u20b918,504.25.",
+    "category": "FUNDS_UNAVAILABLE",
+    "confidence": 1.0,
+    "reasoning": "The gateway explicitly returned the failure code INSUFFICIENT_FUNDS, which directly corresponds to the FUNDS_UNAVAILABLE category."
+  },
+  "42af7c04ab1fdc2be566ed4b7d340500d2e83a5288a3ff817a14f678afb7510a": {
+    "proposed_action": "SUGGEST_ALTERNATE_METHOD",
+    "confidence": 0.85,
+    "reasoning": "The payment failed due to insufficient funds on the first attempt for a high-tier customer. Since an immediate retry would likely fail again and historical data shows some success with alternate methods, sending a payment link for an alternate method minimizes friction while preserving customer relationship.",
+    "risk_assessment": "LOW"
+  },
+  "1b09c331c75f9c5b75287220f1578a688252199c365f7b7d62e534c4329a160b": {
+    "root_cause": "The payment attempt failed because the customer's account did not have enough balance to cover the transaction amount of \u20b918,504.25.",
+    "category": "FUNDS_UNAVAILABLE",
+    "confidence": 0.99,
+    "reasoning": "The gateway returned a specific failure code of INSUFFICIENT_FUNDS on the second attempt, which directly indicates a lack of available balance in the customer's funding source."
+  },
+  "04e209585c68f196b198cf8943f5a3c1a16eee0fa3a36bfac597dfdfb29c2d44": {
+    "proposed_action": "SUGGEST_ALTERNATE_METHOD",
+    "confidence": 0.85,
+    "reasoning": "The payment failed due to insufficient funds (INSUFFICIENT_FUNDS) on the second attempt. Given that RETRY_LATER has a 0% historical success rate for this category and the relationship tier is HIGH, immediate blind retries are discouraged. Suggesting an alternate payment method via SMS/WhatsApp gives the customer flexibility to use a different funding source while preserving the high-value relationship.",
+    "risk_assessment": "LOW"
+  },
+  "85c82166c63fef662d8bcb81c7f796a4e531ef2ae329571b67b8f09ab741bf11": {
+    "root_cause": "The payment attempt failed due to insufficient funds in the customer's account, supported by the explicit failure code INSUFFICIENT_FUNDS across multiple attempts.",
+    "category": "FUNDS_UNAVAILABLE",
+    "confidence": 1.0,
+    "reasoning": "The gateway explicitly returned the 'INSUFFICIENT_FUNDS' error code after 4 attempts, indicating that the account lacked the required balance of \u20b93,722.86 at the time of processing."
+  },
+  "5d66d66767aad89291260650eee569d12272c562794d3df89aa952817342f42f": {
+    "proposed_action": "SUGGEST_ALTERNATE_METHOD",
+    "confidence": 0.85,
+    "reasoning": "The payment has failed four times due to insufficient funds, indicating that immediate retries will likely continue to fail. Since RETRY_LATER has a 0 percent historical success rate and multiple attempts have already been exhausted, sending a payment link for an alternate method is the most effective approach to recover the funds.",
+    "risk_assessment": "LOW"
+  },
+  "9fc7fdcd6efb8619776d88894badcd94d1f029d9b349f1e10c9b222067e1a3a5": {
+    "root_cause": "The payment failed due to a bank timeout error, which indicates a temporary issue with the banking network during the transaction attempt.",
+    "category": "TRANSIENT_NETWORK",
+    "confidence": 0.95,
+    "reasoning": "The failure code explicitly states 'BANK_TIMEOUT' on the first attempt for a reliable customer with no fraud flags, pointing directly to a temporary connectivity or response delay from the banking partner rather than insufficient funds or authentication issues."
+  },
+  "a04fc2020b5cb6d456aa513b162ca4ba0b40f9e19e681373b6571cd9436528ca": {
+    "proposed_action": "RETRY_NOW",
+    "confidence": 0.95,
+    "reasoning": "The payment failed due to a bank timeout error which is a transient network issue. Historical success rate for RETRY_NOW on transient network errors is 100 percent, making an immediate retry via an alternate acquiring switch the most logical and low-risk first step.",
+    "risk_assessment": "LOW"
+  },
+  "9fefc8e55548375f0edd232c08524f210586c8067e2e50089d44f4a56aeef5bc": {
+    "root_cause": "The payment attempt failed due to a timeout at the bank's end during the processing of the transaction.",
+    "category": "TRANSIENT_NETWORK",
+    "confidence": 0.95,
+    "reasoning": "The failure code 'BANK_TIMEOUT' explicitly points to a timeout or connectivity issue between the payment gateway and the banking network, which is a characteristic of transient network problems rather than an issue with customer funds or authentication."
+  },
+  "776ff41aba8c07959040ec7cf6ad3505756415ac2c5812b9bdf382d1e1a26fa5": {
+    "proposed_action": "RETRY_NOW",
+    "confidence": 0.95,
+    "reasoning": "The failure was caused by a transient network timeout at the bank's end with a high diagnosis confidence of 0.95 and historical success data supporting an immediate retry via an alternate acquiring switch.",
+    "risk_assessment": "LOW"
+  },
+  "581d0292a520914adab56e9dd9c3ae9ee89ac609300c645c0a2c0e9aceb5d81a": {
+    "root_cause": "The payment failed because the customer's account lacked the necessary funds to cover the transaction amount of \u20b93,485.25.",
+    "category": "FUNDS_UNAVAILABLE",
+    "confidence": 1.0,
+    "reasoning": "The explicit failure code returned by the payment processor is INSUFFICIENT_FUNDS, which directly corresponds to a lack of available balance in the customer's account."
+  },
+  "dec3bd8a3c499cdcd1b421d698df7bc6499e543138c88a8076c0597718fecd60": {
+    "proposed_action": "SUGGEST_ALTERNATE_METHOD",
+    "confidence": 0.85,
+    "reasoning": "The payment failed due to insufficient funds on the first attempt. Historical data shows that suggesting an alternate payment method has a strong success rate compared to immediate retries which will likely fail again due to the same reason.",
+    "risk_assessment": "LOW"
+  },
+  "93eb7a59bd26f15cab96c99b753575d8ab1bb63c0bcae845b8bbdf4de4865aeb": {
+    "root_cause": "The payment failed because the customer's account did not have enough balance to cover the transaction amount of \u20b93,485.25.",
+    "category": "FUNDS_UNAVAILABLE",
+    "confidence": 1.0,
+    "reasoning": "The failure code explicitly states INSUFFICIENT_FUNDS, which directly corresponds to the FUNDS_UNAVAILABLE category."
+  },
+  "a63ba838b382cfb5ce3781ef53452941ad2e9223850ae3484f378d81c041f7d9": {
+    "proposed_action": "SUGGEST_ALTERNATE_METHOD",
+    "confidence": 0.85,
+    "reasoning": "The payment failed due to insufficient funds (INSUFFICIENT_FUNDS) on the second attempt. Immediate retries or waiting are unlikely to succeed without a change in account balance or payment instrument. Suggesting an alternate payment method has proven historical success and gives the customer the flexibility to use a different source of funds.",
+    "risk_assessment": "LOW"
+  },
+  "f62ef0ab780867b7b60cffb773174daff4eb67bdfbd00306e5bcb5bcfb4b22c9": {
+    "root_cause": "The payment failed because the customer's account did not have enough balance to cover the requested amount of \u20b93,485.25.",
+    "category": "FUNDS_UNAVAILABLE",
+    "confidence": 1.0,
+    "reasoning": "The explicit failure code returned by the payment gateway is INSUFFICIENT_FUNDS, directly indicating a lack of available funds in the account after multiple attempts."
+  },
+  "a483714f3f04c0c913b4f3ba90ff44a39239e504623ee6bd96f7ba649c7e604b": {
+    "proposed_action": "SUGGEST_ALTERNATE_METHOD",
+    "confidence": 0.85,
+    "reasoning": "The payment has failed three times due to insufficient funds. Immediate or delayed retries using the same method are likely to fail again. Suggesting an alternate payment method via SMS or WhatsApp provides the customer with flexibility to use a different source of funds.",
+    "risk_assessment": "LOW"
+  },
+  "63a3022e1e887736bed483bca4d069554d6e7e57769fb4dffe1c9d0829df3433": {
+    "root_cause": "The payment failed because the customer's account had insufficient funds to cover the transaction amount of \u20b93,354.07.",
+    "category": "FUNDS_UNAVAILABLE",
+    "confidence": 0.99,
+    "reasoning": "The explicit failure code returned by the payment gateway is INSUFFICIENT_FUNDS, directly indicating a lack of available balance in the customer's payment source after 2 attempts."
+  },
+  "75082b92cd5334640eda028f5f320e107248466874b4af8cb872c65b3878cf26": {
+    "proposed_action": "SUGGEST_ALTERNATE_METHOD",
+    "confidence": 0.85,
+    "reasoning": "The payment failed due to insufficient funds after two attempts, indicating that an immediate technical retry will likely fail again. Offering an alternate payment method via SMS or WhatsApp has historical success and gives the customer flexibility to use a different source of funds.",
+    "risk_assessment": "LOW"
+  },
+  "c5ab8a031ab1eeccbf255d1c190bbaf8735e77e0e107486cb9b053a221029d2d": {
+    "root_cause": "The payment attempt failed due to a bank timeout error after 4 attempts, indicating a temporary issue with the banking network connectivity.",
+    "category": "TRANSIENT_NETWORK",
+    "confidence": 0.95,
+    "reasoning": "The specific failure code BANK_TIMEOUT directly points to a network or communication timeout between the payment gateway and the customer's bank. Multiple retry attempts (4) further support that the transaction was impacted by transient network issues rather than permanent fund shortages or authentication failures, especially given the customer's good reliability score and high transaction history."
+  },
+  "5eeecd5d3e6a1fdad7b08b7aa212c6aaca8e964e64f04053dc23e75f5a27d624": {
+    "proposed_action": "RETRY_NOW",
+    "confidence": 0.95,
+    "reasoning": "The failure was caused by a transient network bank timeout with high diagnosis confidence, and historical performance for RETRY_NOW shows a strong 73.9% success rate for this category.",
+    "risk_assessment": "LOW"
+  },
+  "aa210d62ceb39cd1f0c3809adf8b7c51fe66ce91751399546e3de4737827e7fc": {
+    "root_cause": "The payment failed due to a bank timeout after 5 attempts, indicating a temporary issue with the banking network infrastructure rather than an account or authentication problem.",
+    "category": "TRANSIENT_NETWORK",
+    "confidence": 0.92,
+    "reasoning": "The specific failure code BANK_TIMEOUT combined with multiple retry attempts (5) strongly suggests intermittent network or gateway connectivity issues between the payment processor and the customer's bank, supported by the customer's high reliability and transaction history."
+  },
+  "eef066c5b02ef11bc8579cb62b78bbd539c6173c186a8060dda7b78472602b51": {
+    "proposed_action": "RETRY_LATER",
+    "confidence": 0.85,
+    "reasoning": "The payment has already failed 5 times due to a bank timeout, indicating persistent transient issues with the banking network infrastructure at this moment. Immediate retries may continue to fail; therefore, scheduling a retry later allows the network time to stabilize.",
+    "risk_assessment": "LOW"
+  },
+  "ca0f0febfd1e541c0d405fac07732031761abd7cbba358434931e52ff7629fb1": {
+    "proposed_action": "SUGGEST_ALTERNATE_METHOD",
+    "confidence": 0.95,
+    "reasoning": "The maximum retry limit of 5 has been reached for automated attempts due to persistent bank timeouts. Compliance rules block further automated retries, so the safest and most compliant path is to suggest an alternate payment method to the customer.",
+    "risk_assessment": "LOW"
+  },
+  "6e2c10d84f4d7562a303b9535d7b27dab057364ec32a1d4cb112386ad6cc922a": {
+    "root_cause": "The payment attempt failed because the customer's account lacks sufficient funds to complete the transaction of \u20b944,903.06.",
+    "category": "FUNDS_UNAVAILABLE",
+    "confidence": 1.0,
+    "reasoning": "The explicit failure code returned by the payment gateway is INSUFFICIENT_FUNDS, which directly corresponds to a lack of available balance in the payer's account."
+  },
+  "e5a19679d35d958eec147df039badc71046d34564c70036ac91a438beb26908b": {
+    "proposed_action": "SUGGEST_ALTERNATE_METHOD",
+    "confidence": 0.85,
+    "reasoning": "The failure reason is INSUFFICIENT_FUNDS after 2 failed attempts, indicating the current account lacks liquidity. Historical data shows SUGGEST_ALTERNATE_METHOD has a solid 39.4% success rate across 11 samples, whereas RETRY_LATER has failed previously. Offering an alternate method gives the customer flexibility to use a different source (like a credit card or UPI) without immediate aggressive escalation.",
+    "risk_assessment": "LOW"
+  },
+  "dce9b4e036b73a8b3bd8dcb08ac69e4d4355417f55923e2d0e0df782f6f84057": {
+    "root_cause": "The payment failed because the customer's account had insufficient funds to cover the transaction amount of \u20b944,903.06.",
+    "category": "FUNDS_UNAVAILABLE",
+    "confidence": 1.0,
+    "reasoning": "The explicit failure code returned by the payment gateway is INSUFFICIENT_FUNDS, directly indicating a lack of available balance for the transaction."
+  },
+  "dfacbb2375971b45f79a592940739919fba384b1b3264e4787997ccf42c598b7": {
+    "proposed_action": "SUGGEST_ALTERNATE_METHOD",
+    "confidence": 0.85,
+    "reasoning": "The payment has failed three times due to insufficient funds for a significant amount (\u20b944,903.06). Immediate or delayed retries will likely continue to fail. Suggesting an alternate payment method via SMS/WhatsApp yields the highest historical success rate among available actions for funds-unavailable scenarios.",
+    "risk_assessment": "LOW"
+  },
+  "3b76a1c595ec0cbd75fab1f7884d47050ad09617fe19b71483ed3017e00e0ba1": {
+    "root_cause": "The payment failed because the customer's account did not have enough balance to cover the amount of \u20b944,903.06 after 4 attempts.",
+    "category": "FUNDS_UNAVAILABLE",
+    "confidence": 1.0,
+    "reasoning": "The failure code explicitly states INSUFFICIENT_FUNDS, which directly corresponds to the FUNDS_UNAVAILABLE category."
+  },
+  "7a48ea121988fbcee70a43d0b35122719ba1479d8d864392c0ac8c07b033c46b": {
+    "proposed_action": "SUGGEST_ALTERNATE_METHOD",
+    "confidence": 0.85,
+    "reasoning": "The payment has failed 4 times due to insufficient funds, indicating that immediate retries or delayed retries without intervention are unlikely to succeed. Suggesting an alternate payment method via SMS or WhatsApp gives the customer flexibility to use a different funding source while keeping friction low for a medium-tier relationship.",
+    "risk_assessment": "LOW"
+  },
+  "65644b404c46da7b6f3f3008e0b8894652a85d985b94bf9267170b87eabf611d": {
+    "root_cause": "The payment attempt failed because the customer's account lacked sufficient funds to complete the transaction.",
+    "category": "FUNDS_UNAVAILABLE",
+    "confidence": 1.0,
+    "reasoning": "The gateway explicitly returned the failure code 'INSUFFICIENT_FUNDS', directly indicating that the customer did not have enough balance for the \u20b98,091.07 charge."
+  },
+  "772c6a9ffd6f307822d3fcc128645c6368a8b27b3a364354e087be060b3a9cfa": {
+    "proposed_action": "SUGGEST_ALTERNATE_METHOD",
+    "confidence": 0.85,
+    "reasoning": "The payment failed due to insufficient funds on the first attempt for a medium-tier customer. Historical data shows that suggesting an alternate payment method has a strong 38.5% success rate compared to retrying later which has failed previously. Providing a payment link allows the customer to use a different funding source at their convenience.",
+    "risk_assessment": "LOW"
+  },
+  "f70c8e43c32ec22eaa3746afe74caffce70f56d1d882a540f04594c513a4a106": {
+    "root_cause": "The payment attempt failed because the customer's account lacked sufficient funds, as explicitly indicated by the failure code 'INSUFFICIENT_FUNDS'.",
+    "category": "FUNDS_UNAVAILABLE",
+    "confidence": 1.0,
+    "reasoning": "The gateway explicitly returned the failure code 'INSUFFICIENT_FUNDS', which directly points to a lack of available balance in the customer's account at the time of the transaction attempts."
+  },
+  "6a983b08e7f7733f0683ec40ed23a7ed0de6ba7faed845f0ceb6750cd3e28063": {
+    "proposed_action": "SUGGEST_ALTERNATE_METHOD",
+    "confidence": 0.35,
+    "reasoning": "The failure was due to insufficient funds on attempt 2. Immediate or delayed retries are likely to fail again without a change in account balance. Suggesting an alternate payment method provides the best historical success rate among available actions with actual samples (33.9%), allowing the customer to use a different source like a credit card or UPI.",
+    "risk_assessment": "LOW"
+  },
+  "ecf4e8fc421ab8d4aa4a9b8690bf3dab5efd4438362276babf2baf43fcf20b15": {
+    "root_cause": "The payment failed due to a temporary technical glitch or communication timeout at the payment gateway.",
+    "category": "TRANSIENT_NETWORK",
+    "confidence": 0.9,
+    "reasoning": "The failure code 'GATEWAY_ERROR' combined with a high customer reliability score (0.85) and high relationship tier indicates that the failure is not due to insufficient funds or fraud, but rather a temporary issue with the payment gateway infrastructure on the first attempt."
+  },
+  "9a48044af8078c8c6a418746da4b6ca0ccf90c466c4999270c7c9aebd1c7d73e": {
+    "proposed_action": "RETRY_NOW",
+    "confidence": 0.9,
+    "reasoning": "The payment failure is diagnosed as a transient network issue with high confidence, and RETRY_NOW has a proven historical success rate of 56.2% for this category. Since this is only the first attempt and the relationship tier is HIGH, an immediate automated retry via an alternate acquiring switch is the most frictionless and effective approach.",
+    "risk_assessment": "LOW"
+  },
+  "ae27bea80d2545f8faff61f1ffed7c51e017cda67b39df16f954734fe9eb4a6f": {
+    "root_cause": "The payment failed because the customer's account had insufficient funds to cover the transaction amount of \u20b91,753.71, as indicated by the specific failure code INSUFFICIENT_FUNDS after multiple attempts.",
+    "category": "FUNDS_UNAVAILABLE",
+    "confidence": 1.0,
+    "reasoning": "The gateway explicitly returned the failure code 'INSUFFICIENT_FUNDS' after 4 attempts, which directly corresponds to a lack of available balance in the customer's payment source, despite the customer's generally high transaction reliability."
+  },
+  "30fa08fda9a7f2cf7c2bf2a35176338dfa2883c2301d276c304586be570d55d7": {
+    "proposed_action": "SUGGEST_ALTERNATE_METHOD",
+    "confidence": 0.85,
+    "reasoning": "The payment has failed four times due to insufficient funds, indicating that immediate automated retries or waiting will not resolve the lack of liquidity on the current account. Suggesting an alternate payment method via SMS or WhatsApp gives the customer flexibility to use a different funding source.",
+    "risk_assessment": "LOW"
+  },
+  "d689cfab0ad424b8d2abd302aa11290f665c54bef3ed580e092e9b95e43f2bc0": {
+    "root_cause": "The payment failed because the customer's account did not have enough balance to complete the transaction of \u20b94,831.40.",
+    "category": "FUNDS_UNAVAILABLE",
+    "confidence": 1.0,
+    "reasoning": "The gateway explicitly returned the failure code 'INSUFFICIENT_FUNDS', directly indicating a lack of available funds in the customer's account at the time of the attempt."
+  },
+  "7cd359e2db019e482d43a6da7463612551d1d78e48408d34ec6d60387cf2c6b5": {
+    "proposed_action": "SUGGEST_ALTERNATE_METHOD",
+    "confidence": 0.85,
+    "reasoning": "The payment failed due to insufficient funds on the first attempt. Historical data shows that suggesting an alternate payment method has a strong success rate with 16 samples, whereas immediate or delayed retries are unlikely to succeed until the customer's balance is replenished or a different payment source is used.",
+    "risk_assessment": "LOW"
+  },
+  "9219457f296e63b5b231cf59fc4e72f64e22d6645c36f261499daaeff02027e9": {
+    "root_cause": "The payment failed because the customer's account had insufficient funds at the time of the transaction attempt, as indicated by the 'INSUFFICIENT_FUNDS' failure code.",
+    "category": "FUNDS_UNAVAILABLE",
+    "confidence": 0.99,
+    "reasoning": "The explicit failure code 'INSUFFICIENT_FUNDS' directly points to a lack of available balance in the customer's account, ruling out network issues, authentication failures, or systemic risk."
+  },
+  "bd22819f2b6060dd4aa46c03da022f602b6b0056f7669c6b8ed993edffb57281": {
+    "proposed_action": "SUGGEST_ALTERNATE_METHOD",
+    "confidence": 0.85,
+    "reasoning": "The payment failed due to insufficient funds on the first attempt. Historical data shows that suggesting an alternate payment method has a strong success rate of 48.2 percent over 17 samples, whereas retrying later has a zero percent success rate.",
+    "risk_assessment": "LOW"
+  },
+  "9c96571f63b40d1329eb7dfd2822afd7058e034915fbee7c12614e17e958a227": {
+    "root_cause": "The payment attempt failed because the customer's account lacked sufficient funds to cover the transaction amount of \u20b93,689.53.",
+    "category": "FUNDS_UNAVAILABLE",
+    "confidence": 1.0,
+    "reasoning": "The explicit failure code provided is INSUFFICIENT_FUNDS, which directly corresponds to the account balance being too low at the time of the transaction, despite the customer's generally moderate reliability history."
+  },
+  "c51c9ef904ad36d703147674f64e3450e6572c384decae98bc80c4ff17e268e0": {
+    "proposed_action": "SUGGEST_ALTERNATE_METHOD",
+    "confidence": 0.85,
+    "reasoning": "The payment failed due to insufficient funds on the second attempt, indicating that an immediate retry or a simple delayed retry will likely fail again. Suggesting an alternate payment method via SMS or WhatsApp has a proven historical success rate and gives the customer flexibility to use a different funding source without being overly intrusive.",
+    "risk_assessment": "LOW"
+  },
+  "5ba98d98e68395e546343e82be9e80687205cc4bc81debf500d92ca3b3bbda76": {
+    "root_cause": "The payment failed because the customer's account did not have enough balance to complete the transaction.",
+    "category": "FUNDS_UNAVAILABLE",
+    "confidence": 1.0,
+    "reasoning": "The explicit failure code provided is INSUFFICIENT_FUNDS, which directly corresponds to the account lacking the necessary funds after multiple attempts."
+  },
+  "7443515ac56b6663b461207c18a20d81b147006ad206b6a321afd15a6fec0eff": {
+    "proposed_action": "SUGGEST_ALTERNATE_METHOD",
+    "confidence": 0.85,
+    "reasoning": "The payment has failed three times due to insufficient funds. Immediate retries or waiting are unlikely to succeed without a change in the funding source. Suggesting an alternate payment method via SMS or WhatsApp has historical success and allows the customer to use a different card or UPI handle.",
+    "risk_assessment": "LOW"
+  },
+  "4d77d703371f1b42a851074cdf2b587cd767eb1e82815baca3f2f8d3a69b726d": {
+    "root_cause": "The payment failed because the customer's account lacked sufficient funds to cover the transaction amount of \u20b918,267.75.",
+    "category": "FUNDS_UNAVAILABLE",
+    "confidence": 0.99,
+    "reasoning": "The gateway explicitly returned the failure code INSUFFICIENT_FUNDS, which directly corresponds to a lack of available balance in the customer's payment source."
+  },
+  "6fb4ec19dbb1518b7b148f303e375fe66041dd0174e9b5be03d1c3671813b733": {
+    "proposed_action": "SUGGEST_ALTERNATE_METHOD",
+    "confidence": 0.85,
+    "reasoning": "The payment failure is due to insufficient funds (FUNDS_UNAVAILABLE) on the first attempt. Historically, suggesting an alternate payment method has a proven success rate of 34.1% over 20 samples, whereas immediate or delayed retries are unlikely to succeed without funds replenishment. Reaching out with an alternate payment link provides the customer flexibility to complete the transaction.",
+    "risk_assessment": "LOW"
+  },
+  "95096ba7a6483a209a41fc76427e6b96b5c7127f95b5c6f7e8af4e2bf5d28983": {
+    "root_cause": "The payment attempt failed due to insufficient funds in the customer's account, evidenced by the specific failure code and historical reliability metrics.",
+    "category": "FUNDS_UNAVAILABLE",
+    "confidence": 0.95,
+    "reasoning": "The gateway explicitly returned the failure code 'INSUFFICIENT_FUNDS', which directly points to a lack of available balance. Furthermore, the customer's reliability score is below average at 0.46, supporting the likelihood of intermittent cash availability issues."
+  },
+  "d9b24f7a98a95b93454de030f22ea937574539bd693fabafe8c302bb44dba250": {
+    "proposed_action": "SUGGEST_ALTERNATE_METHOD",
+    "confidence": 0.85,
+    "reasoning": "The payment failed due to insufficient funds (INSUFFICIENT_FUNDS) on the second attempt, indicating that a direct immediate retry is likely to fail again. Suggesting an alternate payment method provides the customer with flexibility while leveraging the highest performing actionable historical strategy for this category.",
+    "risk_assessment": "LOW"
+  },
+  "a77e7416cc32988c656a99e14db08d63685ee8c457dd43df2e5593d38a02bb33": {
+    "root_cause": "The payment failed multiple times with the explicit failure code INSUFFICIENT_FUNDS, indicating that the customer's account lacks the required balance.",
+    "category": "FUNDS_UNAVAILABLE",
+    "confidence": 1.0,
+    "reasoning": "The gateway explicitly returned the 'INSUFFICIENT_FUNDS' failure code after 3 attempts, which directly matches the criteria for the FUNDS_UNAVAILABLE category."
+  },
+  "b2e09166b5843f5186787dced5a8bd9d92925470c1cabfd27478753543c4067e": {
+    "proposed_action": "SUGGEST_ALTERNATE_METHOD",
+    "confidence": 0.85,
+    "reasoning": "The payment has failed three times due to insufficient funds, which strongly indicates that the customer's primary account lacks the necessary balance. Retrying immediately or later using the same method will likely result in another failure. Suggesting an alternate payment method provides the customer with a viable path to complete the transaction using a different source of funds.",
+    "risk_assessment": "LOW"
+  },
+  "d2efce4cecc22adfabd4e4c4678e09feea6cbc1a1ebf5b9d3fbd55bdd851744e": {
+    "proposed_action": "ESCALATE_HUMAN",
+    "confidence": 0.85,
+    "reasoning": "The invoice is significantly overdue at 75 days with multiple failed attempts and contacts, alongside a chronic delinquency pattern and low reliability score. Standard automated actions have proven ineffective, requiring human intervention for dispute resolution and advanced collections.",
+    "risk_assessment": "HIGH"
+  },
+  "38a1d67369be8cc08a0639546f2b8043eeff83f023d695c96d6d7458d091d3b3": {
+    "root_cause": "The invoice is moderately overdue (24 days) with no prior payment history or recorded dispute, suggesting a standard processing delay in the debtor's accounts payable cycle rather than a systemic risk or intentional delinquency.",
+    "category": "ADMINISTRATIVE_DELAY",
+    "confidence": 0.75,
+    "reasoning": "With 24 days overdue, no dispute flag, and limited contact attempts so far, the delay is most characteristic of standard corporate administrative processing lags for medium-tier relationships."
+  },
+  "306c28da0190c7ef12ab8a60a27d3a8f21eaefbf6783c891aace895f59877274": {
+    "proposed_action": "SEND_REMINDER",
+    "confidence": 0.85,
+    "reasoning": "The invoice is moderately overdue by 24 days with no prior contact attempts and falls under the administrative delay category, indicating a standard accounts payable processing lag. Sending a professional reminder with an attached invoice copy is the appropriate first touchpoint to prompt payment without damaging the medium-tier relationship.",
+    "risk_assessment": "LOW"
+  },
+  "fab07fdf7b8fb4a4ce7f543365c58e298fdaf423feb5aec618d173535cef2857": {
+    "proposed_action": "SEND_REMINDER",
+    "confidence": 0.85,
+    "reasoning": "The invoice is only 24 days overdue for a medium-tier B2B relationship with minimal prior contact, and the root cause is diagnosed as an administrative delay. A professional reminder with the attached invoice copy is the appropriate next step before escalating to stronger measures.",
+    "risk_assessment": "LOW"
+  },
+  "c59a049cb25d3e8eb853eb422de521714f838a0383c4e91224b92a1395addb0e": {
+    "root_cause": "The debtor has a low reliability score of 0.24 and has accumulated 25 days overdue on a substantial invoice amount of \u20b9658,308.31 despite multiple attempts and contacts, indicating a pattern of habitual late payments and delinquent behavior.",
+    "category": "CHRONIC_DELINQUENCY",
+    "confidence": 0.85,
+    "reasoning": "With low debtor reliability, no active dispute, and significant delay in payment without communication breakdown or cash flow mismatch details, the history points strongly toward chronic delinquency."
+  },
+  "45160cc917d2d86a7f450a87126ac0bac1a35d8c453c5731f077570da85d94ad": {
+    "proposed_action": "ESCALATE_TONE",
+    "confidence": 0.85,
+    "reasoning": "The debtor has chronic delinquency with a low reliability score of 0.24 and 25 days overdue on a substantial amount of \u20b9658,308.31, indicating that standard reminders are ineffective and a firm formal notice is required.",
+    "risk_assessment": "MEDIUM"
+  },
+  "641deb2516b247fe49681760de70340ab7b7c6a0da20954d41b626e08d02582a": {
+    "root_cause": "Invoice is only 7 days overdue with a single attempt and no prior history, indicating standard administrative processing time on the client's end rather than deep financial distress or dispute.",
+    "category": "ADMINISTRATIVE_DELAY",
+    "confidence": 0.75,
+    "reasoning": "With only 7 days overdue, no dispute flag, and a low contact count, the most common reason for delay is standard accounts payable processing cycles or minor administrative lag in invoice receipt."
+  },
+  "d669bab5f1b3dfe6de9d8b3b2457ea3d15a7fa073dcd62557910522ff5f0d498": {
+    "proposed_action": "SEND_REMINDER",
+    "confidence": 0.85,
+    "reasoning": "The invoice is only 7 days overdue with a single prior attempt, pointing towards a routine administrative delay rather than a dispute or financial hardship. Since the relationship tier is low and only one reminder has been sent, sending another professional reminder with the invoice attached is the most appropriate and measured next step.",
+    "risk_assessment": "LOW"
+  },
+  "073c6f2712dc76f793d13a325503d6a22a3829622f9cc8b734cf937a93ed895e": {
+    "root_cause": "The invoice is only 7 days overdue with a low relationship tier and no prior history, suggesting a standard processing cycle or short-term cash flow alignment issue on the debtor's end.",
+    "category": "CASH_FLOW_MISMATCH",
+    "confidence": 0.65,
+    "reasoning": "With only 7 days overdue, no dispute flag, and minimal attempt/contact count, the delay points toward routine payment processing delays or minor cash flow misalignment rather than systemic delinquency or communication failure."
+  },
+  "c3e359c62ea527b679739c62418fb1631d6c95becc314912baf94659af7f82a1": {
+    "proposed_action": "SEND_REMINDER",
+    "confidence": 0.85,
+    "reasoning": "The invoice is only 7 days overdue with a low relationship tier and a diagnosis of cash flow mismatch. Given the low attempt count (2), sending a professional reminder with an attached invoice is the most appropriate next step before escalating to stronger measures.",
+    "risk_assessment": "LOW"
+  },
+  "f518224be0ec5384726af8d2082d58620aa8a559e8bec6db6fe8c81311693131": {
+    "root_cause": "The invoice is only 7 days overdue with no prior delinquency history, suggesting a standard operational delay or routine cash flow alignment rather than an intentional non-payment or dispute.",
+    "category": "ADMINISTRATIVE_DELAY",
+    "confidence": 0.85,
+    "reasoning": "Given the short duration of the overdue period (7 days), the absence of a dispute flag, no prior history, and a low relationship tier, the most likely cause is an administrative processing delay on the debtor's accounts payable side."
+  },
+  "7fc9d575420665fe9da274dbf0cd83b7cf937a24be057a275e2c1d3c594393f4": {
+    "proposed_action": "SEND_REMINDER",
+    "confidence": 0.85,
+    "reasoning": "The invoice is only 7 days overdue with a diagnosed root cause of administrative delay. Since the relationship tier is low and this is an early delinquency with no prior dispute, sending a professional reminder with the attached invoice is the most appropriate and measured next step.",
+    "risk_assessment": "LOW"
+  },
+  "d80545416d81ef5730e5e4bd5c3b9e17076381fd09f2f3d4525dfd34c882b7db": {
+    "root_cause": "The invoice is moderately overdue by 39 days with only one attempt and no prior contact, but the debtor has a strong transaction history (36 transactions, \u20b92.8M+ volume) and a solid reliability score of 0.64, indicating an administrative oversight or cash flow mismatch rather than an intentional default or dispute.",
+    "category": "ADMINISTRATIVE_DELAY",
+    "confidence": 0.8,
+    "reasoning": "Given the lack of contact attempts and the debtor's established positive history with a medium relationship tier and no flags for dispute or fraud, the delay is most likely due to routine administrative processing lag or a short-term cash flow mismatch that can be resolved with standard outreach."
+  },
+  "bb5ff653ae145881869e7866deadd8da18d590394cbfe0b2e42bfa62fe4ffb1d": {
+    "proposed_action": "SEND_REMINDER",
+    "confidence": 0.85,
+    "reasoning": "The invoice is 39 days overdue with zero prior contacts and falls under administrative delay. Given the medium relationship tier, strong transaction history, and lack of previous reminders, sending a professional payment reminder with an attached invoice copy is the most appropriate first step before escalating.",
+    "risk_assessment": "LOW"
+  },
+  "436829c19f39602c1ccddfc92f7d898967f7dbddcf0e009304aa88901acd5479": {
+    "root_cause": "The debtor has a history of moderate reliability (0.46) with 32 past transactions, indicating that delayed payments are a regular pattern rather than a one-off issue, typical of chronic delinquency.",
+    "category": "CHRONIC_DELINQUENCY",
+    "confidence": 0.85,
+    "reasoning": "The invoice is 39 days overdue with a low debtor reliability score of 0.46 despite a long transaction history. There are no disputes, fraud flags, or active promises-to-pay, pointing consistently toward chronic delinquency patterns from this medium-tier relationship."
+  },
+  "5378243f87684a4bf5e86ea953e705a5cb838f9c7a42a48d565a189cae793749": {
+    "proposed_action": "ESCALATE_TONE",
+    "confidence": 0.85,
+    "reasoning": "The debtor exhibits chronic delinquency with 39 days overdue on a substantial amount, and historical data for this category indicates success with escalating the tone. Since previous contact attempts have not yielded payment or a promise-to-pay, a firm formal notice is appropriate.",
+    "risk_assessment": "MEDIUM"
+  },
+  "4e3dbffd00b33c41ab1f38646b5711557b642dc09b6ff1e21c939713b71d1cbe": {
+    "root_cause": "The debtor has a low reliability score of 0.21 despite a high transaction history, indicating a chronic pattern of late payments.",
+    "category": "CHRONIC_DELINQUENCY",
+    "confidence": 0.85,
+    "reasoning": "The invoice is only 6 days overdue with no dispute or communication issues noted, but the debtor's historical reliability is very low (0.21), pointing to a habitual delay in clearing payments."
+  },
+  "529147a585de602a36f6e72918c58a24facb6a90ee783b6bff7733dfc7bdc43c": {
+    "proposed_action": "ESCALATE_TONE",
+    "confidence": 0.85,
+    "reasoning": "The debtor exhibits a chronic pattern of late payments despite a high transaction history, supported by historical success data showing ESCALATE_TONE is effective for CHRONIC_DELINQUENCY.",
+    "risk_assessment": "MEDIUM"
+  },
+  "5f967c5448a9c0f9dc9c1ea6d1a422e2f20633f6391a7ca5cf5a230d58fac700": {
+    "root_cause": "The invoice is only 5 days overdue with a low debtor reliability score of 0.37 despite high transaction history, indicating short-term liquidity constraints typical of cash flow mismatches.",
+    "category": "CASH_FLOW_MISMATCH",
+    "confidence": 0.85,
+    "reasoning": "The debtor has a substantial transaction history (91 transactions) but a poor reliability score (0.37), suggesting a pattern of slow payment due to cash flow tightness rather than chronic delinquency or active disputes."
+  },
+  "1b4aacaad22e4b8ab840e9c79732d350cf5a6b7b5c71b1f70254ce61751b20c3": {
+    "proposed_action": "SEND_REMINDER",
+    "confidence": 0.85,
+    "reasoning": "The invoice is only 5 days overdue with a diagnosed root cause of cash flow mismatch due to short-term liquidity constraints. Given the medium relationship tier and low attempt count, a professional reminder with an attached invoice is the appropriate initial step before escalating further.",
+    "risk_assessment": "LOW"
+  },
+  "eb1de2600f93fb7a0a9f1d42b225d97a8e85d2e9d54fab7beeea0a7380d1089e": {
+    "root_cause": "The debtor has a history of low reliability and frequent late payments despite a high volume of transactions, indicating consistent delayed payment habits.",
+    "category": "CHRONIC_DELINQUENCY",
+    "confidence": 0.85,
+    "reasoning": "The debtor reliability score is very low (0.37) across a large number of transactions (91), and the invoice is only 5 days overdue with multiple attempts made without a dispute or promise-to-pay, pointing strongly toward chronic delinquency."
+  },
+  "182d7b85aa3aaf29940b57efd233c6f1b42eaf11b201418a8c51955c5e450602": {
+    "proposed_action": "ESCALATE_TONE",
+    "confidence": 0.85,
+    "reasoning": "The debtor exhibits chronic delinquency with a history of frequent late payments and low reliability despite a medium relationship tier. With historical success at 100% for ESCALATE_TONE in this category and 5 days overdue following prior unsuccessful contacts, a firmer formal notice is warranted.",
+    "risk_assessment": "MEDIUM"
+  },
+  "1c5e87dbba3562c863823071e4d41f7eb2da61fcf739da2e2bc547d653ff03fd": {
+    "root_cause": "The debtor has a history of low reliability (0.37) despite a high volume of transactions, and the invoice is 5 days overdue following 3 payment attempts and 4 contacts without a resolution or promise-to-pay.",
+    "category": "CHRONIC_DELINQUENCY",
+    "confidence": 0.85,
+    "reasoning": "The combination of low debtor reliability score, multiple unsuccessful contact and attempt counts within a short overdue window, and absence of external factors like disputes or system errors points toward habitual late payment behavior."
+  },
+  "f155d92bd9dd390fa37652ca4754893ea65b2093745a363b5a94a6036a3693fd": {
+    "proposed_action": "ESCALATE_TONE",
+    "confidence": 0.85,
+    "reasoning": "The debtor falls into the chronic delinquency category with low historical reliability and has failed to respond after 3 payment attempts and 4 contacts. Given the MEDIUM relationship tier and lack of a promise-to-pay, escalating the tone with a firm formal notice of the overdue obligation is supported by historical performance data showing a 71.3 percent success rate for this action.",
+    "risk_assessment": "MEDIUM"
+  },
+  "cf03e75026182a2aa05286481ae9ac841f932463b12f65bf4b51b22472158998": {
+    "root_cause": "The invoice is only 15 days overdue with a single attempt and contact, coming from a highly reliable debtor with extensive transaction history and no dispute flag, suggesting a standard administrative delay or temporary oversight.",
+    "category": "ADMINISTRATIVE_DELAY",
+    "confidence": 0.85,
+    "reasoning": "Given the debtor's high reliability score (0.97) and large historical volume, chronic delinquency or bad faith is unlikely. The short overdue duration (15 days) and low attempt count point towards a routine processing or administrative lag on the client's end."
+  },
+  "45fb331970b038e1eb9fed9b9d92c3cf4fce8accc0967d15c0d5e91ad567af8b": {
+    "proposed_action": "SEND_REMINDER",
+    "confidence": 0.9,
+    "reasoning": "The invoice is only 15 days overdue for a medium-tier B2B debtor with no prior disputes, indicating a likely administrative oversight. Sending a professional reminder with an attached invoice is the standard and most appropriate next step.",
+    "risk_assessment": "LOW"
+  },
+  "1beab7b5d56ad73a6a7209cabf03b29f09a05892d510628e8fc1f93a46dd02cb": {
+    "root_cause": "The invoice is only 15 days overdue with a debtor who has an exceptionally high reliability score (0.97) and significant transaction history, pointing to a minor administrative delay or standard processing lag rather than chronic delinquency or financial distress.",
+    "category": "ADMINISTRATIVE_DELAY",
+    "confidence": 0.85,
+    "reasoning": "Given the debtor's strong reliability and high transaction volume (\u20b94.7M+), a short overdue period of 15 days with no dispute or communication breakdown strongly suggests routine accounts payable processing delays rather than a deeper systemic or credit issue."
+  },
+  "383f838fdaaf435e198f6fef7908fd7c157d7ed87d66340dfe96a6bbd42e9b6a": {
+    "proposed_action": "SEND_REMINDER",
+    "confidence": 0.9,
+    "reasoning": "The debtor has an exceptionally high reliability score and the invoice is only 15 days overdue due to a likely administrative delay. A professional reminder with an attached invoice copy is the most appropriate and relationship-preserving step at this stage.",
+    "risk_assessment": "LOW"
+  },
+  "afbdb339472fde9b71de330aa7409a0092becccb319c6f8641cfadf7e287d8f0": {
+    "root_cause": "The debtor has a very strong reliability history and significant transaction volume, yet the invoice is 15 days overdue following a few contact attempts without a dispute or fraud flag, indicating standard administrative processing lag or temporary working capital timing rather than unwillingness to pay.",
+    "category": "ADMINISTRATIVE_DELAY",
+    "confidence": 0.85,
+    "reasoning": "Given the high historical reliability of 0.97 across numerous transactions and the absence of any dispute or chronic delinquency indicators, a short delay of 15 days is most typical of standard invoice routing, internal approvals, or payment run scheduling on the client's end."
+  },
+  "f36f12183a45ab217e43c1ba51e21fbe643dac280ab44e09afbc79b45f456990": {
+    "proposed_action": "SEND_REMINDER",
+    "confidence": 0.85,
+    "reasoning": "The invoice is only 15 days overdue with a medium relationship tier and strong reliability history, indicating an administrative processing delay rather than intentional non-payment. Sending a professional reminder with an attached invoice copy aligns with the diagnosed root cause and maintains a constructive B2B relationship.",
+    "risk_assessment": "LOW"
+  },
+  "a3e9ba059957d236a555e2ec31c8c5ff7c6a92c077621acfa09197646c39170c": {
+    "root_cause": "The high-volume debtor with a moderate reliability score has allowed the invoice to become 90 days overdue despite multiple collection attempts, indicating persistent non-payment behavior.",
+    "category": "CHRONIC_DELINQUENCY",
+    "confidence": 0.85,
+    "reasoning": "The invoice is significantly overdue (90 days) with two attempts made and only one contact, despite a high relationship tier. The debtor has a history of mixed reliability (0.47) across a substantial number of transactions, pointing to a pattern of delayed payments rather than a one-off administrative delay or dispute."
+  },
+  "ad3e20ed617acf5cc04a30bc10068c97f6ae541bface874a93ff5b0352401676": {
+    "proposed_action": "ESCALATE_HUMAN",
+    "confidence": 0.89,
+    "reasoning": "The invoice is significantly overdue at 90 days with multiple failed collection attempts for a high-value amount (\u20b91,923,688.46) from a high relationship tier client experiencing chronic delinquency. Automated reminders and standard notices are no longer effective, requiring human intervention and a specialized account manager or dispute resolution to protect the high-value relationship while securing funds.",
+    "risk_assessment": "MEDIUM"
+  },
+  "7b0d5dfe020715ebdecd80d406d23bed0eed8e8786a8f629d9bc71451da2ba49": {
+    "root_cause": "The debtor has a low reliability score (0.29) and a history of delayed payments despite a high transaction volume, combined with being 80 days overdue with 3 failed collection attempts, indicating a pattern of chronic late payment.",
+    "category": "CHRONIC_DELINQUENCY",
+    "confidence": 0.85,
+    "reasoning": "The debtor's low reliability metric across a significant number of past transactions strongly points to chronic delinquency rather than a one-off cash flow issue or administrative delay, especially given the extended overdue period of 80 days."
+  },
+  "34baa89089a9639a3fec799d6e6fe20ac467748aa9fd26fe6a680ec4ebbfc54c": {
+    "proposed_action": "ESCALATE_TONE",
+    "confidence": 0.85,
+    "reasoning": "The debtor is 80 days overdue with 3 failed collection attempts, falling under chronic delinquency with a low relationship tier and poor reliability score. Since gentle reminders have failed and historical performance supports escalating tone, a firm formal notice is required to compel payment.",
+    "risk_assessment": "MEDIUM"
+  },
+  "d7a91097ff6cee1c5d9e919d6cfa2c3c98fed03280f926502e180687571d4e1e": {
+    "root_cause": "The debtor has a low reliability score of 0.29 across 28 transactions, and the invoice is 80 days overdue with 4 failed attempts and 3 contacts without resolution, indicating a pattern of habitual late payments and delinquent behavior.",
+    "category": "CHRONIC_DELINQUENCY",
+    "confidence": 0.95,
+    "reasoning": "The combination of a very low reliability score, high days overdue (80 days), multiple failed attempts, and no dispute or fraud flags strongly points toward chronic delinquency rather than a temporary cash flow mismatch or administrative delay."
+  },
+  "59e1ce549ca2d754ecb9adf831b518bf69dd4f885dd790706da70db82f1e45ff": {
+    "proposed_action": "ESCALATE_HUMAN",
+    "confidence": 0.9,
+    "reasoning": "The debtor is severely delinquent at 80 days overdue with a chronic pattern of delinquency, a very low reliability score of 0.29, and multiple failed automated attempts without resolution. Automated communication methods have proven ineffective, necessitating human intervention for collections or formal dispute resolution.",
+    "risk_assessment": "MEDIUM"
+  },
+  "5e41900a6c27e7e0c8da7e669e213075f2eb2680d8223ab14344e2fe53ca83e4": {
+    "root_cause": "The debtor has a very low reliability score of 0.16 over a significant transaction history, indicating a long-standing pattern of delayed payments.",
+    "category": "CHRONIC_DELINQUENCY",
+    "confidence": 0.95,
+    "reasoning": "The debtor's low reliability metric across numerous past transactions strongly points toward chronic delayed payment behavior rather than a one-off administrative delay or temporary cash flow issue."
+  },
+  "5d9ce7f1204fa021b98b9bd10cfeca1c44c6a0ec5c6920acf9ae0166812e5acf": {
+    "proposed_action": "ESCALATE_TONE",
+    "confidence": 0.85,
+    "reasoning": "The debtor has a chronic delinquency pattern with a very low reliability score of 0.16 and is 30 days overdue with 2 previous failed attempts. Given the Low relationship tier, a firm escalation of tone is warranted to compel payment.",
+    "risk_assessment": "MEDIUM"
+  },
+  "abc73efea6ee11a0ab7d632d645685505206013f7f5299592892dfd26bf4c6bc": {
+    "root_cause": "The debtor has a history of extremely low reliability (0.16) despite a high volume of transactions, indicating a persistent pattern of late payments and delayed obligations.",
+    "category": "CHRONIC_DELINQUENCY",
+    "confidence": 0.95,
+    "reasoning": "The debtor's reliability score is critically low at 0.16 across 30 transactions, suggesting that late payment is an ongoing behavioral pattern rather than a one-off issue. There are no disputes, fraud flags, or communication breakdowns noted, and 30 days overdue with 3 contact attempts points directly to habitual delinquency."
+  },
+  "2303b8edb4b7aa250188ba160aafb3ec3d11b88dd9993eb70773695897367def": {
+    "proposed_action": "ESCALATE_TONE",
+    "confidence": 0.85,
+    "reasoning": "The debtor has 30 days overdue with 3 failed attempts, a low relationship tier, and a diagnosed pattern of chronic delinquency. Given the historical performance data and lack of good-faith promises, a firm and formal notice is necessary.",
+    "risk_assessment": "MEDIUM"
+  },
+  "3f9b628571481199052c617fddd0a36569fe4d64bd03105a9613730a1e8ab2b0": {
+    "root_cause": "The debtor has a history of low reliability (0.16) despite a high number of transactions, indicating a persistent pattern of late payments and financial delinquency.",
+    "category": "CHRONIC_DELINQUENCY",
+    "confidence": 0.85,
+    "reasoning": "The debtor's low reliability score combined with 30 days overdue and multiple failed contact attempts strongly points towards chronic delinquency rather than a one-off administrative delay or communication breakdown."
+  },
+  "4f2d5900cf414c0c86fecf54183af3d81e767f44428067b377aeccb1ba336705": {
+    "proposed_action": "ESCALATE_TONE",
+    "confidence": 0.85,
+    "reasoning": "The debtor has chronic delinquency with 30 days overdue and low reliability despite 4 attempts. Prior attempts with standard reminders have failed, and given the low relationship tier and persistent pattern of late payments, escalating to a firm formal notice is appropriate.",
+    "risk_assessment": "MEDIUM"
+  },
+  "fcb0983c94c3d08b17e6c15246a1380f667886d204069cd93d1d1c9e9e2b3667": {
+    "proposed_action": "ESCALATE_HUMAN",
+    "confidence": 0.95,
+    "reasoning": "The maximum automated attempt count of 4 has been reached for this B2B receivable case, and further automated escalation is blocked by compliance. Due to chronic delinquency and low reliability, the case must now be handed over to human intervention for manual review and special handling.",
+    "risk_assessment": "MEDIUM"
+  },
+  "65160355e7066a770254c57e449792439fc3e63e55ea10b98fd55610739f3317": {
+    "root_cause": "The debtor has a low reliability score of 0.38 despite a high transaction volume, and the invoice is only 3 days overdue with no contact attempts made yet. This suggests a pattern of chronic payment delinquency or standard administrative processing lag for this client.",
+    "category": "CHRONIC_DELINQUENCY",
+    "confidence": 0.75,
+    "reasoning": "The low debtor reliability score combined with the immediate short-term delinquency indicates habitual payment friction rather than a dispute or system error."
+  },
+  "076ea19e17917e304332a8e89425969781033ae903e756eedaafa983b4ba8152": {
+    "proposed_action": "SEND_REMINDER",
+    "confidence": 0.85,
+    "reasoning": "The invoice is only 3 days overdue with zero prior contact attempts made. Given the medium relationship tier and chronic delinquency diagnosis, initiating a professional first reminder is the appropriate standard step before escalating to stronger measures.",
+    "risk_assessment": "LOW"
+  },
+  "c6ceda8a1bbcee97306609fdb173f2791f29eddfb1d3dfe3c536bfc65a2fe0c5": {
+    "root_cause": "The debtor made a promise-to-pay for 2026-08-19, which is currently broken after only 1 day overdue, while the debtor has a medium reliability score and moderate transaction history.",
+    "category": "CASH_FLOW_MISMATCH",
+    "confidence": 0.85,
+    "reasoning": "The invoice is only 1 day overdue and there is no dispute or fraud flag, but a specific promise-to-pay was broken. Given the debtor's moderate history and reliability, this points to a short-term cash flow mismatch rather than chronic delinquency or communication breakdown."
+  },
+  "51e898b39d124d8e279dbc9cb76cb1fee4192cefb1cc12c0105f08c0270f95e7": {
+    "proposed_action": "OFFER_PAYMENT_PLAN",
+    "confidence": 0.85,
+    "reasoning": "The debtor recently broke a promise-to-pay date by only 1 day, and the diagnosed root cause is a cash flow mismatch rather than an outright refusal to pay. Given the medium relationship tier and moderate transaction history, offering a structured milestone installment plan is the most constructive way to bridge the temporary liquidity gap while securing the receivable.",
+    "risk_assessment": "MEDIUM"
+  },
+  "4a47e87022b023e63f64fcfc6295aa8f2415cbf629bf0cce1957b405007d724a": {
+    "root_cause": "The debtor has a history of unreliability (reliability score of 0.18) and has broken a promise to pay for the invoice, indicating a pattern of delayed or missed payments despite moderate transaction history.",
+    "category": "CHRONIC_DELINQUENCY",
+    "confidence": 0.9,
+    "reasoning": "The debtor's extremely low reliability score combined with a broken promise-to-pay date strongly points towards chronic delinquency rather than a simple administrative delay or a dispute."
+  },
+  "f35ade92108595a352fbf5be4c1e875ebe43f38e7404b514c903b863ca482a43": {
+    "proposed_action": "ESCALATE_TONE",
+    "confidence": 0.85,
+    "reasoning": "The debtor has a chronic delinquency profile with a very low reliability score and has already broken a promise-to-pay date. Simply sending a standard reminder is unlikely to be effective given their pattern of missed commitments. Escalating the tone to a firm formal notice of overdue obligation is appropriate for addressing this broken commitment while keeping the relationship salvageable.",
+    "risk_assessment": "MEDIUM"
+  },
+  "ab3ed9b78d0d029e93236a2954ce7e8c0d8756ea3a9c59b97bd85d7f2c2acbc8": {
+    "root_cause": "The debtor made a promise-to-pay for 2026-08-20 which was subsequently broken, despite a moderate transaction history and medium relationship tier.",
+    "category": "CASH_FLOW_MISMATCH",
+    "confidence": 0.85,
+    "reasoning": "The invoice is only 7 days overdue, with a broken promise-to-pay date and no dispute or fraud flags. Given the debtor's decent transaction history (reliability 0.46) and the short duration of delay, this points primarily to a temporary cash flow mismatch rather than chronic delinquency or administrative delay."
+  },
+  "bcf51cffb00f7569e9be9c331254797b0c2805f99554d69c0f2b5d0b739efdf8": {
+    "proposed_action": "OFFER_PAYMENT_PLAN",
+    "confidence": 0.85,
+    "reasoning": "The debtor has a broken promise-to-pay due to a cash flow mismatch, but the relationship tier is medium and historical performance data shows a 100.0% success rate for structured payment plans in this category.",
+    "risk_assessment": "MEDIUM"
+  },
+  "a3d53eb158b9c59f628c16e5c68b371b8405ca2454f2f015ea58ee95147eb9ee": {
+    "proposed_action": "ESCALATE_HUMAN",
+    "confidence": 0.95,
+    "reasoning": "The maximum automated attempt count of 4 has been reached for this B2B receivable case, and the previous promise-to-pay was broken. Since automated actions are now blocked, the case must be escalated to a human agent for manual intervention and relationship management.",
+    "risk_assessment": "MEDIUM"
+  },
+  "2f029c76945945ee795271e1c6e628038a1641fe4e03a744577d6dcbbacb6dff": {
+    "root_cause": "The invoice is moderately overdue by 15 days with a high relationship tier and good debtor reliability, despite a high invoice amount relative to historical volume, suggesting a temporary liquidity alignment issue.",
+    "category": "CASH_FLOW_MISMATCH",
+    "confidence": 0.85,
+    "reasoning": "The debtor has a strong transaction history (84 transactions) and a high reliability score (0.72), with no disputes or fraud flags. However, the current invoice amount (\u20b91,954,935.19) significantly exceeds the historical total volume (\u20b9447,560.84), indicating a potential working capital or cash flow mismatch for this specific large transaction."
+  },
+  "f04a81cd59c7a5c8bca344d1d65cef38c180c9500a2ae94c80702e2fb19b77d4": {
+    "proposed_action": "OFFER_PAYMENT_PLAN",
+    "confidence": 0.85,
+    "reasoning": "The debtor has a high relationship tier and good reliability, but faces a cash flow mismatch due to a high invoice amount relative to historical volume. Historical data for this category shows a 100 percent success rate for offering payment plans, making this a constructive and relationship-preserving approach.",
+    "risk_assessment": "LOW"
+  },
+  "ae10dc96b32d7488fd07c34a53ac2bf5de96f71add4af6e6107694af6095723b": {
+    "root_cause": "The invoice is only 6 days overdue for a high-reliability debtor with a strong payment history, indicating a temporary operational or administrative delay rather than a chronic default.",
+    "category": "ADMINISTRATIVE_DELAY",
+    "confidence": 0.85,
+    "reasoning": "The debtor has completed 96 transactions with a reliability score of 1.00 and falls under the HIGH relationship tier. With no dispute flag, fraud flag, or prior chronic issues, a 6-day delay strongly points toward routine internal processing or administrative lag on the client's end."
+  },
+  "1d07eadf7b4855c960ac6219c6ceee84950e6174ed59ab3f944bface78a86b65": {
+    "proposed_action": "WAIT",
+    "confidence": 0.9,
+    "reasoning": "Given that the debtor is in the High relationship tier, the invoice is only 6 days overdue, and the root cause is diagnosed as an administrative delay, it is prudent to stand down with a cooling-off window rather than being overly aggressive, preserving the valuable business relationship.",
+    "risk_assessment": "LOW"
+  },
+  "c341d0f480dad8a6b027f77af2c60abccaa2e26104889d5d82c4bb6e7baf1a43": {
+    "root_cause": "The invoice is only 11 days overdue with no prior history and no dispute flagged, suggesting a minor internal processing or cash flow timing issue on the debtor's end rather than a chronic or systemic problem.",
+    "category": "ADMINISTRATIVE_DELAY",
+    "confidence": 0.75,
+    "reasoning": "Given the low number of days overdue (11), the absence of a dispute flag, and no history of chronic delinquency, the delay is most likely due to routine administrative processing or temporary cash flow timing typical of low-tier relationship accounts."
+  },
+  "274826e5d85155192636bf3d4f6a266616c648abe2e401700e367342f85c3cd0": {
+    "proposed_action": "SEND_REMINDER",
+    "confidence": 0.85,
+    "reasoning": "The invoice is only 11 days overdue with a low relationship tier and an administrative delay root cause. Sending a polite professional reminder with the invoice copy is the appropriate first-line action before escalating tone or involving human agents.",
+    "risk_assessment": "LOW"
+  },
+  "741ddac1e5390eb45f78cedd5ca7718352ec9b14b5f3086391c8f0063460d10f": {
+    "root_cause": "The debtor has a low reliability score of 0.33 despite a significant transaction history, indicating a persistent pattern of late payments and chronic delinquency.",
+    "category": "CHRONIC_DELINQUENCY",
+    "confidence": 0.85,
+    "reasoning": "The debtor's history shows a low reliability score (0.33) across 33 transactions, which strongly points towards a behavioral pattern of slow or delinquent payments rather than a one-off administrative delay or a dispute."
+  },
+  "312a89557f08ce8e9e8f78c3a2d1450d53150563ed3f512a6b5a00b5ae4d6f3e": {
+    "proposed_action": "SEND_REMINDER",
+    "confidence": 0.9,
+    "reasoning": "This is only the first attempt and first contact for this invoice, and historical data for CHRONIC_DELINQUENCY shows a 100% success rate with SEND_REMINDER. Given the medium relationship tier and 21 days overdue, a professional reminder with an attached invoice is the most appropriate next step before escalating to firmer measures.",
+    "risk_assessment": "LOW"
+  },
+  "62dfa535d62a1a47de4282ca2a6a81c7771c92f7baa85b9858a067b0855f58e8": {
+    "root_cause": "The debtor has a low reliability score of 0.33 over 33 transactions, indicating a recurring pattern of delayed payments despite a moderate overall volume and no active dispute.",
+    "category": "CHRONIC_DELINQUENCY",
+    "confidence": 0.85,
+    "reasoning": "The debtor's historical reliability is poor (0.33), and the invoice is 21 days overdue with multiple attempts made and no promise-to-pay or dispute logged. This fits the profile of chronic delinquency where the buyer consistently pays late."
+  },
+  "699caaecc95f6da7a2f24c5297af6bb4f7a2c200e4a3a9ae932f387f15425db7": {
+    "proposed_action": "ESCALATE_TONE",
+    "confidence": 0.82,
+    "reasoning": "The debtor exhibits chronic delinquency with a low reliability score of 0.33 over multiple transactions and has missed the payment window by 21 days with no promise-to-pay. Since gentle reminders have failed across 2 prior attempts and contacts, a firm formal notice of overdue obligation is necessary.",
+    "risk_assessment": "MEDIUM"
+  },
+  "17d09d55b6fd51bd05a9ab661016cae5eeee367b1cc511deb2d5c139c3fc7573": {
+    "root_cause": "The debtor has a low reliability score (0.33) over a significant number of past transactions (33), indicating a recurring pattern of delayed payments.",
+    "category": "CHRONIC_DELINQUENCY",
+    "confidence": 0.85,
+    "reasoning": "With 21 days overdue, 3 attempts made, no disputes, and a historically low reliability score despite a substantial volume of transactions, the delay is most likely driven by chronic late-payment behavior rather than a sudden cash flow issue or administrative error."
+  },
+  "22f98d57faeb3f5066bbe3153857c9915d2c3fa487e965ce016f577f88b5e888": {
+    "proposed_action": "ESCALATE_TONE",
+    "confidence": 0.85,
+    "reasoning": "The debtor has a chronic delinquency pattern with a low reliability score of 0.33 over 33 past transactions. With 3 failed attempts and 21 days overdue under a medium relationship tier, standard reminders are ineffective, and escalating tone is supported by historical performance.",
+    "risk_assessment": "MEDIUM"
+  },
+  "caff28a5e24bce617e07d3335e2aa80f34ce96c168031e74cd2ff3abb4935f2c": {
+    "root_cause": "The debtor has a low reliability score of 0.28 over 50 transactions and is currently 29 days overdue despite 4 contact attempts, indicating a persistent pattern of late payments.",
+    "category": "CHRONIC_DELINQUENCY",
+    "confidence": 0.85,
+    "reasoning": "The combination of a very low reliability score (0.28), a significant number of past transactions, and the failure to pay after multiple contact attempts strongly points to chronic delinquency rather than a one-off administrative delay or communication breakdown, especially with no dispute or promise-to-pay recorded."
+  },
+  "ba09f77ed6796938b03c2870cc8040436f0054eeff4e975241b07411715c60eb": {
+    "proposed_action": "ESCALATE_TONE",
+    "confidence": 0.82,
+    "reasoning": "The debtor has a chronic delinquency pattern with a low reliability score, 29 days overdue, and 4 unsuccessful contact attempts. Given the low relationship tier and missed engagement, escalating the tone to a firm formal notice is necessary to signal urgency and compel payment.",
+    "risk_assessment": "MEDIUM"
+  },
+  "e5c94a9d2e4a5637d283d3a57470c2c350dd41aea55c7f1e2de820a7bf09bd2f": {
+    "proposed_action": "ESCALATE_HUMAN",
+    "confidence": 0.95,
+    "reasoning": "The maximum automated attempt count of 4 has been reached and the debtor exhibits chronic delinquency with a low reliability score and 29 days overdue, requiring human intervention for further collections efforts.",
+    "risk_assessment": "MEDIUM"
+  },
+  "ca4fc661208c11ab5f27bf4d54deb9d70a47f0aa74ee676a7c203b0e9bbdd559": {
+    "root_cause": "The debtor has an exceptionally high reliability score of 0.98 across 78 previous transactions, indicating a strong payment history, yet the invoice is 20 days overdue with only 1 attempt and no contact made yet, pointing to a standard administrative processing delay or oversight by the high-tier client rather than a chronic issue or lack of funds.",
+    "category": "ADMINISTRATIVE_DELAY",
+    "confidence": 0.85,
+    "reasoning": "Given the debtor's near-perfect reliability score, high relationship tier, and lack of any dispute or fraud flags, the 20-day delay following only a single contact attempt is most consistent with a routine administrative lag in the client's accounts payable department."
+  },
+  "8c3764adc8da0306bd26b4f010ce82ca5e0543f84ab32db36ce43dff0d4cf943": {
+    "proposed_action": "SEND_REMINDER",
+    "confidence": 0.9,
+    "reasoning": "The debtor is a high-tier client with an exceptional reliability score and a strong payment history. Since this is only the first attempt and the root cause is diagnosed as a standard administrative delay, sending a polite professional reminder with the attached invoice copy is the most appropriate and relationship-preserving approach.",
+    "risk_assessment": "LOW"
+  },
+  "dd308159cb9165ae8a54beaef73d7eccc58da2f658c7c93385a01af7bf4bb608": {
+    "root_cause": "The debtor has an exceptionally high reliability score (0.98) and a strong transaction history (78 transactions, over 3.7 million INR in volume) within a high relationship tier. With only 20 days overdue, 2 attempts, and 1 contact, this minor delay on a significant invoice amount (over 1 million INR) points to a standard temporary internal cash flow mismatch rather than chronic delinquency or a dispute.",
+    "category": "CASH_FLOW_MISMATCH",
+    "confidence": 0.85,
+    "reasoning": "Given the debtor's near-perfect historical reliability and lack of disputes, the delay is most likely attributed to a temporary alignment issue in their accounts payable cycle given the large invoice amount."
+  },
+  "b636b5fdd21b94adc0ef63eab8a067ec98b7d473b131f4f8399a0072dafc1bb7": {
+    "proposed_action": "OFFER_PAYMENT_PLAN",
+    "confidence": 0.85,
+    "reasoning": "The debtor is a high-tier client with an exceptional reliability score and strong transaction history, indicating a temporary cash flow mismatch rather than unwillingness to pay. Offering a structured milestone installment plan leverages historical success for this category while preserving the valuable business relationship.",
+    "risk_assessment": "LOW"
+  },
+  "dbea541dc15080b0512077a9babcee8c4022ff5ccec63adaeb58a211d2a5104d": {
+    "root_cause": "The high-tier debtor with an exceptional reliability score (0.98) and a strong transaction history (78 transactions) has not paid the \u20b91,093,708.61 invoice after 20 days and 3 attempts, despite no dispute or fraud flags, suggesting a temporary internal administrative delay or standard payment processing cycle mismatch rather than chronic delinquency.",
+    "category": "ADMINISTRATIVE_DELAY",
+    "confidence": 0.85,
+    "reasoning": "Given the debtor's near-perfect reliability score of 0.98 and extensive trading history, failure to pay within 20 days without any active disputes strongly points towards internal invoice routing or processing delays rather than unwillingness or inability to pay."
+  },
+  "57ec6f7556c3b2eb3a7b2eae1488f9bb18b7099fba421043aafbfaf65762d7ff": {
+    "proposed_action": "SEND_REMINDER",
+    "confidence": 0.88,
+    "reasoning": "The debtor is a high-tier client with an exceptional reliability score and strong transaction history, and the root cause is diagnosed as an administrative delay rather than unwillingness to pay. Sending a professional reminder with an attached invoice copy is the appropriate, low-risk measure to prompt internal processing without damaging the valuable business relationship.",
+    "risk_assessment": "LOW"
+  },
+  "20fbaca2a308353088e17ae9c98f561bd4aaa0453e7b3dd770e75c9ad3bdb935": {
+    "root_cause": "The invoice is moderately overdue by 28 days with only one contact attempt made. Given the debtor's exceptionally high historical reliability, high volume of transactions, and lack of any dispute or fraud flags, the delay is most likely attributable to standard administrative processing timelines or a temporary cash flow mismatch rather than an intentional delinquency.",
+    "category": "ADMINISTRATIVE_DELAY",
+    "confidence": 0.85,
+    "reasoning": "The debtor has a strong reliability score of 0.91 and 83 past transactions, indicating a trusted business relationship. With only one payment attempt and two contacts made so far, combined with a lack of disputes, the 28-day delay strongly points towards internal administrative processing lags on the buyer's end."
+  },
+  "abcc8cb1cc31756b1b48b086beb8b4ea4a611035be4043e39f89a57b1b236be3": {
+    "proposed_action": "SEND_REMINDER",
+    "confidence": 0.85,
+    "reasoning": "The invoice is only 28 days overdue for a high-tier B2B client with a strong history, and only one contact attempt has been made so far. The root cause points to an administrative delay rather than intentional non-payment. A gentle professional reminder with an attached invoice copy is the most appropriate next step to preserve the relationship while prompting payment.",
+    "risk_assessment": "LOW"
+  },
+  "eee3b4a1cef8afbaf09f8b387f8130afec82dbb94791a8c9a1d88ab1e639fdbf": {
+    "root_cause": "The high-tier debtor with strong reliability and a history of 83 transactions is currently 28 days overdue with no dispute or fraud flags, suggesting a temporary internal administrative delay or standard processing lag rather than chronic delinquency.",
+    "category": "ADMINISTRATIVE_DELAY",
+    "confidence": 0.85,
+    "reasoning": "Given the debtor's high reliability score (0.91) and the absence of disputes, the delay of 28 days with only 2 payment attempts and 3 contacts points toward a routine administrative slowdown in invoice processing on the buyer's end."
+  },
+  "997184043d117ddf5f06ea02ebd6cfe6e50b0686d57b6724357bf68f2594cfa7": {
+    "proposed_action": "SEND_REMINDER",
+    "confidence": 0.85,
+    "reasoning": "The debtor is a high-tier account with strong historical reliability and 83 past transactions, currently 28 days overdue due to a suspected administrative delay without any dispute flags. Given the high relationship tier, a professional and gentle reminder with an attached invoice copy is the most appropriate approach to prompt payment processing without straining the business relationship.",
+    "risk_assessment": "LOW"
+  },
+  "0dc92f90f88d58b62104b04e8fd88a5990b0383785a3b544ab63bc265c8b3754": {
+    "root_cause": "The debtor has a very strong reliability history (0.91) across 83 transactions, with high relationship tier and no disputes or fraud flags. However, the invoice amount of \u20b9388,371.35 significantly exceeds the historical transaction volume (total volume \u20b9245,141.74 across all past transactions), indicating that this single large invoice temporarily strains their typical payment capacity.",
+    "category": "CASH_FLOW_MISMATCH",
+    "confidence": 0.85,
+    "reasoning": "The invoice value is unusually large compared to the debtor's historical transaction volume, while their reliability score and payment history remain strong. This suggests the delay is due to a temporary liquidity mismatch rather than delinquency or disputes."
+  },
+  "6d208157c1031f52c9e8d2ccd2f4f4225b178fcaaea6ebcaf1445da4bb6ed7e2": {
+    "proposed_action": "OFFER_PAYMENT_PLAN",
+    "confidence": 0.88,
+    "reasoning": "The debtor has an exceptionally strong reliability history but is facing a cash flow mismatch because this single invoice exceeds their total historical transaction volume. Given their HIGH relationship tier and willingness to engage, offering a structured milestone installment plan directly addresses their capacity constraint while leveraging the most historically successful strategy (63.4%) for this diagnosis category.",
+    "risk_assessment": "LOW"
+  },
+  "10e774520fc26b25856fa43a6c73fee0d52caa76a37c4cb5d32739f0e1b07034": {
+    "root_cause": "The invoice is only 19 days overdue with a single attempt and contact made, combined with an otherwise highly reliable debtor history and significant transaction volume. This points to a standard administrative or routine processing delay rather than intentional delinquency or financial distress.",
+    "category": "ADMINISTRATIVE_DELAY",
+    "confidence": 0.85,
+    "reasoning": "The debtor has a strong reliability score of 0.92 across 22 past transactions, indicating a history of good payment behavior. The low days overdue (19), lack of dispute flags, and minimal attempt count suggest the delay is likely due to routine accounts payable processing cycles or a minor administrative oversight rather than a deeper financial or operational issue."
+  },
+  "11a10dfd05bca734525a2e31577e22b838960ee09d246e6b3d023b59d12c03f4": {
+    "proposed_action": "SEND_REMINDER",
+    "confidence": 0.85,
+    "reasoning": "The invoice is only 19 days overdue with a single previous contact, and the diagnosed root cause is an administrative delay from a reliable debtor. Sending a professional reminder with an attached invoice copy is the appropriate next step to prompt payment without damaging the medium-tier business relationship.",
+    "risk_assessment": "LOW"
+  },
+  "b9bd3c0468f0fffe0ff9cadc9d1d14c7acb017d90aa11a49e9911d1fe389beec": {
+    "root_cause": "The invoice is only 28 days overdue with a single attempt and contact, and the debtor has an exceptionally high reliability score (0.97) and extensive transaction history (72 transactions). This indicates a minor administrative delay in processing rather than chronic delinquency or financial distress.",
+    "category": "ADMINISTRATIVE_DELAY",
+    "confidence": 0.85,
+    "reasoning": "Given the high reliability tier and historical volume, occasional minor delays in payment cycles are typical and usually stem from internal processing lags on the client's side rather than deeper credit or communication issues."
+  },
+  "f5327537e1fd9e9311de84dc63cab066bb6a250a76d9d065c602562a0de4a43f": {
+    "proposed_action": "SEND_REMINDER",
+    "confidence": 0.9,
+    "reasoning": "The debtor has a high reliability score and extensive transaction history, and the invoice is only 28 days overdue. This strongly points to an administrative delay. A professional reminder with an attached invoice copy is the most appropriate, relationship-preserving first step to prompt payment without escalating prematurely.",
+    "risk_assessment": "LOW"
+  },
+  "ad94d4b7be665a74545477d6e7d8a2807b6a2768272df502cb68f0dac11c903a": {
+    "root_cause": "The debtor has a high reliability score (0.97) and significant transaction history with a low number of attempts and contacts for a 28-day overdue invoice, suggesting the delay is likely an internal administrative processing bottleneck rather than chronic delinquency or financial distress.",
+    "category": "ADMINISTRATIVE_DELAY",
+    "confidence": 0.85,
+    "reasoning": "Given the debtor's exceptional reliability, high transaction volume, and absence of disputes or fraud flags, a 28-day delay with only 2 contact attempts strongly points to a routine administrative or invoice processing delay on the client's end."
+  },
+  "01c4dacc1afd772d26c7099daffb273caa4d05d03bb4f99be001c81a23a6e3c7": {
+    "proposed_action": "SEND_REMINDER",
+    "confidence": 0.85,
+    "reasoning": "The debtor has a high reliability score and this is a B2B account with only 2 previous attempts, indicating an administrative bottleneck rather than financial distress. Given the high relationship tier, a polite and professional reminder with an attached invoice copy is the most appropriate next step.",
+    "risk_assessment": "LOW"
+  },
+  "58966e0aa13fbbf9b83e932d177132c441d0dde97733485c95d195639f9e4d34": {
+    "root_cause": "The debtor has a very strong historical reliability of 0.97 over 72 transactions with high volume, no dispute or fraud flags, and only 28 days overdue after 3 attempts, suggesting a standard administrative delay or short-term cash flow processing lag rather than chronic delinquency or unwillingness to pay.",
+    "category": "ADMINISTRATIVE_DELAY",
+    "confidence": 0.85,
+    "reasoning": "Given the high relationship tier, excellent historical reliability, lack of disputes, and moderate overdue duration (28 days), the late payment is most likely due to internal invoice processing or payment cycle alignment rather than intentional avoidance or systemic financial distress."
+  },
+  "a8b7893d0ddbfdf90664d73b01fcfe2edbac22c64a90338a3b4f69b0f70bc8d7": {
+    "proposed_action": "SEND_REMINDER",
+    "confidence": 0.85,
+    "reasoning": "Given the high relationship tier, strong historical reliability, and only 28 days overdue due to an administrative delay, a gentle professional reminder with an attached invoice copy is the most appropriate action to prompt payment without damaging the relationship.",
+    "risk_assessment": "LOW"
+  },
+  "280e54c8eac30a1e670912db297badd3c87c216e18fc36bcab929f87771aae5e": {
+    "root_cause": "The invoice is only 2 days overdue from a highly reliable high-tier partner with no prior dispute, suggesting a minor internal administrative or processing delay in payment scheduling.",
+    "category": "ADMINISTRATIVE_DELAY",
+    "confidence": 0.85,
+    "reasoning": "Given the short overdue duration of 2 days, strong historical reliability (0.66 rating across 72 transactions), and high relationship tier without any dispute flags, it is most likely a routine administrative processing lag rather than chronic delinquency or financial distress."
+  },
+  "98b40a0b3f6801e03326df1dcfce1a94f5113ffcf64653dd3cea129889a1d9f1": {
+    "proposed_action": "WAIT",
+    "confidence": 0.85,
+    "reasoning": "The invoice is only 2 days overdue from a high-tier partner with an established relationship and no prior disputes. Given the high likelihood of a minor administrative delay, waiting a short cooling-off period before initiating contact preserves the valuable client relationship while avoiding premature collection efforts.",
+    "risk_assessment": "LOW"
+  },
+  "06503ca4d9569d55d476a53d29a60fa67db84c39b0377021b7a9873c98238bab": {
+    "root_cause": "The invoice is only 9 days overdue with a low attempt count, no prior history, and no dispute flagged, suggesting a minor internal administrative delay or simple oversight by the debtor.",
+    "category": "ADMINISTRATIVE_DELAY",
+    "confidence": 0.85,
+    "reasoning": "With a short overdue period of 9 days, zero contact attempts made so far, and no active disputes or cash flow warning signs, the delay is most likely procedural or administrative in nature."
+  },
+  "dd537c2e0cb85d8aa4b908999e2bb4dc4794e0aa5024dfaeae194e1392473c56": {
+    "proposed_action": "SEND_REMINDER",
+    "confidence": 0.85,
+    "reasoning": "The invoice is only 9 days overdue with a low attempt count, no prior history, and no dispute flagged, indicating a simple administrative delay or oversight. Sending a professional reminder is the appropriate low-friction first step for a Low tier relationship.",
+    "risk_assessment": "LOW"
+  },
+  "9dcca5f448161c973e893bc2e73afdb594b9f822ac42e6caae5765b27bf3c01c": {
+    "root_cause": "The invoice is only 4 days overdue with a single attempt and 2 contacts made, for a client with a strong transaction history (79 transactions, high reliability score of 0.85). This slight delay with no dispute or chronic behavior points to a standard administrative delay or minor working capital cycle misalignment.",
+    "category": "ADMINISTRATIVE_DELAY",
+    "confidence": 0.85,
+    "reasoning": "Given the short duration of the overdue status (4 days), high reliability of the debtor, and absence of disputes or broken promises, it is most likely a routine administrative processing delay on the client's end."
+  },
+  "3a6a9442a71fda7fd610e658ea5357bd153e9d6a9d14d3b9082b54df1fba7aaf": {
+    "proposed_action": "SEND_REMINDER",
+    "confidence": 0.85,
+    "reasoning": "The invoice is only 4 days overdue for a high-tier client with a strong reliability score and 79 past transactions. The root cause is identified as an administrative delay. A gentle professional reminder with the invoice attached is the most appropriate next step to preserve the relationship while prompting payment.",
+    "risk_assessment": "LOW"
+  },
+  "1171fb7b038a2793000ef3a3754be2758a94dde89234984e594633753db6ec55": {
+    "root_cause": "The debtor has a strong reliability history with 79 transactions and high relationship tier, but the invoice is only 4 days overdue with a minimal attempt and contact count, pointing to a routine administrative delay or minor working capital timing.",
+    "category": "ADMINISTRATIVE_DELAY",
+    "confidence": 0.85,
+    "reasoning": "Given the debtor's high reliability score (0.85) and the very short overdue duration (4 days), it is most likely an internal processing or administrative delay on their end rather than chronic delinquency or a dispute."
+  },
+  "37be4854c61513058e26cd6fde8d4b0888674f6b58e0af9de594c62d8d76a66f": {
+    "proposed_action": "SEND_REMINDER",
+    "confidence": 0.85,
+    "reasoning": "The invoice is only 4 days overdue for a high-tier B2B client with a strong reliability history, indicating a likely administrative delay. Sending a gentle professional reminder is appropriate to maintain the relationship while prompting payment.",
+    "risk_assessment": "LOW"
+  },
+  "2d72d1881dab23a924c4a09bf7fe7db3501fec25f7857e5d6e0a22712000c7ae": {
+    "root_cause": "The invoice is only 4 days overdue with a high-reliability debtor who has a strong transaction history and a HIGH relationship tier, suggesting a routine administrative delay in processing payment rather than a chronic issue.",
+    "category": "ADMINISTRATIVE_DELAY",
+    "confidence": 0.85,
+    "reasoning": "Given the debtor's high reliability score (0.85), significant transaction volume, and the very short overdue period of 4 days with no dispute flags, it is most likely a standard administrative or processing lag rather than an intentional non-payment or cash flow crisis."
+  },
+  "dd01ea924d684bcdd8bf47e7c29650c847d4d1cfa6a9db933a68c452363dffa6": {
+    "proposed_action": "WAIT",
+    "confidence": 0.9,
+    "reasoning": "The invoice is only 4 days overdue for a high-tier debtor with a strong transaction history, indicating a likely administrative delay. Given the relationship tier and short overdue period, applying immediate pressure is unnecessary and could harm the relationship. Standing down for a short cooling-off window is the safest and most professional approach.",
+    "risk_assessment": "LOW"
+  },
+  "66711671066fb1d3dc65dec993d701ad77489ad579f5624f5ab6a94ea131f92b": {
+    "root_cause": "The customer has a low reliability score of 0.46 across 25 transactions and an invoice overdue by 57 days with no prior contact attempts, indicating chronic delinquency patterns.",
+    "category": "CHRONIC_DELINQUENCY",
+    "confidence": 0.85,
+    "reasoning": "With 57 days overdue, a low debtor reliability score, and no proactive communication or active dispute flags, the failure to pay points directly to ongoing delinquency tendencies from this debtor."
+  },
+  "52e270def18b5dfc33b65d9f779a31d9b73225ec3fd9eff5e95b473970652a23": {
+    "proposed_action": "ESCALATE_TONE",
+    "confidence": 0.85,
+    "reasoning": "The invoice is significantly overdue by 57 days with a low relationship tier and a diagnosed root cause of chronic delinquency, supported by a low customer reliability score. Since no contact has been made yet, a firm formal notice is required to establish urgency.",
+    "risk_assessment": "MEDIUM"
+  },
+  "8e29448217d238e20f89d5493e54214550235c982dbb3fe4f31ae14cb674cc3a": {
+    "root_cause": "The debtor has a low reliability score of 0.46 across 25 transactions and the invoice is 57 days overdue despite multiple collection attempts, indicating a persistent pattern of late payments.",
+    "category": "CHRONIC_DELINQUENCY",
+    "confidence": 0.85,
+    "reasoning": "The combination of a low debtor reliability score, significant days overdue, and a history of transactions points towards chronic delinquency rather than a one-off administrative delay or dispute, as there is no dispute flag present."
+  },
+  "c1f5d0f93102e785716d11bf8a17ce02110b5e3ba13d32b2bf1d55c23501fe38": {
+    "proposed_action": "ESCALATE_TONE",
+    "confidence": 0.82,
+    "reasoning": "The invoice is significantly overdue at 57 days with chronic delinquency history, low reliability score, and low relationship tier. Previous reminder attempts have failed to secure payment, warranting a firm and formal escalation.",
+    "risk_assessment": "MEDIUM"
+  },
+  "c58a3e36e81162d71357ebb6c18c2c742fa5a68c70bf4066dfffd1b76c0d5631": {
+    "root_cause": "The debtor has a low reliability score (0.46) and a history of delayed payments despite a high transaction volume, indicating a pattern of habitual late payment over 57 days overdue.",
+    "category": "CHRONIC_DELINQUENCY",
+    "confidence": 0.85,
+    "reasoning": "The debtor's low reliability score across a significant number of transactions (25) combined with 57 days of overdue status without any dispute or promise-to-pay points directly to a chronic delinquency issue rather than an isolated administrative delay or cash flow mismatch."
+  },
+  "23ff2af8b8131be9ebe2a950556c161b68c8ef54273323b32d1c1906f7d0de5a": {
+    "proposed_action": "ESCALATE_TONE",
+    "confidence": 0.82,
+    "reasoning": "The debtor is 57 days overdue with a diagnosed root cause of chronic delinquency, a low reliability score, and a low relationship tier. Previous reminder attempts have failed to secure payment. Historical performance for ESCALATE_TONE shows relevant sample usage with a firm approach suitable for low-tier chronic delinquents.",
+    "risk_assessment": "MEDIUM"
+  },
+  "f84e829c04dc8cee38393a0a39ebc59f9b9b18bb14ebf99f5bc8e5845c5bc80f": {
+    "root_cause": "The invoice is moderately overdue by 38 days with only a single collection attempt and two contact counts made, suggesting the delay is likely due to internal administrative processing lag or a temporary alignment issue rather than an active dispute or chronic delinquency.",
+    "category": "ADMINISTRATIVE_DELAY",
+    "confidence": 0.75,
+    "reasoning": "With 38 days overdue, no dispute flag, and minimal contact attempts made so far, it points towards standard bureaucratic or administrative processing delays on the debtor's side for a medium-tier relationship."
+  },
+  "17ac25243aea633a98853837c4cbb859930199740c1f38a334b97297e515271b": {
+    "proposed_action": "SEND_REMINDER",
+    "confidence": 0.8,
+    "reasoning": "The invoice is only 38 days overdue with a medium relationship tier and the root cause is identified as an administrative delay. Since only one attempt has been made so far, sending a professional reminder with an attached invoice copy is the most appropriate next step to gently prompt payment without risking the client relationship.",
+    "risk_assessment": "LOW"
+  },
+  "ad131ffb6c5e662f2f3c196669e8271713799f60393ca0142f4920b9d50ae29b": {
+    "root_cause": "The debtor has a strong transaction history and reliability score of 0.82 across 15 transactions, indicating a generally good payment standing. However, with the invoice 90 days overdue despite 3 contact attempts and a substantial amount, the delay points toward a temporary liquidity shortage or internal payment cycle misalignment rather than an intentional default or dispute.",
+    "category": "CASH_FLOW_MISMATCH",
+    "confidence": 0.85,
+    "reasoning": "The debtor's high reliability and transaction volume suggest they are trustworthy, but the significant aging (90 days) without a dispute or fraud flag strongly points to working capital constraints or cash flow friction."
+  },
+  "fed4cfdd91ae4db1f677e4c0309c0bf273274f92a246e78d2345a0748e69fdeb": {
+    "proposed_action": "OFFER_PAYMENT_PLAN",
+    "confidence": 0.85,
+    "reasoning": "The debtor has a strong transaction history and high reliability score, indicating the delay is likely due to a temporary cash flow mismatch or internal payment cycle misalignment rather than an intentional default. Given the substantial amount (\u20b9504,253.33) and 90 days overdue status, proposing a structured milestone installment plan is the most constructive approach to facilitate recovery while preserving the medium-tier business relationship.",
+    "risk_assessment": "MEDIUM"
+  },
+  "b112e6881313a757ed0edc15d584d5ab534726bc8d1ce78b3a0dc551eff31ea2": {
+    "root_cause": "The debtor has a strong transaction history with high reliability (0.82) and significant total volume, yet the invoice is 90 days overdue with 4 attempts and contacts failing to yield payment despite no disputes or fraud flags, suggesting temporary liquidity constraints.",
+    "category": "CASH_FLOW_MISMATCH",
+    "confidence": 0.85,
+    "reasoning": "Given the debtor's high reliability score (0.82) across 15 past transactions, chronic delinquency or bad faith is less likely. The absence of a dispute flag or fraud flag points away from service issues, leaving working capital or cash flow timing discrepancies as the most probable cause for the 90-day delay."
+  },
+  "5e80a0ceda48ace98f1809f264c9fd907669174bf4689a60e5938508e168a15f": {
+    "proposed_action": "OFFER_PAYMENT_PLAN",
+    "confidence": 0.85,
+    "reasoning": "The debtor has a strong transaction history and high reliability, but is currently 90 days overdue with 4 failed contact attempts due to a diagnosed cash flow mismatch. Since there are no disputes or fraud flags and past attempts with simple reminders have failed, offering a structured milestone installment plan is the most constructive approach to bridge their temporary liquidity constraint while preserving the medium-tier relationship.",
+    "risk_assessment": "MEDIUM"
+  },
+  "27e959a94921e7aabe29a5a2502c9091405d89cd9fdbc1002ab8191820b46954": {
+    "proposed_action": "ESCALATE_HUMAN",
+    "confidence": 0.95,
+    "reasoning": "The maximum automated attempt count of 4 has been reached for this B2B receivable case, blocking further automated actions like offering a payment plan. Given the debtor's strong transaction history, high reliability, and cash flow mismatch without disputes, the account should be escalated to a human agent for manual intervention and relationship-managed resolution.",
+    "risk_assessment": "MEDIUM"
+  },
+  "5da80a222b1a78342db9169c31d4678f99902482fa14083778e76d98d0036dac": {
+    "root_cause": "The invoice is only 3 days overdue with an otherwise reliable debtor history and no disputes, indicating a minor administrative delay or a brief cash flow mismatch.",
+    "category": "ADMINISTRATIVE_DELAY",
+    "confidence": 0.85,
+    "reasoning": "The debtor has completed 66 successful transactions with high overall reliability, and the overdue period is very short (3 days) with only one attempt and two contacts made. There is no dispute or fraud flag, making administrative processing lag the most probable cause."
+  },
+  "643ef66f1373b8ef2408caabdc258e74c6d5486296ef0ea94250d74aa921053a": {
+    "proposed_action": "SEND_REMINDER",
+    "confidence": 0.85,
+    "reasoning": "The invoice is only 3 days overdue with a reliable debtor history and medium relationship tier, indicating a likely administrative delay. A polite reminder is the most appropriate next step.",
+    "risk_assessment": "LOW"
+  },
+  "ae277fe078cd0137fe5ab63cf086022be4eb7ff5164c6f6a7507f738b3f2a551": {
+    "root_cause": "The invoice is only 3 days overdue with no dispute or fraud flags, and the debtor has a strong transaction history, indicating a standard administrative delay or minor cash flow timing mismatch.",
+    "category": "ADMINISTRATIVE_DELAY",
+    "confidence": 0.85,
+    "reasoning": "With only 3 days overdue, a high reliability score (0.80 across 66 transactions), and no active disputes, the delay is likely due to routine processing times or standard accounts payable cycles rather than systemic financial distress."
+  },
+  "b7307c0dd836523c72c18a527b08dad1f8799ca0bc7a92083787aa4b853167eb": {
+    "proposed_action": "WAIT",
+    "confidence": 0.85,
+    "reasoning": "The invoice is only 3 days overdue with a medium relationship tier and a diagnosed administrative delay. Since prior attempts have already been made and the delay is very short, waiting for a 48h cooling-off window is appropriate before taking further action.",
+    "risk_assessment": "LOW"
+  },
+  "b0af1e7416ea90e9f45c225562e3013f313cbf0c2a36de18687688054dd7afd0": {
+    "root_cause": "The invoice is 90 days overdue despite a high reliability score and strong transaction history, indicating a temporary liquidity or working capital constraint rather than a deliberate refusal to pay or ongoing dispute.",
+    "category": "CASH_FLOW_MISMATCH",
+    "confidence": 0.85,
+    "reasoning": "Given the debtor's high reliability (0.72) and significant volume of past transactions (\u20b93.58M), the 90-day delay with only one contact attempt suggests an administrative oversight or cash flow pinch rather than chronic delinquency or a disputed deliverable."
+  },
+  "fb878cd81abb2c327173bee753165dccdc28d5de1d4daae4e3d0d159c225d74e": {
+    "proposed_action": "OFFER_PAYMENT_PLAN",
+    "confidence": 0.85,
+    "reasoning": "The client is in a high relationship tier with a strong transaction history, and the root cause diagnosis indicates a temporary cash flow mismatch rather than an intentional refusal to pay. Offering a structured milestone installment plan directly addresses working capital constraints while maintaining a gentle and collaborative tone suited for a high-value relationship.",
+    "risk_assessment": "LOW"
+  },
+  "8f2eb8e84cb6ba04c1c4f19a5dd8acd68fb7a36966a3aac11037973fa9531d8c": {
+    "root_cause": "The debtor has a high reliability score and significant transaction history with the company, but the invoice is 90 days overdue despite multiple attempts and contacts, indicating they are likely experiencing a temporary liquidity or working capital constraint rather than a dispute.",
+    "category": "CASH_FLOW_MISMATCH",
+    "confidence": 0.85,
+    "reasoning": "With 90 days overdue and no dispute or fraud flags, combined with a strong historical relationship (reliability 0.72, 63 transactions), the delay points towards internal liquidity management or cash flow timing issues on the debtor's end."
+  },
+  "14e41e33c80d799d8422a025125732acf61a4f18a541ae0c99433f168cf67711": {
+    "proposed_action": "OFFER_PAYMENT_PLAN",
+    "confidence": 0.85,
+    "reasoning": "The debtor has a high reliability score, significant transaction history, and is experiencing a temporary cash flow mismatch at 90 days overdue. Since reminders have failed and the relationship tier is HIGH, offering a structured milestone installment plan is the most appropriate empathetic yet proactive approach to resolve the liquidity constraint without damaging the business relationship.",
+    "risk_assessment": "LOW"
+  },
+  "fbde298e25cb9df26145a147106c7485ef208fe2817914b9885d86bf65f4eb77": {
+    "root_cause": "The debtor has a high transaction history and good reliability, but the invoice is 90 days overdue despite multiple attempts, suggesting internal liquidity constraints rather than a dispute.",
+    "category": "CASH_FLOW_MISMATCH",
+    "confidence": 0.82,
+    "reasoning": "The debtor possesses a high reliability score (0.72) and significant historical transaction volume (\u20b93.5M+), indicating they are generally trustworthy. With no dispute flag, no fraud flag, and no promise-to-pay record after 90 days and 3 contact attempts, the delay is most consistent with a temporary or extended cash flow mismatch on the debtor's side rather than a chronic refusal to pay or an administrative error."
+  },
+  "d2c80ff53d3ddd49a82db7a6d87e8e76b5629b0aec593637cfe0b9dedb61319b": {
+    "proposed_action": "OFFER_PAYMENT_PLAN",
+    "confidence": 0.85,
+    "reasoning": "The debtor is in a High relationship tier with a good historical reliability profile, but the 90-day overdue status and cash flow mismatch diagnosis indicate temporary liquidity constraints rather than a dispute. Given that reminders have failed and the amount is substantial (INR 485,610.47), offering a structured milestone installment plan is the most constructive approach to facilitate payment while preserving the valuable business relationship.",
+    "risk_assessment": "LOW"
+  },
+  "c612d5e63ace84ae77f3e0a88bd8b3cad579ff178f8192c5a551f8324a7cc9f0": {
+    "root_cause": "The debtor has a low reliability score (0.49) despite a moderate transaction history, indicating habitual slow payment patterns relative to their volume, leading to an 18-day delay.",
+    "category": "CHRONIC_DELINQUENCY",
+    "confidence": 0.82,
+    "reasoning": "The debtor reliability metric is low at 0.49, which strongly suggests that the delayed payment of \u20b9230,074.18 is part of a recurring pattern of slow settlements rather than an isolated administrative or transient issue. No dispute or fraud flags are present, and there are no active promises-to-pay."
+  },
+  "fede387cec8ca19d70405521a70ce149e0efff77bc55acfdcc516f49dada4cf6": {
+    "proposed_action": "ESCALATE_TONE",
+    "confidence": 0.82,
+    "reasoning": "The debtor has a diagnosed chronic delinquency root cause with low reliability and is 18 days overdue. Among available historical actions with sufficient samples, escalating the tone shows the highest relative effectiveness for chronic delinquency patterns.",
+    "risk_assessment": "MEDIUM"
+  },
+  "7a18780d81bfdc4a7f69227926558b3d778afc94237932cad5283fc0f5a182dd": {
+    "root_cause": "The debtor has a low reliability score (0.49) despite high transaction volume, indicating chronic delayed payments and delinquency issues rather than a dispute or immediate cash flow mismatch.",
+    "category": "CHRONIC_DELINQUENCY",
+    "confidence": 0.85,
+    "reasoning": "With 18 days overdue, 3 attempts and contacts made, no disputes, and a consistently low reliability score over 90 transactions, the debtor's payment behavior points directly to chronic delinquency."
+  },
+  "c09066555be9c3c23f0e5ed26423bc0db401f0cf155446a12e5972468497506a": {
+    "proposed_action": "ESCALATE_TONE",
+    "confidence": 0.75,
+    "reasoning": "The debtor exhibits chronic delinquency with low reliability despite three previous attempts and contacts, indicating that standard reminders are ineffective. Escalating tone with a firm formal notice is appropriate for this Medium tier relationship to drive urgency.",
+    "risk_assessment": "MEDIUM"
+  },
+  "c98ca6ec47ac7d2a8596e2a38766e18afa9372f98820aaf6c91556431beca025": {
+    "root_cause": "The debtor has a low reliability score of 0.49 despite a high transaction volume, indicating a consistent pattern of delayed payments typical of chronic delinquency.",
+    "category": "CHRONIC_DELINQUENCY",
+    "confidence": 0.85,
+    "reasoning": "The debtor's history reflects a low reliability score (0.49) across 90 transactions, pointing to habitual late payments rather than a one-off administrative delay or cash flow mismatch, especially given the absence of any active dispute or promise-to-pay."
+  },
+  "4a2b7bd1ce14cb5c95458a84f588df94b3ae32f8498072460a0e1c7f4e863c91": {
+    "proposed_action": "ESCALATE_TONE",
+    "confidence": 0.82,
+    "reasoning": "Given the chronic delinquency diagnosed with a confidence of 0.85, 18 days overdue, and 4 unsuccessful prior contact attempts on a medium relationship tier account, standard reminders are ineffective. Escalating the tone to a firm formal notice of overdue obligation is supported by historical success data for this category and addresses the consistent pattern of delayed payments.",
+    "risk_assessment": "MEDIUM"
+  },
+  "aed84fbfb992f2c466723273d2c268d4975e3211d98f58685c40f32b5109cbf8": {
+    "proposed_action": "ESCALATE_HUMAN",
+    "confidence": 0.95,
+    "reasoning": "The maximum attempt count of 4 for automated reminders has been reached without success, and the debtor exhibits a chronic delinquency pattern. Per compliance rules, no further automated attempts are permitted, necessitating an escalation to human intervention for specialized resolution.",
+    "risk_assessment": "MEDIUM"
+  },
+  "463719a6260eaa3d6550c084a69427297a901c2a73fd8cfa3b0ef1cb4341eb39": {
+    "root_cause": "The debtor has a history of low reliability (0.33) over 20 transactions, indicating a chronic pattern of late payments despite being only 2 days overdue.",
+    "category": "CHRONIC_DELINQUENCY",
+    "confidence": 0.85,
+    "reasoning": "With a reliability score of 0.33 and multiple past transactions, the debtor frequently delays payments. The invoice is only 2 days overdue with no dispute or communication issues, pointing directly to chronic delinquency."
+  },
+  "653e5f117eee466891acad1c3b45726c311446d7875e4eee16af5f6b3d128a7d": {
+    "proposed_action": "ESCALATE_TONE",
+    "confidence": 0.82,
+    "reasoning": "The debtor has only 2 days overdue on a large invoice, but possesses a chronic pattern of low reliability over 20 transactions. Given this proven history of delayed payments, standard soft reminders are ineffective, and escalating the tone early establishes seriousness and mitigates long-term delinquency risk.",
+    "risk_assessment": "MEDIUM"
+  },
+  "265cd30010384182cef9deaa5032fb40c7d0b8fb353fb5d62e9f98776dd33101": {
+    "root_cause": "The invoice is moderately overdue by 20 days with no prior delinquency history, low relationship tier, and minimal collection attempts, suggesting a standard administrative delay or working capital timing mismatch.",
+    "category": "ADMINISTRATIVE_DELAY",
+    "confidence": 0.75,
+    "reasoning": "Given the lack of a dispute flag, fraud flag, or chronic delinquency history, and the relatively low number of attempts, the delay is most likely due to routine processing times or minor cash flow timing issues on the debtor's end."
+  },
+  "f5a856d21acc379d5317205eac15d2229762b2a17b7db7b5b88066476c0f1d12": {
+    "proposed_action": "ESCALATE_TONE",
+    "confidence": 0.82,
+    "reasoning": "The invoice is 20 days overdue with a low relationship tier and only one prior contact made. Since historical performance for simple reminders is low and the customer falls into a low tier, escalating tone with a firm formal notice of overdue obligation is appropriate to drive urgency without jumping straight to human intervention.",
+    "risk_assessment": "MEDIUM"
+  },
+  "99ec9ab6ffed6774ccd97a74f6079acfa968cdc9ffc85e31adea7cbd65797ab2": {
+    "root_cause": "The invoice is 20 days overdue with moderate follow-up attempts and no dispute or fraud flags, suggesting a standard working capital or liquidity delay rather than chronic or disputed issues.",
+    "category": "CASH_FLOW_MISMATCH",
+    "confidence": 0.75,
+    "reasoning": "With 20 days overdue, no prior history of delinquency, and no reported disputes, the delay is most likely attributable to a short-term cash flow mismatch or standard payment processing cycle on the debtor's end."
+  },
+  "7e7e6bad3706290df05dacfed6d49e993a57e8ced915792531a9af7a9156011f": {
+    "proposed_action": "ESCALATE_TONE",
+    "confidence": 0.8,
+    "reasoning": "The invoice is 20 days overdue with multiple unresponded follow-ups, and the relationship tier is low. Since reminders have been ineffective and cash flow mismatch is diagnosed, a firmer, formal notice is required to prompt action without permanently terminating the relationship.",
+    "risk_assessment": "MEDIUM"
+  },
+  "6dc2610582a6b40f855569d46e0f8f0d8367ab1807b371b594b693ceb5fcd809": {
+    "root_cause": "The debtor has a low reliability score of 0.20 despite a high volume of past transactions, indicating a persistent history of delayed payments.",
+    "category": "CHRONIC_DELINQUENCY",
+    "confidence": 0.85,
+    "reasoning": "With 72 historical transactions and a very low reliability score of 0.20, the debtor consistently pays late. The invoice is only 4 days overdue with no dispute or communication barriers reported, which points directly to established patterns of delayed payment behavior."
+  },
+  "ee0520777c995d53d7f53470176937e55460b9e55f0b438a9c917d32b49b9e2b": {
+    "proposed_action": "ESCALATE_TONE",
+    "confidence": 0.75,
+    "reasoning": "The debtor exhibits a chronic delinquency pattern with a low reliability score of 0.20 and only 4 days overdue on their second attempt. Given the Low relationship tier and persistent history of delayed payments, sending a firm formal notice of overdue obligation is appropriate to curb delaying habits early.",
+    "risk_assessment": "MEDIUM"
+  },
+  "a43e8d02a36c4c1c2c28e8068f1bb15fbc893e4486fe195ebda506998b71f796": {
+    "root_cause": "The debtor has a history of low reliability (0.34) despite a high volume of transactions, and the invoice is 23 days overdue with only a single contact attempt made so far, indicating a pattern of habitual late payments.",
+    "category": "CHRONIC_DELINQUENCY",
+    "confidence": 0.85,
+    "reasoning": "The debtor's reliability score is notably low at 0.34 across 24 transactions, pointing toward a persistent trend of delayed settlements rather than a one-off administrative issue or communication gap. No dispute has been flagged, and no promise-to-pay has been registered, which aligns closely with chronic delinquency behavior."
+  },
+  "88a0c9fb8b5cb2c49ef34529568ed9fdbe23fee9b7710b6d4b57df1a81ceb603": {
+    "proposed_action": "ESCALATE_TONE",
+    "confidence": 0.82,
+    "reasoning": "The debtor exhibits chronic delinquency with low reliability and is now 23 days overdue. Since only a single contact has been made, escalating the tone with a firm formal notice is appropriate to address the habitual late payment behavior before further escalation is required.",
+    "risk_assessment": "MEDIUM"
   }
 }
