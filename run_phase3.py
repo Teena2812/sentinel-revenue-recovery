@@ -39,17 +39,17 @@ def main():
     test_result = runner.run(suite)
 
     if not test_result.wasSuccessful():
-        print("\n❌ B2B Tests failed! Please fix test failures before benchmarking.")
+        print("\n[ERROR] B2B Tests failed! Please fix test failures before benchmarking.")
         sys.exit(1)
 
-    print("\n✅ All B2B unit tests passed successfully.")
+    print("\n[OK] All B2B unit tests passed successfully.")
 
     # 2. Load synthetic B2B cases
     data_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
     b2b_path = os.path.join(data_dir, "b2b_receivables.json")
 
     if not os.path.exists(b2b_path):
-        print(f"\n❌ Data file not found: {b2b_path}. Running generator...")
+        print(f"\n[ERROR] Data file not found: {b2b_path}. Running generator...")
         from data.generator import generate_all
         generate_all()
 

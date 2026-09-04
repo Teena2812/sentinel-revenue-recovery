@@ -39,17 +39,17 @@ def main():
     test_result = runner.run(suite)
 
     if not test_result.wasSuccessful():
-        print("\n❌ Tests failed! Please fix test failures before benchmarking.")
+        print("\n[ERROR] Tests failed! Please fix test failures before benchmarking.")
         sys.exit(1)
 
-    print("\n✅ All unit tests passed successfully.")
+    print("\n[OK] All unit tests passed successfully.")
 
     # 2. Load synthetic payment cases
     data_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
     pay_path = os.path.join(data_dir, "failed_payments.json")
 
     if not os.path.exists(pay_path):
-        print(f"\n❌ Data file not found: {pay_path}. Running generator...")
+        print(f"\n[ERROR] Data file not found: {pay_path}. Running generator...")
         from data.generator import generate_all
         generate_all()
 

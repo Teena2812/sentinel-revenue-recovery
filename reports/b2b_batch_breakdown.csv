@@ -34,7 +34,7 @@ B2B-12e89d10-287,RECOVERED,OFFER_PAYMENT_PLAN,196331.92,196331.92,14.0,days,1,1,
 B2B-fe2110d0-4bb,ESCALATED,ESCALATE_HUMAN,355575.48,0.00,N/A,days,4,1,CASH_FLOW_MISMATCH,0.88,strategy_policy_escalation,Terminal action ESCALATE_HUMAN executed (ESCALATED).
 B2B-3810ae66-5a3,FAILED,ESCALATE_TONE,1093708.61,0.00,N/A,days,1,3,CASH_FLOW_MISMATCH,0.88,exhausted_all_attempts_failed,Case unrecovered after maximum 3 attempts.
 B2B-1712fb16-21a,FAILED,ESCALATE_TONE,388371.35,0.00,N/A,days,1,3,CASH_FLOW_MISMATCH,0.88,exhausted_all_attempts_failed,Case unrecovered after maximum 3 attempts.
-B2B-cde22f1c-56b,ESCALATED,ESCALATE_HUMAN,180317.92,0.00,N/A,days,1,1,CASH_FLOW_MISMATCH,0.88,fallback_ladder_conflicting_signals,Terminal action ESCALATE_HUMAN executed (ESCALATED).
+B2B-cde22f1c-56b,ESCALATED,ESCALATE_HUMAN,180317.92,0.00,N/A,days,1,1,CASH_FLOW_MISMATCH,0.79,fallback_ladder_conflicting_signals,Terminal action ESCALATE_HUMAN executed (ESCALATED).
 B2B-5e5ba13d-746,FAILED,ESCALATE_TONE,96985.02,0.00,N/A,days,1,3,CASH_FLOW_MISMATCH,0.88,exhausted_all_attempts_failed,Case unrecovered after maximum 3 attempts.
 B2B-e8cda0cc-76d,ESCALATED,ESCALATE_HUMAN,428966.92,0.00,N/A,days,2,3,ADMINISTRATIVE_DELAY,0.90,attempt_cap_reached_on_attempt_4,Terminal action ESCALATE_HUMAN executed (ESCALATED).
 B2B-aba4fc03-5ef,ESCALATED,ESCALATE_HUMAN,14081.21,0.00,N/A,days,2,1,ADMINISTRATIVE_DELAY,0.90,strategy_policy_escalation,Terminal action ESCALATE_HUMAN executed (ESCALATED).
