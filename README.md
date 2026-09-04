@@ -39,7 +39,7 @@ Tested across N=80 benchmark cases (30 Failed Payments, 50 B2B Receivables):
 - [2. Build Quality](#2-build-quality)
   - [Technical Specification & Architecture Document](#technical-specification-architecture-document)
   - [Test Coverage & CI Automated Verification](#test-coverage-ci-automated-verification)
-  - [Fresh Clone Verification Under 2 Minutes](#fresh-clone-verification-under-2-minutes)
+  - [Fresh Clone Verification (≈2 Minutes Cold Install)](#fresh-clone-verification-2-minutes-cold-install)
   - [Strict Typed Schema Validation](#strict-typed-schema-validation)
   - [Rules-as-Data Architecture](#rules-as-data-architecture)
   - [Repository Structure](#repository-structure)
@@ -104,11 +104,19 @@ Automated verification runs on every commit and pull request via GitHub Actions 
 - Head-to-head benchmark generation (`scripts/run_phase2.py`, `scripts/run_phase3.py`).
 - Zero-drift regression assertion against locked ground truth (`scripts/assert_baseline.py`).
 
-### Fresh Clone Verification Under 2 Minutes
-Sentinel has zero external database requirements, zero Docker daemon dependencies, and zero heavy local model weights. A fresh clone runs end-to-end in **under 30 seconds**:
-1. `git clone https://github.com/Teena2812/sentinel-revenue-recovery.git`
-2. `pip install -r requirements.txt` (only standard typing/dataclasses and optional `matplotlib`)
-3. `python scripts/assert_baseline.py` (instantly verifies all benchmark numbers and zero violations)
+### Fresh Clone Verification (≈2 Minutes Cold Install)
+Sentinel has zero external database requirements, zero Docker daemon dependencies, and zero heavy local model weights. On a completely fresh clone with zero pre-cached wheels, setup and verification takes **≈2 minutes (119.95s cold install)**:
+
+1. **Virtual Environment Creation**: **22.99s** (`python -m venv .venv`)
+2. **Dependency Installation**: **95.62s** (`pip install -r requirements.txt`) — dominated almost entirely by the binary wheels in `google-generativeai` (`grpcio`, `protobuf`) and `matplotlib` (`numpy`). On warm cached installs, this drops to under 5 seconds.
+3. **Full Automated Test Suite**: **0.98s** (`python -m unittest discover tests`, executing 147 unit tests in 0.165s).
+4. **Baseline & Zero-Drift Assertion**: **0.35s** (`python scripts/assert_baseline.py`, validating payment and B2B recovery rates against locked ground truth).
+
+```bash
+git clone https://github.com/Teena2812/sentinel-revenue-recovery.git
+pip install -r requirements.txt
+python scripts/assert_baseline.py
+```
 
 ### Strict Typed Schema Validation
 Upstream language models occasionally generate malformed JSON, omit expected fields, or return strings outside expected enum sets. Rather than letting corrupted data penetrate business logic, Sentinel enforces typed schema validation ([`core/schema_validation.py`](core/schema_validation.py)):
