@@ -196,7 +196,8 @@ python run_phase2.py    # Phase 2 Failed Payments benchmark vs Baseline
 python run_phase3.py    # Phase 3 B2B Receivables benchmark vs Baseline
 
 # 3. Run Confidence Calibration Audit
-python calibration_check.py
+python scripts/confidence_calibration.py  # Prompt 9 calibration evaluation & plot (N=61 diagnosed)
+python calibration_check.py               # Phase 4 fallback ladder audit
 
 # 4. Inspect Case Breakdown Reports
 type reports\payment_batch_breakdown.csv
@@ -353,19 +354,38 @@ In an autonomous financial recovery engine, utilizing generative AI for determin
 
 ## Confidence Calibration Check
 
-To verify whether Sentinel's diagnostic confidence scores correlate with real-world outcomes, all 80 benchmark cases were evaluated across 5 standard confidence buckets using [`scripts/confidence_calibration.py`](scripts/confidence_calibration.py):
+To evaluate the empirical calibration of Sentinel's diagnostic confidence scores, the benchmark was analyzed across standard confidence buckets using [`scripts/confidence_calibration.py`](scripts/confidence_calibration.py).
 
-| Confidence Bucket | Total Cases | Recovered Cases | Empirical Win Rate (%) | Avg Confidence | Primary Outcome Breakdown |
+### Scope & Exclusion of Pre-Pipeline Hard Stops
+
+A critical methodological requirement for calibration analysis is ensuring every evaluated case actually received a model-assessed confidence score:
+- **Total benchmark cases**: 80 (30 Failed Payments, 50 B2B Receivables)
+- **Pre-pipeline safety skips (excluded, $N=19$)**: 19 cases (7 payment, 12 B2B) are halted by deterministic statutory rules (fraud flags, active disputes, initial attempt-cap exhaustion, active promises-to-pay) *before* reaching the AI pipeline. Because `diagnose()` is never invoked, these cases have no model confidence to calibrate against (logged as `diagnosis_confidence = "N/A"`). Excluding them prevents artificial contamination of the low-confidence bucket with arbitrary `0.0` placeholder values.
+- **Genuine diagnosed cases ($N=61$)**: Strictly evaluates the 61 cases (23 payment, 38 B2B) that actively ran through the Diagnosis Agent (`diagnose()`) with multi-perspective self-consistency scoring.
+
+### Empirical Calibration Breakdown ($N=61$)
+
+| Confidence Bucket | Diagnosed Cases | Recovered Cases | Empirical Win Rate (%) | Avg Confidence | Primary Outcome Breakdown |
 | :--- | :---: | :---: | :---: | :---: | :--- |
-| **0.0 - 0.2** | 19 | 0 | **0.0%** (0/19) | 0.00 | 7 escalated, 6 stopped, 6 unrecovered (Pre-pipeline filtered) |
-| **0.2 - 0.4** | 0 | 0 | **0.0%** (0/0) | — | Zero cases assigned to this band |
-| **0.4 - 0.6** | 0 | 0 | **0.0%** (0/0) | — | Zero cases assigned to this band |
+| **0.0 - 0.2** | 0 | 0 | **0.0%** (0/0) | — | Zero diagnosed cases assigned to this band |
+| **0.2 - 0.4** | 0 | 0 | **0.0%** (0/0) | — | Zero diagnosed cases assigned to this band |
+| **0.4 - 0.6** | 0 | 0 | **0.0%** (0/0) | — | Zero diagnosed cases assigned to this band |
 | **0.6 - 0.8** | 1 | 0 | **0.0%** (0/1) | 0.79 | 1 escalated (`B2B-cde22f1c-56b` capped at 0.79 via 2/3 majority vote) |
 | **0.8 - 1.0** | 60 | 24 | **40.0%** (24/60) | 0.88 | 24 recovered, 24 escalated, 12 failed (Autonomous execution tier) |
+| **Total / Overall** | **61** | **24** | **39.3%** (24/61) | **0.88** | 24 recovered, 25 escalated, 12 failed |
 
 ![Confidence Calibration Curve](reports/confidence_calibration.png)
 
-> **Honest Calibration Assessment**: In this dataset, confidence functions primarily as an **all-or-nothing gating filter rather than a continuous linear predictor of payment success**: sub-0.80 cases have a 0.0% recovery rate because the safety architecture routes them directly to escalations or hard stops, while cases in the autonomous tier (0.80–1.0) achieve a 40.0% empirical recovery rate because real recovery depends on debtor liquidity and banking rails rather than model certainty.
+> ### Honest Empirical Calibration Assessment
+> 
+> When pre-pipeline statutory holds are properly excluded, the data reveals an important and defensible finding: **the sample size in the lower confidence buckets is too small ($N=1$ in 0.6–0.8, $N=0$ in 0.0–0.6) to claim that an empirical continuous calibration curve exists across five buckets**. 
+> 
+> Rather than functioning as a fine-grained, continuous probability of debt recovery, model confidence in Sentinel operates as an **architectural threshold backstop (a binary safety gate)**:
+> 1. **Heavy Model Clustering ($0.80–0.95$)**: When presented with eligible, non-fraudulent cases, the Diagnosis Agent reaches strong consensus across its self-consistency passes, concentrating 98.4% (60/61) of all diagnosed cases into the 0.8–1.0 band.
+> 2. **Threshold Floor Enforcement**: The one case in the 0.6–0.8 bucket (`B2B-cde22f1c-56b`, confidence 0.79) resulted from a 2/3 majority vote disagreement where confidence was decayed below the 0.85 safety floor; as expected, the system safely stepped it down to human escalation without attempting automated recovery.
+> 3. **Recovery Depends on External Reality**: Within the high-confidence tier (0.8–1.0), the empirical recovery rate is 40.0% (24/60). Diagnostic certainty indicates high confidence in the *root-cause classification* and *chosen intervention strategy*, but debtor liquidity, banking rails, and debtor willingness ultimately determine whether funds are recovered.
+> 
+> Acknowledging this sample limitation plainly is more transparent and mathematically sound than asserting a multi-bucket calibration curve constructed from non-diagnosed placeholder data.
 
 ---
 

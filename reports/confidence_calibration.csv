@@ -1,6 +1,6 @@
-confidence_bucket,total_cases,recovered_cases,win_rate_pct,avg_confidence,escalated_cases,stopped_cases
-0.0 - 0.2,19,0,0.0,0.0,7,6
-0.2 - 0.4,0,0,0.0,0.0,0,0
-0.4 - 0.6,0,0,0.0,0.0,0,0
-0.6 - 0.8,1,0,0.0,0.79,1,0
-0.8 - 1.0,60,24,40.0,0.88,24,0
+confidence_bucket,total_cases,recovered_cases,win_rate_pct,avg_confidence,escalated_cases,stopped_cases,case_ids
+0.0 - 0.2,0,0,0.0,0.0,0,0,
+0.2 - 0.4,0,0,0.0,0.0,0,0,
+0.4 - 0.6,0,0,0.0,0.0,0,0,
+0.6 - 0.8,1,0,0.0,0.79,1,0,B2B-cde22f1c-56b
+0.8 - 1.0,60,24,40.0,0.88,24,0,60 cases

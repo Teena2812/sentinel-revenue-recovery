@@ -2,10 +2,17 @@
 scripts/confidence_calibration.py — Confidence Calibration Check (Prompt 9)
 
 Evaluates the empirical calibration of Sentinel's LLM confidence scores across
-all 80 benchmark cases (Failed Payments + B2B Receivables).
+all 61 cases that actually reached the Diagnosis Agent (diagnose()).
 
-Buckets cases by confidence:
-- 0.0 – 0.2 (Pre-pipeline filtered / zero-confidence fallbacks)
+Exclusion Note: Exactly 19 cases in the 80-case benchmark are pre-pipeline safety
+skips (fraud flags, dispute holds, initial attempt-cap ceilings, active promises).
+These cases are filtered purely by statutory rules before the AI pipeline, meaning
+no LLM diagnosis is ever invoked (logged as diagnosis_confidence = "N/A"). They
+are excluded from calibration analysis to prevent artificial contamination of the
+0.0–0.2 bucket with non-model placeholder values.
+
+Buckets cases by model-assessed confidence:
+- 0.0 – 0.2
 - 0.2 – 0.4
 - 0.4 – 0.6 (Self-consistency split disagreements / cold starts)
 - 0.6 – 0.8 (Sub-threshold / majority-vote capped at 0.80)
@@ -55,14 +62,28 @@ def load_all_benchmark_cases(base_dir: Path) -> list[dict]:
     return rows
 
 
+def is_diagnosed_case(row: dict) -> bool:
+    """Check if the case actually ran through diagnose().
+
+    Pre-pipeline skipped cases (fraud, dispute, initial attempt caps, active promises)
+    were evaluated purely by deterministic rules before the AI pipeline, so they have
+    no model-assessed diagnosis confidence to calibrate against.
+    """
+    conf_str = row.get("diagnosis_confidence", "").strip()
+    cat_str = row.get("diagnosis_category", "").strip()
+    if not conf_str or conf_str in {"N/A", "None", ""}:
+        return False
+    if not cat_str or cat_str in {"N/A", "None", "", "N/A (Pre-Pipeline Skip)"}:
+        return False
+    return True
+
+
 def parse_confidence(val_str: str) -> float:
-    """Parse confidence string into float, treating N/A or empty as 0.0."""
-    if not val_str or val_str.strip() in {"N/A", "None", ""}:
-        return 0.0
+    """Parse confidence string into float, returning 0.0 on failure."""
     try:
         val = float(val_str)
         return max(0.0, min(1.0, val))
-    except ValueError:
+    except (ValueError, TypeError):
         return 0.0
 
 
@@ -71,8 +92,15 @@ def run_calibration_analysis() -> None:
     reports_dir = repo_root / "reports"
     reports_dir.mkdir(parents=True, exist_ok=True)
 
-    rows = load_all_benchmark_cases(reports_dir)
-    total_cases = len(rows)
+    all_rows = load_all_benchmark_cases(reports_dir)
+    total_benchmark_cases = len(all_rows)
+
+    # Filter to cases that actually ran through diagnose()
+    diagnosed_rows = [r for r in all_rows if is_diagnosed_case(r)]
+    skipped_rows = [r for r in all_rows if not is_diagnosed_case(r)]
+
+    diagnosed_count = len(diagnosed_rows)
+    skipped_count = len(skipped_rows)
 
     # Initialize bucket metrics
     calibration_data = {
@@ -87,13 +115,15 @@ def run_calibration_analysis() -> None:
             "failed": 0,
             "waiting": 0,
             "confidences": [],
+            "case_ids": [],
         }
         for b in BUCKETS
     }
 
-    for r in rows:
+    for r in diagnosed_rows:
         conf = parse_confidence(r.get("diagnosis_confidence", ""))
         status = r.get("status", "").upper()
+        cid = r.get("case_id", "")
 
         # Find matching bucket
         for label, lower, upper in BUCKETS:
@@ -101,6 +131,7 @@ def run_calibration_analysis() -> None:
                 b_dict = calibration_data[label]
                 b_dict["total_cases"] += 1
                 b_dict["confidences"].append(conf)
+                b_dict["case_ids"].append(cid)
                 if status == "RECOVERED":
                     b_dict["recovered"] += 1
                 elif status == "ESCALATED":
@@ -129,14 +160,19 @@ def run_calibration_analysis() -> None:
             "escalated_cases": d["escalated"],
             "stopped_cases": d["stopped"],
             "avg_confidence": round(avg_conf, 2),
+            "case_ids": ", ".join(d["case_ids"]) if cnt <= 3 else f"{len(d['case_ids'])} cases",
         })
 
     # Print Table to stdout
-    print("\n" + "=" * 76)
-    print("SENTINEL CONFIDENCE CALIBRATION ANALYSIS (80 Benchmark Cases)")
-    print("=" * 76)
+    print("\n" + "=" * 78)
+    print(f"SENTINEL CONFIDENCE CALIBRATION ANALYSIS (N={diagnosed_count} Diagnosed Cases)")
+    print("=" * 78)
+    print(f"Total benchmark cases:          {total_benchmark_cases}")
+    print(f"Pre-pipeline skips (excluded):  {skipped_count} (no diagnosis invoked; placeholder 0.0 removed)")
+    print(f"Diagnosed cases evaluated:      {diagnosed_count}")
+    print("-" * 78)
     print(f"{'Confidence Bucket':<18} | {'Cases':<6} | {'Recovered':<10} | {'Win Rate (%)':<13} | {'Avg Conf':<8} | {'Escalated / Stopped'}")
-    print("-" * 76)
+    print("-" * 78)
     for res in results:
         print(
             f"{res['confidence_bucket']:<18} | "
@@ -146,8 +182,10 @@ def run_calibration_analysis() -> None:
             f"{res['avg_confidence']:>8.2f} | "
             f"{res['escalated_cases']} esc / {res['stopped_cases']} stop"
         )
-    print("=" * 76)
-    print(f"Total benchmark cases evaluated: {total_cases} (Recovered: {sum(r['recovered_cases'] for r in results)})\n")
+    print("=" * 78)
+    total_rec = sum(r["recovered_cases"] for r in results)
+    overall_diag_rate = (total_rec / diagnosed_count * 100.0) if diagnosed_count > 0 else 0.0
+    print(f"Overall recovery rate among diagnosed cases: {overall_diag_rate:.1f}% ({total_rec}/{diagnosed_count})\n")
 
     # Export CSV
     csv_path = reports_dir / "confidence_calibration.csv"
@@ -160,6 +198,7 @@ def run_calibration_analysis() -> None:
             "avg_confidence",
             "escalated_cases",
             "stopped_cases",
+            "case_ids",
         ]
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
@@ -169,15 +208,15 @@ def run_calibration_analysis() -> None:
     # Generate Chart if matplotlib is available
     if HAS_MATPLOTLIB:
         chart_path = reports_dir / "confidence_calibration.png"
-        _render_chart(results, chart_path)
+        _render_chart(results, chart_path, diagnosed_count, skipped_count)
         print(f"--> Calibration plot exported to: {chart_path}")
     else:
         print("--> Matplotlib not installed; skipping chart generation.")
 
 
-def _render_chart(results: list[dict], output_path: Path) -> None:
-    """Render a clean calibration bar chart."""
-    fig, ax1 = plt.subplots(figsize=(9, 5.5), dpi=300)
+def _render_chart(results: list[dict], output_path: Path, diagnosed_count: int, skipped_count: int) -> None:
+    """Render a clean calibration bar chart for diagnosed cases."""
+    fig, ax1 = plt.subplots(figsize=(9.5, 5.8), dpi=300)
     fig.patch.set_facecolor("#0F172A")
     ax1.set_facecolor("#0F172A")
 
@@ -186,7 +225,7 @@ def _render_chart(results: list[dict], output_path: Path) -> None:
     win_rates = [r["win_rate_pct"] for r in results]
 
     x = range(len(labels))
-    width = 0.45
+    width = 0.42
 
     # Bar chart for case counts
     bars = ax1.bar(
@@ -195,7 +234,7 @@ def _render_chart(results: list[dict], output_path: Path) -> None:
         width=width,
         color="#38BDF8",
         alpha=0.85,
-        label="Case Volume (N)",
+        label="Diagnosed Cases (N)",
         edgecolor="#0284C7",
         linewidth=1.2,
     )
@@ -245,14 +284,14 @@ def _render_chart(results: list[dict], output_path: Path) -> None:
             )
 
     # Styling
-    ax1.set_xlabel("Confidence Score Bucket", fontsize=11, color="#E2E8F0", labelpad=10)
-    ax1.set_ylabel("Case Volume", fontsize=11, color="#38BDF8", labelpad=10)
+    ax1.set_xlabel("Diagnosis Confidence Score Bucket", fontsize=11, color="#E2E8F0", labelpad=10)
+    ax1.set_ylabel("Diagnosed Case Volume", fontsize=11, color="#38BDF8", labelpad=10)
     ax2.set_ylabel("Empirical Recovery Rate (%)", fontsize=11, color="#10B981", labelpad=10)
     ax1.set_xticks(list(x))
     ax1.set_xticklabels(labels, fontsize=10, color="#CBD5E1")
     ax1.tick_params(colors="#94A3B8")
     ax2.tick_params(colors="#94A3B8")
-    ax1.set_ylim(0, max(case_counts) * 1.2)
+    ax1.set_ylim(0, max(case_counts) * 1.25)
     ax2.set_ylim(0, 100)
     ax2.yaxis.set_major_formatter(mtick.PercentFormatter())
 
@@ -265,11 +304,12 @@ def _render_chart(results: list[dict], output_path: Path) -> None:
 
     # Titles & Legend
     plt.title(
-        "Sentinel — Confidence Score vs. Empirical Recovery Success Rate (N=80)",
-        fontsize=13,
+        f"Sentinel — Confidence Calibration on Diagnosed Cases (N={diagnosed_count})\n"
+        f"[Excludes {skipped_count} pre-pipeline safety skips with no model-assessed confidence]",
+        fontsize=12,
         color="#F8FAFC",
         fontweight="bold",
-        pad=18,
+        pad=14,
     )
     lines1, labels1 = ax1.get_legend_handles_labels()
     lines2, labels2 = ax2.get_legend_handles_labels()
