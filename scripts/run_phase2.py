@@ -13,6 +13,15 @@ import random
 import sys
 import unittest
 
+# Ensure project root is on path
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if ROOT_DIR not in sys.path:
+    sys.path.insert(0, ROOT_DIR)
+os.chdir(ROOT_DIR)
+
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+
 from baseline.baseline import export_baseline_csv, run_baseline_batch
 from core import config
 from core.audit_log import AuditLog
@@ -45,7 +54,7 @@ def main():
     print("\n[OK] All unit tests passed successfully.")
 
     # 2. Load synthetic payment cases
-    data_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
+    data_dir = os.path.join(ROOT_DIR, "data")
     pay_path = os.path.join(data_dir, "failed_payments.json")
 
     if not os.path.exists(pay_path):

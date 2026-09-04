@@ -19,6 +19,15 @@ powershell.bat
 .DS_Store
 Thumbs.db
 
+# IDE, Editor & Agent app-data paths (never commit assistant/IDE state)
+.gemini/
+.agents/
+.tempmediaStorage/
+.vscode/
+.idea/
+scratch/
+visual_enhancement_plan.md
+
 # NOTE: data/, reports/, and data/agent_memory.json are intentionally NOT ignored.
 # These contain real proof artifacts (benchmark CSVs, live Gemini proof, memory stats)
 # and must be tracked in version control.

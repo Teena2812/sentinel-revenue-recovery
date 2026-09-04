@@ -5,6 +5,13 @@ Reads strictly from reports/payment_batch_breakdown.csv and reports/b2b_batch_br
 
 import csv
 import os
+import sys
+
+# Ensure working directory is project root
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if ROOT_DIR not in sys.path:
+    sys.path.insert(0, ROOT_DIR)
+os.chdir(ROOT_DIR)
 
 RECOVERY_ACTIONS = {
     "RETRY_NOW",

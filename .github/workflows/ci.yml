@@ -36,8 +36,8 @@ jobs:
 
       - name: Generate benchmark reports
         run: |
-          python run_phase2.py
-          python run_phase3.py
+          python scripts/run_phase2.py
+          python scripts/run_phase3.py
 
       - name: Assert benchmark recovery rates & zero violations
         run: |

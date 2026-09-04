@@ -21,6 +21,15 @@ import time
 from datetime import datetime
 from typing import Any
 
+# Ensure project root is on path
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if ROOT_DIR not in sys.path:
+    sys.path.insert(0, ROOT_DIR)
+os.chdir(ROOT_DIR)
+
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+
 from agents.diagnosis import diagnose
 from agents.execution import execute
 from agents.llm_client import MockLLMClient
