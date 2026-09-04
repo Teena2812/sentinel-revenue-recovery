@@ -151,6 +151,13 @@ class FailedPaymentCase:
     currency: str = "INR"
     case_type: CaseType = CaseType.FAILED_PAYMENT
 
+    def __post_init__(self) -> None:
+        if self.amount <= 0:
+            raise ValueError(
+                f"Invalid case amount: {self.amount}. "
+                f"Case amount must be strictly positive (> 0)."
+            )
+
     @property
     def idempotency_key(self) -> str:
         """Computed every access — never stale."""
@@ -181,6 +188,13 @@ class B2BReceivableCase:
     created_at: datetime = field(default_factory=datetime.now)
     currency: str = "INR"
     case_type: CaseType = CaseType.B2B_RECEIVABLE
+
+    def __post_init__(self) -> None:
+        if self.amount <= 0:
+            raise ValueError(
+                f"Invalid case amount: {self.amount}. "
+                f"Case amount must be strictly positive (> 0)."
+            )
 
     @property
     def days_overdue(self) -> int:

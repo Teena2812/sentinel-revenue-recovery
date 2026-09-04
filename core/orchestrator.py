@@ -24,9 +24,9 @@ import os
 import random
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
-from typing import Optional, Union
+from typing import Optional
 
-from agents.diagnosis import DiagnosisCategory, DiagnosisResult, diagnose
+from agents.diagnosis import DiagnosisResult, diagnose
 from agents.execution import ExecutionResult, execute
 from agents.llm_client import LLMClient, get_llm_client
 from agents.strategy import (
@@ -38,7 +38,6 @@ from agents.strategy import (
 from core import config
 from core.audit_log import (
     AuditLog,
-    CaseAuditTrail,
     DiagnosisEntry,
     GateEntry,
     StrategyEntry,
@@ -49,7 +48,6 @@ from core.schemas import (
     ActionType,
     B2BReceivableCase,
     Case,
-    CaseStatus,
     CaseType,
     FailedPaymentCase,
 )
@@ -143,8 +141,17 @@ def process_case(
     active_rng = rng if rng is not None else random.Random(42)
     client = llm_client or get_llm_client()
     sim_time = current_time or getattr(config, "SIMULATED_CURRENT_TIME", None) or datetime.now()
-    is_payment = case.case_type == CaseType.FAILED_PAYMENT
-    res_unit = "hours" if is_payment else "days"
+    if case.case_type == CaseType.FAILED_PAYMENT:
+        is_payment = True
+        res_unit = "hours"
+    elif case.case_type == CaseType.B2B_RECEIVABLE:
+        is_payment = False
+        res_unit = "days"
+    else:
+        raise ValueError(
+            f"Unsupported or unrecognized case_type: {getattr(case, 'case_type', None)!r}. "
+            f"Expected CaseType.FAILED_PAYMENT or CaseType.B2B_RECEIVABLE."
+        )
     case_initial_attempts = max(1, case.attempt_count)
 
     # -----------------------------------------------------------------------
@@ -157,7 +164,9 @@ def process_case(
         audit_log.record_gate_decision(_gate_decision_to_entry(gate))
 
         esc_reason: Optional[str] = None
-        if skip_result.skip_type == "dispute":
+        if skip_result.skip_type == "invalid_amount":
+            esc_reason = "INVALID_AMOUNT_ESCALATED"
+        elif skip_result.skip_type == "dispute":
             esc_reason = "dispute_skip"
         elif skip_result.skip_type == "fraud":
             esc_reason = "fraud_stop_skip"

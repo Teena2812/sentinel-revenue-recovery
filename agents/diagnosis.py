@@ -12,9 +12,9 @@ from collections import Counter
 import enum
 import logging
 from dataclasses import dataclass
-from typing import Any, Optional, Union
+from typing import Any, Optional
 
-from agents.llm_client import LLMClient, LLMError
+from agents.llm_client import LLMClient
 from core.schema_validation import SchemaValidationError, validate_diagnosis_output
 from core.schemas import B2BReceivableCase, Case, CaseType, CustomerHistory, FailedPaymentCase
 

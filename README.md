@@ -1,7 +1,7 @@
 # Sentinel — Autonomous AI Revenue Recovery Engine
 
 [![Sentinel CI](https://github.com/Teena2812/sentinel-revenue-recovery/actions/workflows/ci.yml/badge.svg)](https://github.com/Teena2812/sentinel-revenue-recovery/actions/workflows/ci.yml)
-[![Tests](https://img.shields.io/badge/Tests-147%2F147%20passing-brightgreen)](tests/)
+[![Tests](https://img.shields.io/badge/Tests-150%2F150%20passing-brightgreen)](tests/)
 ![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Specification](https://img.shields.io/badge/Specification-ARCHITECTURE.md-indigo)](ARCHITECTURE.md)
@@ -10,7 +10,7 @@
 
 | 🛡️ Zero Violations | 📈 Dual Recovery Rates | 🧪 100% Test Coverage | 📊 Benchmark Ground Truth |
 | :---: | :---: | :---: | :---: |
-| [**0 Compliance Violations**](reports/audit_viewer.html)<br>*(100% compliant vs [11 baseline breaches](reports/payment_baseline.csv))* | [**30.0% Full / 35.8% Addressable**](core/orchestrator.py#L99-L108)<br>*(₹9.09M capital recovered across [N=80 cases](data/))* | [**147 Passing (0 failures)**](tests/)<br>*(Executed in 0.086s on [GitHub CI](.github/workflows/ci.yml))* | [**30 Payments + 50 B2B**](data/)<br>*(Deterministic [locked IST simulation](core/config.py#L73-L79))* |
+| [**0 Compliance Violations**](reports/audit_viewer.html)<br>*(100% compliant vs [11 baseline breaches](reports/payment_baseline.csv))* | [**30.0% Full / 35.8% Addressable**](core/orchestrator.py#L99-L108)<br>*(₹9.09M capital recovered across [N=80 cases](data/))* | [**150 Passing (0 failures)**](tests/)<br>*(Executed in 0.092s on [GitHub CI](.github/workflows/ci.yml))* | [**30 Payments + 50 B2B**](data/)<br>*(Deterministic [locked IST simulation](core/config.py#L73-L79))* |
 
 ![Sentinel Live KPI Ribbon](docs/screenshots/kpi_ribbon.png)
 
@@ -23,10 +23,20 @@
 
 Sentinel is an autonomous, dual-engine AI revenue recovery system built for Track 3 of the **Razorpay AI Buildathon**. It replaces rigid, one-size-fits-all retry schedules with adaptive root-cause reasoning surrounded by an unbendable, deterministic compliance gate grounded in the **RBI Fair Practices Code**.
 
+### Why Track 3 (Revenue Recovery) Over the Other Six Tracks
+The Razorpay AI Buildathon presented seven problem areas (conversational checkout, merchant onboarding, fraud scoring, ledger reconciliation, AI dispute resolution, and churn prediction). We selected **Track 3 (AI Revenue Recovery)** because:
+1. **Direct Bottom-Line Survival**: In fintech, checkout optimizations yield marginal percentage gains, but uncollected revenue is pure financial leakage. Recovering an overdue invoice or failed transaction flows 100% directly to merchant liquidity.
+2. **The Classic AI Tension**: Revenue recovery is the quintessential domain where **unconstrained AI is dangerous, but pure rules are ineffective**:
+   - *Why pure rules fail*: Fixed-interval cron jobs treat bank gateway crashes identical to expired card authorizations, retrying indiscriminately until cards are blocked or customers churn.
+   - *Why unconstrained AI fails*: Pure LLMs hallucinate aggressive demands, send midnight dunning notices, retry fraud-flagged cards, and trigger severe RBI regulatory penalties.
+3. **The Architectural Solution**: Sentinel proves that pairing **probabilistic AI reasoning** (for root-cause diagnosis and tone calibration) with **deterministic code gates** (for legal contact windows, attempt caps, idempotency, and confidence floors) creates a production-grade recovery engine that out-recovers fixed rules while eliminating regulatory liability.
+
+### Headline Benchmark Results
 Tested across N=80 benchmark cases ([30 Failed Payments](reports/payment_batch_breakdown.csv), [50 B2B Receivables](reports/b2b_batch_breakdown.csv)):
 
 * **Full-Batch Recovery Rate**: [**30.0% (24/80 cases)**](scripts/assert_baseline.py) across all inbound failure volume.
-* **Addressable Recovery Rate**: [**35.8% (24/67 cases)**](core/orchestrator.py#L99-L108) — strictly evaluating addressable cases after excluding 13 cases halted before any recovery attempt by statutory fraud, dispute, or attempt-cap rules (inspected in [Visual Audit Viewer](reports/audit_viewer.html)).
+* **Addressable Recovery Rate**: [**35.8% (24/67 cases)**](core/orchestrator.py#L99-L108) — strictly evaluating addressable cases after excluding 13 cases halted before any recovery attempt by statutory fraud, dispute, or attempt-cap rules (inspected in [Visual Audit Viewer](reports/audit_viewer.html)).  
+  *(Reconciliation Note: Of the 19 cases that never reached diagnosis, 13 are statutory terminal hard-stops [fraud/dispute/attempt-cap, excluded from the addressable-recovery denominator] and 6 are active-but-undiagnosed cases [5 promise-to-pay waits + 1 sub-₹500 micro-case], which are recovery attempts and remain in the addressable cohort — hence 80 − 13 = 67 addressable, but 80 − 19 = 61 diagnosed.)*
 * **Statutory Compliance Violations**: [**0 violations**](reports/audit_viewer.html) (100% compliant) vs. [**11 severe violations**](reports/payment_baseline.csv) generated by the naive baseline.
 * **Capital Recovered**: [**₹9,092,801.66**](reports/b2b_batch_breakdown.csv) (₹154.1K payments + ₹8.94M commercial B2B invoices) recovered cleanly without debtor harassment.
 * **100% Locked & Reproducible**: Fully deterministic verification anchored to [`SIMULATED_CURRENT_TIME = 2026-08-24 12:00:00 IST`](core/config.py#L73-L79) with isolated random generator streams (`seed=42`).
@@ -93,6 +103,7 @@ flowchart TD
   - [Failed Payments Benchmark (30 Cases)](#failed-payments-benchmark-30-cases)
   - [B2B Receivables Benchmark (50 Cases)](#b2b-receivables-benchmark-50-cases)
   - [Confidence Calibration Breakdown (N=61 Diagnosed Cases)](#confidence-calibration-breakdown-n61-diagnosed-cases)
+- [Scope & Generalization](#scope-generalization)
 - [How to Run & Verify](#how-to-run-verify)
 - [Interactive Test Harness](#interactive-test-harness)
 
@@ -104,7 +115,7 @@ flowchart TD
 **Sentinel is an autonomous, dual-engine AI revenue recovery system that turns uncollected invoices and payment drops into recovered cash through root-cause diagnosis, adaptive retry strategies, and an unbendable deterministic compliance gate.**
 
 ### The Real-World Stakes: ₹8.1 Trillion MSME Liquidity Crisis
-An estimated **₹8.1 Trillion is currently locked in delayed payments to India's MSME sector** (2025–26 Economic Survey). Across Indian commerce, invoice cycles routinely breach the legally mandated 45-day payment window established under the MSMED Act, starving small businesses of working capital and driving viable enterprises into insolvency.
+An estimated **₹8.1 Trillion is currently locked in delayed payments to India's MSME sector** ([Economic Survey 2025–26, tabled in Parliament January 29, 2026; reported via Business Standard](https://www.business-standard.com/budget/news/delayed-payments-continue-to-hit-msmes-8-1-trillion-stuck-eco-survey-126012901139_1.html)). Across Indian commerce, invoice cycles routinely breach the legally mandated 45-day payment window established under the MSMED Act, starving small businesses of working capital and driving viable enterprises into insolvency.
 
 Revenue leaks across two temporal horizons:
 1. **Intraday B2C Payment Drops**: Transient bank gateway timeouts, customer auth expirations, and momentary liquidity dips cause high-velocity checkout abandonment. Merchants lose customers permanently when dumb retries fire immediately into overloaded banking switches.
@@ -128,26 +139,27 @@ The buildathon deliverables require clear separation of code, architecture, and 
 👉 **[`ARCHITECTURE.md`](ARCHITECTURE.md)**
 
 ### Test Coverage & CI Automated Verification
-Sentinel is backed by a comprehensive, fully automated test suite containing **147 tests across 8 test suites**, executing in **under 0.10 seconds**:
+Sentinel is backed by a comprehensive, fully automated test suite containing **150 tests across 9 test suites**, executing in **under 0.10 seconds**:
 
 ```bash
 python -m unittest discover tests -v
-# Ran 147 tests in 0.086s -> OK
+# Ran 150 tests in 0.092s -> OK
 ```
 
-The 8 dedicated test suites cover every layer of the architecture:
+The 9 dedicated test suites cover every layer of the architecture:
 - [`tests/test_compliance.py`](tests/test_compliance.py) — RBI Fair Practices Code, contact hours, attempt caps, dispute/fraud invariants, confidence floors.
 - [`tests/test_core_loop.py`](tests/test_core_loop.py) — End-to-end multi-attempt loop, recovery state machine, payment retry strategy dispatch.
 - [`tests/test_b2b_loop.py`](tests/test_b2b_loop.py) — B2B commercial invoice recovery cycles, aging buckets, promise-to-pay tracking.
 - [`tests/test_diagnosis_self_consistency.py`](tests/test_diagnosis_self_consistency.py) — 3-sample multi-perspective consensus voting and majority confidence capping.
 - [`tests/test_relationship.py`](tests/test_relationship.py) — Value percentile, historical reliability, and fatigue-cap tier downgrades.
 - [`tests/test_failure_modes.py`](tests/test_failure_modes.py) — 5 induced adversarial failure modes (out-of-menu, malformed JSON, timeout, race conditions, low confidence).
+- [`tests/test_out_of_distribution.py`](tests/test_out_of_distribution.py) — Out-of-distribution robustness (unseen failure codes, extreme positive amounts, malformed negative balances, unknown case types).
 - [`tests/test_baseline.py`](tests/test_baseline.py) — Benchmark replication, zero regression drift, and temporal simulation anchoring.
 - [`tests/test_build_quality.py`](tests/test_build_quality.py) — Schema validation exception hierarchies and rules-as-data fallback handling.
 
 Automated verification runs on every commit and pull request via GitHub Actions ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)), validating:
 - Python 3.11 syntax compilation across all subpackages (`core/`, `agents/`, `tests/`, `scripts/`).
-- Full 147-test execution with zero failures.
+- Full 150-test execution with zero failures.
 - Head-to-head benchmark generation (`scripts/run_phase2.py`, `scripts/run_phase3.py`).
 - Zero-drift regression assertion against locked ground truth (`scripts/assert_baseline.py`).
 
@@ -156,7 +168,7 @@ Sentinel has zero external database requirements, zero Docker daemon dependencie
 
 1. **Virtual Environment Creation**: **22.99s** (`python -m venv .venv`)
 2. **Dependency Installation**: **95.62s** (`pip install -r requirements.txt`) — dominated almost entirely by the binary wheels in `google-generativeai` (`grpcio`, `protobuf`) and `matplotlib` (`numpy`). On warm cached installs, this drops to under 5 seconds.
-3. **Full Automated Test Suite**: **0.98s** (`python -m unittest discover tests`, executing 147 unit tests in 0.165s).
+3. **Full Automated Test Suite**: **0.98s** (`python -m unittest discover tests`, executing 150 unit tests in 0.092s).
 4. **Baseline & Zero-Drift Assertion**: **0.35s** (`python scripts/assert_baseline.py`, validating payment and B2B recovery rates against locked ground truth).
 
 ```bash
@@ -193,11 +205,11 @@ A clean top-level directory layout allows immediate orientation:
 ├── docs/             # Technical specifications, PRDs, stress tests, and architecture diagrams
 ├── reports/          # Benchmark outputs, calibration charts, CSV breakdowns, visual HTML viewer
 ├── scripts/          # Interactive demo, phase benchmarks, calibration audits, and live runner
-├── tests/            # Automated test suite (147 tests across compliance, loop, and schema validation)
+├── tests/            # Automated test suite (150 tests across compliance, loop, and schema validation)
 ├── ARCHITECTURE.md   # Standalone comprehensive system architecture & methodology specification
 ├── LICENSE           # Open-source MIT license
 ├── README.md         # Master project overview structured around buildathon evaluation criteria
-└── requirements.txt  # Minimal dependencies for local execution (installs under 15s)
+└── requirements.txt  # Minimal dependencies (≈95s cold install due to grpcio/protobuf / <5s cached)
 ```
 
 ---
@@ -330,7 +342,8 @@ Both benchmarks evaluate against identical synthetic datasets anchored to `confi
 
 ### Confidence Calibration Breakdown (N=61 Diagnosed Cases)
 
-Evaluated via [`scripts/confidence_calibration.py`](scripts/confidence_calibration.py) across all 61 cases that reached `diagnose()` (data recorded in [`reports/confidence_calibration.csv`](reports/confidence_calibration.csv)):
+Evaluated via [`scripts/confidence_calibration.py`](scripts/confidence_calibration.py) across all 61 cases that reached `diagnose()` (data recorded in [`reports/confidence_calibration.csv`](reports/confidence_calibration.csv)).  
+*(Reconciliation Note: Of the 19 cases that never reached diagnosis, 13 are statutory terminal hard-stops [fraud/dispute/attempt-cap, excluded from the addressable-recovery denominator] and 6 are active-but-undiagnosed cases [5 promise-to-pay waits + 1 sub-₹500 micro-case], which are recovery attempts and remain in the addressable cohort — hence 80 − 13 = 67 addressable, but 80 − 19 = 61 diagnosed.)*
 
 | Confidence Bucket | Diagnosed Cases | Recovered Cases | Empirical Win Rate (%) | Avg Confidence | Primary Outcome Breakdown |
 | :--- | :---: | :---: | :---: | :---: | :--- |
@@ -344,6 +357,25 @@ Evaluated via [`scripts/confidence_calibration.py`](scripts/confidence_calibrati
 ![Confidence Calibration Curve](reports/confidence_calibration.png)
 
 > **Honest Calibration Interpretation**: In this dataset, confidence functions primarily as an **all-or-nothing gating filter rather than a continuous linear predictor of payment success**: sub-0.80 cases route directly to escalations or hard stops, while cases in the autonomous tier (0.80–1.0) achieve a 40.0% empirical recovery rate because real recovery depends on debtor liquidity and banking rails rather than model certainty.
+
+---
+
+## Scope & Generalization
+
+Sentinel's benchmark performance is validated against **N=80 synthetically generated cases** (30 Failed Payments, 50 B2B Receivables). We make **no statistical generalization claim** from a sample size of N=80: empirical recovery rates and calibration figures reflect performance on this specific synthetic validation suite rather than an empirical claim over the broader universe of real-world Indian commerce.
+
+Instead, Sentinel's robustness to unseen and out-of-distribution inputs is fundamentally **architectural, not statistical**:
+1. **Schema Validation Layer ([`core/schemas.py`](core/schemas.py))**: Input serialization rigidly enforces typed dataclasses and enumeration bounds. Unknown category codes (such as unrecognized failure codes or invalid case types) and non-positive monetary balances (`amount <= 0`) are cleanly rejected at ingestion rather than entering agent reasoning.
+2. **Low-Confidence Escalation ([`core/compliance.py`](core/compliance.py))**: Novel feature combinations and ambiguous debtor contexts induce diagnostic disagreement or low model confidence, automatically decaying confidence below the regulatory floor ($< 0.85$) and routing the case safely to human operations rather than executing an ungrounded recovery action.
+3. **Bounded-Action Deterministic Gate ([`core/compliance.py`](core/compliance.py))**: Strategy generation is confined to a closed action menu with invariant statutory rules (RBI contact hours, attempt ceilings, fatigue caps, and fraud/dispute hard stops), ensuring the engine cannot execute arbitrary, dangerous, or harassing actions even when facing novel scenarios.
+
+Rather than making an unqualified claim of hypothetical resilience, this architectural robustness was actively tested against failure: when [`tests/test_out_of_distribution.py`](tests/test_out_of_distribution.py) was first run against the full pipeline, it surfaced a genuine architectural gap — negative case amounts (`-₹1,500.0`) evaluated as `< 500` in `check_cost_threshold()`, misclassifying them as cheap sub-threshold micro-cases and routing them to automated `RETRY_NOW`. We resolved this gap at its root by adding strict non-positive amount rejection (`amount <= 0` raises `ValueError`) at schema construction in [`core/schemas.py`](core/schemas.py), backed by a defensive gate guard in [`core/compliance.py`](core/compliance.py) that routes any bypassed non-positive balance to `ESCALATE_HUMAN` (`INVALID_AMOUNT_ESCALATED`). With this real gap fixed, all 3 OOD scenarios (novel failure code tuples, extreme positive and negative amounts, and unknown case types) now pass cleanly across the 150-test suite.
+
+Furthermore, all operational thresholds across the engine — including the confidence safety floor (`0.85`), maximum loop attempts (`3`), attempt ceilings (`5` for payments, `4` for B2B), and contact windows (`8:00 AM – 7:00 PM IST`) — are **illustrative engineering defaults**, not calibrated against real production data.
+
+A real-world production deployment would require an integrated live fraud and dispute signal source (such as Razorpay Thirdwatch or card network chargeback feeds) and empirical recalibration of confidence thresholds and attempt budgets against actual recovery outcomes.
+
+*(Cross-referenced with architectural safety boundaries in [`Where We Chose NOT to Use AI`](#where-we-chose-not-to-use-ai) and [`ARCHITECTURE.md §10: Scope & Generalization`](ARCHITECTURE.md#10-scope-generalization).)*
 
 ---
 

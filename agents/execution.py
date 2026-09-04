@@ -18,7 +18,7 @@ import logging
 import random
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Optional, Union
+from typing import Optional
 
 from core import config
 from core.audit_log import AuditLog, ExecutionEntry

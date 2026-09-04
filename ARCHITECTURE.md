@@ -231,7 +231,26 @@ Sentinel’s B2B compliance rules are mathematically grounded in the **Reserve B
 
 ---
 
-## 10. Production Roadmap (Buildathon Scope Boundaries)
+## 10. Scope & Generalization
+
+Sentinel's benchmark evaluation is conducted across **N=80 synthetic validation cases** (30 Failed Payments, 50 B2B Receivables). We make **no statistical generalization claim** from this sample size: the 30.0% full-batch and 35.8% addressable recovery rates demonstrate pipeline mechanics on this synthetic set rather than a statistically valid claim over the infinite distribution of Indian commerce.
+
+Robustness to unseen and out-of-distribution inputs in Sentinel is fundamentally **architectural, not statistical**:
+1. **Schema Validation Layer ([`core/schemas.py`](core/schemas.py))**: Input serialization rigidly enforces typed dataclasses and enumeration bounds. Unknown category codes (such as unrecognized failure codes or invalid case types) and non-positive monetary balances (`amount <= 0`) are cleanly rejected at ingestion rather than entering agent reasoning.
+2. **Low-Confidence Escalation ([`core/compliance.py`](core/compliance.py))**: Out-of-distribution feature combinations induce low model confidence or multi-perspective disagreement, automatically capping confidence below the regulatory threshold ($< 0.85$) and triggering safe fallback escalation to human teams.
+3. **Bounded-Action Deterministic Gate ([`core/compliance.py`](core/compliance.py))**: Even when reasoning agents operate under complete ambiguity, the compliance gate enforces rigid statutory invariants (RBI contact hours, attempt ceilings, fatigue caps, and dispute halts), ensuring the system cannot execute ungrounded, abusive, or dangerous actions on novel cases.
+
+Rather than relying on an unqualified claim of hypothetical resilience, this architecture was actively tested against failure: when [`tests/test_out_of_distribution.py`](tests/test_out_of_distribution.py) was executed against the full pipeline, it surfaced a genuine architectural gap — negative case amounts (`-₹1,500.0`) evaluated as `< 500` in `check_cost_threshold()`, misclassifying them as cheap sub-threshold micro-cases and routing them to automated `RETRY_NOW`. We resolved this gap at its root by adding strict non-positive amount rejection (`amount <= 0` raises `ValueError`) at schema construction in [`core/schemas.py`](core/schemas.py), backed by a defensive gate guard in [`core/compliance.py`](core/compliance.py) that routes any bypassed non-positive balance to `ESCALATE_HUMAN` (`INVALID_AMOUNT_ESCALATED`). With this real gap fixed, all 3 OOD scenarios (novel failure code tuples, extreme positive and negative amounts, and unknown case types) now pass cleanly across the 150-test suite.
+
+Furthermore, all governance thresholds across the system — including confidence safety floors (`0.85`), loop caps (`3`), attempt ceilings (`5` for payments, `4` for B2B), and contact hours (`8 AM – 7 PM IST`) — are **illustrative engineering defaults**, not calibrated against real-world payment data.
+
+A real-world production deployment would require an integrated live fraud and dispute signal source (e.g. Razorpay Thirdwatch, card network dispute feeds) and empirical threshold recalibration against real-world recovery outcomes.
+
+*(Cross-referenced with [`Where We Chose Not to Use AI`](#5-where-we-chose-not-to-use-ai) and [`README.md § Scope & Generalization`](README.md#scope-generalization).)*
+
+---
+
+## 11. Production Roadmap (Buildathon Scope Boundaries)
 
 Sentinel is architecturally complete for buildathon evaluation. The following represent production transition steps:
 

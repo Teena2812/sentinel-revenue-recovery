@@ -30,10 +30,8 @@ from typing import Any, Optional, Union
 from core import config
 from core.schemas import (
     ActionType,
-    B2BReceivableCase,
     Case,
     CaseType,
-    FailedPaymentCase,
 )
 
 logger = logging.getLogger(__name__)
@@ -262,6 +260,14 @@ def check_cost_threshold(case: Case) -> ComplianceResult:
     else:
         threshold = config.MIN_RECOVERY_AMOUNT_B2B
 
+    if case.amount <= 0:
+        return ComplianceResult(
+            passed=False,
+            rule_name="cost_threshold",
+            reason=f"INVALID_AMOUNT: Case amount ₹{case.amount:,.2f} is non-positive (<= 0). "
+                   f"Non-positive balances must never be automated for recovery.",
+        )
+
     if case.amount >= threshold:
         return ComplianceResult(
             passed=True,
@@ -286,20 +292,32 @@ class SkipResult:
     should_skip: bool
     action: ActionType
     reason: str
-    skip_type: str  # "fraud" | "dispute" | "cost_threshold"
+    skip_type: str  # "invalid_amount" | "fraud" | "dispute" | "cost_threshold"
 
 
 def should_skip_pipeline(case: Case) -> SkipResult | None:
     """Pre-pipeline check: should this case skip Diagnosis/Strategy?
 
     Checks in strict priority order before spending LLM tokens:
+    0. Non-positive amount -> ESCALATE_HUMAN (defense-in-depth against invalid cases)
     1. Fraud flag -> STOP (hard stop, outcome is predetermined)
     2. Dispute flag -> ESCALATE_HUMAN (route to dispute queue, outcome predetermined)
-    3. Cost threshold -> cheap deterministic action (e.g., RETRY_NOW for payments)
+    3. Active unexpired promise-to-pay (kept is None) -> WAIT
+    4. Cost threshold -> cheap deterministic action (e.g., RETRY_NOW for payments)
 
     Returns SkipResult if the case should skip LLM pipeline, or None if full pipeline is required.
     NOTE: All actions returned still pass through run_all_checks() before executing.
     """
+    # 0. Non-positive amount guard (defense-in-depth against bypassed schema validation)
+    if getattr(case, "amount", 0.0) <= 0:
+        return SkipResult(
+            should_skip=True,
+            action=ActionType.ESCALATE_HUMAN,
+            reason=f"INVALID_AMOUNT_ESCALATED: Case amount ₹{getattr(case, 'amount', 0.0):,.2f} <= 0 is invalid. "
+                   f"Non-positive balances must never route to automated recovery. Routing to human review.",
+            skip_type="invalid_amount",
+        )
+
     # 1. Fraud flag hard-stop
     if getattr(case, "fraud_flag", False):
         return SkipResult(

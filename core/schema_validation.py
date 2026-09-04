@@ -9,8 +9,6 @@ catch it with the same retry-once-then-escalate behavior as unparseable
 JSON, producing LLM_RESPONSE_INVALID_SCHEMA in the reasoning.
 """
 
-from core.schemas import ActionType
-
 
 # _VALID_CATEGORIES is populated lazily on first use to avoid circular imports
 # (agents.diagnosis imports core.schema_validation, so we cannot import agents.diagnosis at module level)

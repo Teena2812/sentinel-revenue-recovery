@@ -33,7 +33,6 @@ ALL DATA IS SIMULATED.
 from __future__ import annotations
 
 import logging
-from typing import Union
 
 from core import config
 from core.schemas import (

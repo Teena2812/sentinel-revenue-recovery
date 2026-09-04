@@ -13,9 +13,9 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass
-from typing import Any, Optional, Union
+from typing import Any, Optional
 
-from agents.diagnosis import DiagnosisCategory, DiagnosisResult
+from agents.diagnosis import DiagnosisResult
 from agents.llm_client import LLMClient
 from core import config
 from core.compliance import GateDecision
