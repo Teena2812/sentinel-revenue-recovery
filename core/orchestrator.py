@@ -326,7 +326,8 @@ def process_case(
 
             # Prompt 7: Hard confidence gate rejection routes directly to human escalation
             if any(v.rule_name == "confidence_threshold" for v in gate.violations):
-                last_esc_reason = "low_confidence"
+                last_esc_reason = "LOW_CONFIDENCE_BLOCKED"
+                initial_gate_violation = "LOW_CONFIDENCE_BLOCKED"
                 proposal.proposed_action = ActionType.ESCALATE_HUMAN
                 term_gate = run_all_checks(
                     case,
@@ -344,6 +345,8 @@ def process_case(
                 viol_reason = gate.violations[0].reason
                 if "INVALID_ACTION_REJECTED" in viol_reason:
                     initial_gate_violation = "INVALID_ACTION_REJECTED"
+                elif "LOW_CONFIDENCE_BLOCKED" in viol_reason or viol_name == "confidence_threshold":
+                    initial_gate_violation = "LOW_CONFIDENCE_BLOCKED"
                 elif viol_name == "attempt_cap":
                     initial_gate_violation = f"attempt_cap_reached_on_attempt_{case.attempt_count}"
                 else:

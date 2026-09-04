@@ -1,6 +1,6 @@
 # Sentinel — AI Revenue Recovery Agent
 
-![Tests](https://img.shields.io/badge/Tests-140%2F140%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/Tests-141%2F141%20passing-brightgreen)
 ![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
 ![Buildathon](https://img.shields.io/badge/Razorpay%20AI%20Buildathon-Track%203-orange)
 
@@ -45,7 +45,7 @@ An estimated **₹8.1 trillion** is currently locked in delayed payments to Indi
 
 Both benchmarks evaluate against identical synthetic datasets anchored to `config.SIMULATED_CURRENT_TIME = 2026-08-24 12:00:00 IST` with isolated RNG streams (`seed=42`).
 
-**140/140 tests passing, reproducible across independent runs.**
+**141/141 tests passing, reproducible across independent runs.**
 
 ### Benchmark Visualizations
 
@@ -344,6 +344,7 @@ In a production revenue recovery engine, resilience is measured by how safely th
 
 5. **Sub-Threshold / Low-Confidence Proposals (`LOW_CONFIDENCE_BLOCKED`)**  
    *What happens:* A generative model might propose an active recovery action with low statistical confidence (below the regulatory bar of 0.85), or an unvalidated caller might bypass the Strategy agent's internal Fallback Ladder.  
-   *What Sentinel does:* The Deterministic Compliance Gate independently evaluates `check_confidence_threshold` against `config.CONFIDENCE_THRESHOLD` (`0.85`, sourced from `config/rules_config.json`). If confidence is sub-threshold, the gate independently rejects the action with `LOW_CONFIDENCE_BLOCKED` and routes directly to the human operations queue with the explicit reason code `low_confidence`. Safe passive actions (`ESCALATE_HUMAN`, `STOP`, `WAIT`) remain exempt, ensuring the system can always stand down safely.
+   *What Sentinel does:* The Deterministic Compliance Gate independently evaluates `check_confidence_threshold` against `config.CONFIDENCE_THRESHOLD` (`0.85`, sourced from `config/rules_config.json`). If confidence is sub-threshold, the gate independently rejects the action with `LOW_CONFIDENCE_BLOCKED` and routes directly to the human operations queue with the explicit reason code `LOW_CONFIDENCE_BLOCKED`. Safe passive actions (`ESCALATE_HUMAN`, `STOP`, `WAIT`) remain exempt, ensuring the system can always stand down safely.  
+   *Empirical Dataset Note:* In the current 80-case mock benchmark, only one case (`PAY-57c700aa-b7b`) ever produced sub-threshold confidence, and it was already caught by the existing soft fallback ladder before reaching the hard gate — so the hard gate's independence is proven by the direct-bypass unit tests in `tests/test_failure_modes.py`, not by a naturally-occurring case in this dataset.
 
 

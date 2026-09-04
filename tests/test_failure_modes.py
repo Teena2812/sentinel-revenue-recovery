@@ -167,6 +167,36 @@ class TestFailureModes(unittest.TestCase):
         )
         self.assertTrue(gate_decision.approved)
 
+    def test_low_confidence_action_blocked_and_escalated_when_ladder_bypassed(self):
+        """Prompt 7 / Scenario 5: End-to-end pipeline test when soft ladder is bypassed.
+
+        Proves that if an unvalidated component or rogue policy bypasses the soft ladder
+        and sends an active recovery action with confidence < 0.85 to the execution loop,
+        the Deterministic Compliance Gate independently blocks it and routes to ESCALATE_HUMAN
+        with CaseOutcome.escalation_reason == 'LOW_CONFIDENCE_BLOCKED'.
+        """
+        import unittest.mock
+        case = _make_test_case("PAY-CONF-E2E-001")
+        client = MockLLMClient(override_responses={
+            "STRATEGY PROPOSAL REQUEST": (
+                '{"proposed_action": "RETRY_NOW", "confidence": 0.70, '
+                '"reasoning": "Sub-threshold retry proposal", "risk_assessment": "MEDIUM"}'
+            )
+        })
+
+        with unittest.mock.patch("core.orchestrator.apply_fallback_ladder", side_effect=lambda c, p: p):
+            outcome = process_case(
+                case,
+                self.audit_log,
+                self.memory,
+                client,
+                current_time=config.SIMULATED_CURRENT_TIME,
+            )
+
+        self.assertEqual(outcome.status, "ESCALATED")
+        self.assertEqual(outcome.final_action, ActionType.ESCALATE_HUMAN)
+        self.assertEqual(outcome.escalation_reason, "LOW_CONFIDENCE_BLOCKED")
+
     def test_malformed_unparseable_llm_response(self):
         """Scenario 2: LLM API returns corrupted/truncated JSON -> catches, zero crash, LLM_RESPONSE_UNPARSEABLE."""
         case = _make_test_case("PAY-MALFORMED-001")

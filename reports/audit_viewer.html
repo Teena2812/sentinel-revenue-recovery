@@ -508,7 +508,7 @@
           let escDetail = 'HUMAN QUEUE';
           if (safety.type === 'dispute') escDetail = 'DISPUTE QUEUE';
           else if (safety.type === 'cap' || (c.escalation_reason || '').includes('attempt_cap')) escDetail = 'CAP REACHED';
-          else if ((c.escalation_reason || '').includes('low_confidence')) escDetail = 'LOW CONFIDENCE';
+          else if ((c.escalation_reason || '').toLowerCase().includes('low_confidence')) escDetail = 'LOW CONFIDENCE';
           outcomeHtml = `<span class="badge badge-escalated">▲ ESCALATED (${escDetail})</span>`;
         } else {
           outcomeHtml = `<span class="badge badge-blocked">✖ ${c.status}</span>`;
