@@ -117,13 +117,15 @@ def main():
     print("=" * 60)
     print(f"{'Metric':<30} | {'Baseline':<12} | {'AI Agent':<12}")
     print("-" * 60)
-    print(f"{'Recovery Rate (%)':<30} | {baseline_report.recovery_rate_pct:>10.1f}% | {agent_report.recovery_rate_pct:>10.1f}%")
+    print(f"{'Recovery Rate (Full Batch)':<30} | {baseline_report.recovery_rate_pct:>10.1f}% | {agent_report.recovery_rate_pct:>9.1f}% ({agent_report.cases_recovered}/{agent_report.total_cases})")
+    print(f"{'Recovery Rate (Addressable)*':<30} | {'N/A (Breached)':>11} | {agent_report.addressable_recovery_rate_pct:>9.1f}% ({agent_report.cases_recovered}/{agent_report.addressable_cases})")
     print(f"{'Amount Recovered (₹)':<30} | ₹{baseline_report.amount_recovered:>9,.2f} | ₹{agent_report.amount_recovered:>9,.2f}")
     print(f"{'Avg Resolution Time':<30} | {str(baseline_report.avg_hours_to_resolution) + ' hrs':>11} | {str(agent_report.avg_hours_to_resolution) + ' hrs':>11}")
     print(f"{'Compliance Violations':<30} | {baseline_report.total_compliance_violations:>11} | {agent_report.total_compliance_violations:>11}")
     print(f"{'Cases Hard-Stopped':<30} | {baseline_report.cases_hard_stopped:>11} | {agent_report.cases_hard_stopped:>11}")
     print(f"{'Cases Escalated':<30} | {0:>11} | {agent_report.cases_escalated:>11}")
     print("=" * 60)
+    print(f"*Addressable rate excludes {agent_report.pre_pipeline_stops} pre-pipeline hard stops (fraud, dispute, attempt-cap).")
 
     # Clean up test artifacts
     if os.path.exists("data/agent_audit_log.json"):

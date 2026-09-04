@@ -595,12 +595,16 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 
       const totalRecoveredINR = recovered.reduce((sum, c) => sum + (c.amount_recovered || 0), 0);
       const overallRecoveryRate = ((recovered.length / (total || 1)) * 100).toFixed(1) + "%";
+      const addressableTotal = total - prepipeStops.length;
+      const addressableRecoveryRate = ((recovered.length / (addressableTotal || 1)) * 100).toFixed(1) + "%";
 
       // Render KPIs
       document.getElementById('kpi-total-cases').textContent = total;
       document.getElementById('kpi-case-split').textContent = `${paymentCount} Payments / ${b2bCount} B2B`;
       document.getElementById('kpi-revenue-recovered').textContent = formatINR(totalRecoveredINR);
-      document.getElementById('kpi-recovery-rate').textContent = `${overallRecoveryRate} recovered (${recovered.length}/${total})`;
+      const recRateEl = document.getElementById('kpi-recovery-rate');
+      recRateEl.textContent = `${overallRecoveryRate} full (${recovered.length}/${total}) • ${addressableRecoveryRate} addressable (${recovered.length}/${addressableTotal})`;
+      recRateEl.title = `Addressable rate (${addressableRecoveryRate}) excludes ${prepipeStops.length} pre-pipeline stops for fraud, dispute & attempt caps`;
       document.getElementById('kpi-prepipe-stops').textContent = prepipeStops.length;
       document.getElementById('kpi-midflow-escalated').textContent = midflowEscalations.length;
       document.getElementById('kpi-midflow-subtext').textContent = `${gateIntercepts.length} Gate Intercepts • ${midflowEscalations.length - gateIntercepts.length} Policy/Conf`;

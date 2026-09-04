@@ -92,7 +92,20 @@ class AgentBatchReport:
     cases_hard_stopped: int
     cases_escalated: int
     diagnosis_disagreements: int = 0
+    pre_pipeline_stops: int = 0
     individual_outcomes: list[CaseOutcome] = field(default_factory=list)
+
+    @property
+    def addressable_cases(self) -> int:
+        """Total cases minus pre-pipeline hard stops (fraud, dispute, attempt caps)."""
+        return max(0, self.total_cases - self.pre_pipeline_stops)
+
+    @property
+    def addressable_recovery_rate_pct(self) -> float:
+        """Recovery rate computed dynamically over addressable cases only."""
+        if self.addressable_cases == 0:
+            return 0.0
+        return (self.cases_recovered / self.addressable_cases) * 100.0
 
     @property
     def avg_hours_to_resolution(self) -> Optional[float]:
@@ -522,6 +535,14 @@ def process_payment_batch(
             or "Majority diagnosis (2/3" in o.diagnosis.reasoning
         )
     )
+    prepipe_stops = sum(
+        1 for o in outcomes
+        if o.escalation_reason in {
+            "fraud_stop_skip",
+            "dispute_skip",
+            "attempt_cap_reached_at_start",
+        }
+    )
 
     return AgentBatchReport(
         scenario=scenario_name,
@@ -536,6 +557,7 @@ def process_payment_batch(
         cases_hard_stopped=cases_stopped,
         cases_escalated=cases_escalated,
         diagnosis_disagreements=diag_disagreements,
+        pre_pipeline_stops=prepipe_stops,
         individual_outcomes=outcomes,
     )
 
@@ -579,6 +601,14 @@ def process_b2b_batch(
             or "Majority diagnosis (2/3" in o.diagnosis.reasoning
         )
     )
+    prepipe_stops = sum(
+        1 for o in outcomes
+        if o.escalation_reason in {
+            "fraud_stop_skip",
+            "dispute_skip",
+            "attempt_cap_reached_at_start",
+        }
+    )
 
     return AgentBatchReport(
         scenario=scenario_name,
@@ -593,6 +623,7 @@ def process_b2b_batch(
         cases_hard_stopped=cases_stopped,
         cases_escalated=cases_escalated,
         diagnosis_disagreements=diag_disagreements,
+        pre_pipeline_stops=prepipe_stops,
         individual_outcomes=outcomes,
     )
 
@@ -649,7 +680,9 @@ def print_agent_batch_report(report: AgentBatchReport) -> None:
     print(f"Total cases:              {report.total_cases}")
     print(f"Total ₹ at risk:          ₹{report.total_amount_at_risk:,.2f}")
     print(f"Cases recovered:          {report.cases_recovered} "
-          f"({report.recovery_rate_pct:.1f}%)")
+          f"({report.recovery_rate_pct:.1f}% full batch, {report.cases_recovered}/{report.total_cases} | "
+          f"{report.addressable_recovery_rate_pct:.1f}% addressable, {report.cases_recovered}/{report.addressable_cases})")
+    print(f"Addressable exclusion:    {report.pre_pipeline_stops} pre-pipeline hard stops excluded (fraud, dispute, attempt-cap)")
     print(f"₹ recovered:             ₹{report.amount_recovered:,.2f}")
     print(f"Avg resolution time:      "
           f"{f'{report.avg_resolution_time} {report.resolution_unit}' if report.avg_resolution_time is not None else 'N/A'}")

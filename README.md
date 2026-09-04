@@ -22,11 +22,13 @@
 - [What This Doesn't Do Yet](#what-this-doesnt-do-yet)
 - [Adaptation](#adaptation--honest-description)
 - [What "Learning" Means in This System](#what-learning-means-in-this-system)
+- [Where We Chose Not to Use AI](#where-we-chose-not-to-use-ai)
+- [Confidence Calibration Check](#confidence-calibration-check)
 - [Failure Modes — What Breaks and What We Do About It](#failure-modes--what-breaks-and-what-we-do-about-it)
 
 ---
 
-**Sentinel** is an autonomous, dual-engine AI revenue recovery system built for Track 3 of the **Razorpay AI Buildathon**. Tested across N=30 payment-failure cases and N=50 B2B receivable cases (80 total).
+**Sentinel** is an autonomous, dual-engine AI revenue recovery system built for Track 3 of the **Razorpay AI Buildathon**. Tested across N=30 payment-failure cases and N=50 B2B receivable cases (80 total). Across the full benchmark, Sentinel achieves a **30.0% (24/80) full-batch recovery rate** and a **35.8% (24/67) addressable recovery rate** — safely excluding 13 cases correctly blocked before any attempt for fraud, dispute, or attempt-cap reasons — with **0 compliance violations**.
 
 > **⚠️ ALL DATA IN THIS PROJECT IS SIMULATED.**
 > No real Razorpay data, real payment transactions, or real customer information
@@ -57,7 +59,7 @@ Both benchmarks evaluate against identical synthetic datasets anchored to `confi
 
 | Metric | Naive Baseline | AI Recovery Agent | Difference & Impact |
 | :--- | :---: | :---: | :--- |
-| **Recovery Rate (%)** | 60.0% (18/30) | **36.7% (11/30)** | High-precision recovery on compliant cases |
+| **Recovery Rate (%)** | 60.0% (18/30) | **36.7% (11/30) full-batch**<br>**45.8% (11/24) addressable** | **36.7%** of all 30 cases recovered; **45.8%** of the 24 addressable cases recovered (excluding 6 cases correctly blocked before any attempt for fraud or initial attempt caps) |
 | **Amount Recovered (₹)** | ₹203,778.98 | **₹154,082.22** | Clean recovery without illegal retries |
 | **Avg Resolution Time** | 7.1 hrs | **8.9 hrs** | Includes smart liquidity cooling delays |
 | **Compliance Violations** | 4 violations | **0 violations** | 100% Deterministic Gate enforcement |
@@ -68,7 +70,7 @@ Both benchmarks evaluate against identical synthetic datasets anchored to `confi
 
 | Metric | Naive Baseline | AI Recovery Agent | Difference & Impact |
 | :--- | :---: | :---: | :--- |
-| **Recovery Rate (%)** | 36.0% (18/50) | **26.0% (13/50)** | Compliant collections honoring disputes & caps |
+| **Recovery Rate (%)** | 36.0% (18/50) | **26.0% (13/50) full-batch**<br>**30.2% (13/43) addressable** | **26.0%** of all 50 cases recovered; **30.2%** of the 43 addressable cases recovered (excluding 7 cases correctly blocked before any attempt for fraud or active disputes) |
 | **Amount Recovered (₹)** | ₹9,773,215.13 | **₹8,938,719.44** | ₹8.94M recovered safely without debtor harassment |
 | **Avg Resolution Time** | 10.6 days | **8.1 days** | **2.5 days faster** on legitimate collections |
 | **Compliance Violations** | 7 violations | **0 violations** | Zero RBI Fair Practices Code breaches |
@@ -149,6 +151,18 @@ RESULT → MEMORY + ANALYTICS (windowed strategy success rates)
       ↓
 ADAPTATION → STOPPING-RULE CHECK
 ```
+
+### Shared Dual-Engine Pipeline
+
+Both **Failed Payments** (`FAILED_PAYMENT`) and **B2B Receivables** (`B2B_RECEIVABLE`) flow through an identical five-stage pipeline. Domain differences are strictly confined to schema-guided prompt construction and bounded action-menu selection — the core orchestration, verification, and execution logic is never duplicated:
+
+1. **`process_case()` in [`core/orchestrator.py`](core/orchestrator.py)**: Coordinates the case lifecycle — evaluating pre-pipeline skip conditions (fraud, disputes, attempt ceilings), orchestrating the multi-attempt adaptive loop, applying fallback ladders, and managing terminal outcome states.
+2. **`diagnose()` in [`agents/diagnosis.py`](agents/diagnosis.py)**: Performs multi-sample self-consistency diagnostic passes across distinct analytical perspectives (`FACTUAL`, `COUNTER_INDICATOR`, `CONSERVATIVE`) to classify root cause and compute calibrated consensus confidence.
+3. **`propose_strategy()` in [`agents/strategy.py`](agents/strategy.py)**: Consumes the diagnosis, debtor/customer history, relationship tier, and historical memory statistics to propose exactly one compliant action from the domain-specific bounded menu.
+4. **`run_all_checks()` in [`core/compliance.py`](core/compliance.py)**: Independently evaluates proposed actions against hard regulatory rules, statutory contact windows, attempt caps, concurrency locks, and confidence thresholds before any action is dispatched.
+5. **`execute()` in [`agents/execution.py`](agents/execution.py)**: Dispatches the verified recovery action under atomic idempotency protection with exception safety, returning a structured execution result.
+
+*(For detailed architectural boundaries on where determinism replaces probabilistic LLM inference, see [Where We Chose Not to Use AI](#where-we-chose-not-to-use-ai).)*
 
 ### Why the Deterministic Gate Matters
 
@@ -261,8 +275,12 @@ The AI Recovery Agent's bounded retry loop initializes directly from each case's
 ├── run_phase1.py           # Phase 1 verification script
 ├── run_phase2.py           # Phase 2 benchmark & comparison script (Payments)
 ├── run_phase3.py           # Phase 3 benchmark & comparison script (B2B)
-├── calibration_check.py    # Confidence calibration audit script
 ├── demo.py                 # 5-Minute interactive demo script (Beats 1-5)
+├── scripts/
+│   ├── assert_baseline.py         # Zero-drift regression assertion
+│   ├── confidence_calibration.py  # Prompt 9 calibration evaluation & plot
+│   ├── generate_audit_viewer.py   # Standalone HTML audit trail visualizer
+│   └── run_live_validation.py     # End-to-end live Gemini validation
 ├── requirements.txt
 └── README.md
 ```
@@ -319,6 +337,35 @@ In Sentinel, **"learning" has an explicit and bounded definition**:
 - **Lookup Table Updates, Not Weight Updates**: Learning in this system strictly means updating a per-(category, action) win-rate lookup table (`core/memory.py`) from observed historical outcomes. It **does not** fine-tune or retrain the underlying LLM, nor does it modify any model weights.
 - **Human Engineering Required for New Categories**: The system does not autonomously invent new classification labels. Introducing a genuinely new case category or failure scenario requires an engineer to explicitly define it in `DiagnosisCategory` (`agents/diagnosis.py`) and update the corresponding policy matrices in `MockLLMClient` (`agents/llm_client.py`).
 - **Prompt Injection in Live Runs**: The recency-weighted statistics computed from this lookup table are formatted and injected as dynamic context into strategy generation prompts for live models (see [How the Numbers Were Produced](#how-the-numbers-were-produced) for how this differs between the deterministic mock benchmark and live runs).
+
+---
+
+## Where We Chose Not to Use AI
+
+In an autonomous financial recovery engine, utilizing generative AI for deterministic constraints creates unacceptable operational and regulatory risk. Sentinel explicitly restricts generative LLMs to genuine ambiguity (identifying root causes from noisy signals and calibrating conversational/strategy tone), while enforcing all boundaries through deterministic, non-AI code:
+
+1. **The Hard-Rule Compliance Gate (`core/compliance.py`)**: Statutory boundaries — including RBI contact-hour windows (8 AM – 7 PM IST), attempt ceilings (5 for payments, 4 for B2B), and mandatory dispute/fraud halts — are implemented in pure deterministic Python because legal compliance must be an unbendable invariant rather than a probabilistic LLM prediction subject to prompt drift or hallucination.
+2. **The Idempotency & Concurrency Lock (`core/compliance.py` / `AuditLog`)**: Atomic reservation state is protected under re-entrant threading locks (`threading.Lock`) before execution because preventing double-debiting and duplicate debtor communications during near-simultaneous webhook retries requires strict transactional atomicity that probabilistic language models cannot guarantee.
+3. **The Win-Rate Statistics Tracker (`core/memory.py`)**: Historical strategy performance and category success rates are tracked via Bayesian arithmetic and deterministic sliding windows because injected memory context must represent mathematical empirical truth rather than model-generated summaries of past performance.
+4. **Deterministic Confidence-Threshold Enforcement (`check_confidence_threshold` in `core/compliance.py`)**: The `0.85` regulatory confidence threshold (sourced directly from `config/rules_config.json`) is evaluated as an independent, deterministic gate check on the AI-produced confidence score, ensuring the decision of whether a proposal clears the safety floor is an immutable architectural backstop rather than an AI decision left to the model itself.
+
+---
+
+## Confidence Calibration Check
+
+To verify whether Sentinel's diagnostic confidence scores correlate with real-world outcomes, all 80 benchmark cases were evaluated across 5 standard confidence buckets using [`scripts/confidence_calibration.py`](scripts/confidence_calibration.py):
+
+| Confidence Bucket | Total Cases | Recovered Cases | Empirical Win Rate (%) | Avg Confidence | Primary Outcome Breakdown |
+| :--- | :---: | :---: | :---: | :---: | :--- |
+| **0.0 - 0.2** | 19 | 0 | **0.0%** (0/19) | 0.00 | 7 escalated, 6 stopped, 6 unrecovered (Pre-pipeline filtered) |
+| **0.2 - 0.4** | 0 | 0 | **0.0%** (0/0) | — | Zero cases assigned to this band |
+| **0.4 - 0.6** | 0 | 0 | **0.0%** (0/0) | — | Zero cases assigned to this band |
+| **0.6 - 0.8** | 1 | 0 | **0.0%** (0/1) | 0.79 | 1 escalated (`B2B-cde22f1c-56b` capped at 0.79 via 2/3 majority vote) |
+| **0.8 - 1.0** | 60 | 24 | **40.0%** (24/60) | 0.88 | 24 recovered, 24 escalated, 12 failed (Autonomous execution tier) |
+
+![Confidence Calibration Curve](reports/confidence_calibration.png)
+
+> **Honest Calibration Assessment**: In this dataset, confidence functions primarily as an **all-or-nothing gating filter rather than a continuous linear predictor of payment success**: sub-0.80 cases have a 0.0% recovery rate because the safety architecture routes them directly to escalations or hard stops, while cases in the autonomous tier (0.80–1.0) achieve a 40.0% empirical recovery rate because real recovery depends on debtor liquidity and banking rails rather than model certainty.
 
 ---
 
