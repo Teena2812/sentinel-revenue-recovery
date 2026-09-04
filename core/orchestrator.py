@@ -297,6 +297,7 @@ def process_case(
                 audit_log,
                 current_time=sim_time,
                 reserve_idempotency=should_reserve,
+                confidence=proposal.confidence,
             )
             audit_log.record_gate_decision(_gate_decision_to_entry(gate))
             final_gate = gate
@@ -321,6 +322,21 @@ def process_case(
                 )
 
             if gate.approved:
+                break
+
+            # Prompt 7: Hard confidence gate rejection routes directly to human escalation
+            if any(v.rule_name == "confidence_threshold" for v in gate.violations):
+                last_esc_reason = "low_confidence"
+                proposal.proposed_action = ActionType.ESCALATE_HUMAN
+                term_gate = run_all_checks(
+                    case,
+                    ActionType.ESCALATE_HUMAN,
+                    audit_log.get_execution_log(),
+                    current_time=sim_time,
+                    confidence=proposal.confidence,
+                )
+                audit_log.record_gate_decision(_gate_decision_to_entry(term_gate))
+                final_gate = term_gate
                 break
 
             if not initial_gate_violation and gate.violations:

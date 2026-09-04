@@ -77,13 +77,10 @@ _RULES = _load_rules_config()
 # real wall-clock time, ensuring zero calendar drift across different runs or sessions.
 SIMULATED_CURRENT_TIME = datetime(2026, 8, 24, 12, 0, 0)
 
-# --- Confidence & Auto-Execute ---
+# --- Confidence & Auto-Execute (backed by config/rules_config.json) ---
 # Auto-execute only when ALL of: confidence >= threshold, no conflicting signal,
-# gate passes, action is reversible/low-risk. (Addendum §3)
-# NOTE: confidence.threshold is forward-provisioned in config/rules_config.json for Prompt 7.
-# It is NOT wired into any compliance gate here. Prompt 7 is the reviewed step where
-# gate enforcement is added consciously.
-CONFIDENCE_THRESHOLD = 0.85
+# gate passes, action is reversible/low-risk. (Prompt 7, Addendum §3)
+CONFIDENCE_THRESHOLD = _RULES["confidence"]["threshold"]
 
 # --- Cost Thresholds (backed by config/rules_config.json) ---
 # Below these amounts, skip the full LLM diagnosis pipeline — use cheap

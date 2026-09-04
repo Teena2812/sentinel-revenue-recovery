@@ -122,6 +122,51 @@ class TestFailureModes(unittest.TestCase):
         self.assertEqual(len(violations), 1)
         self.assertIn("INVALID_ACTION_REJECTED", violations[0].reason)
 
+    def test_compliance_gate_independently_blocks_low_confidence_action(self):
+        """Prompt 7: Direct call to compliance gate with high-friction action and sub-threshold confidence.
+
+        Proves the Deterministic Compliance Gate independently blocks low-confidence recovery
+        actions even when the strategy agent's soft Fallback Ladder is completely bypassed.
+        """
+        case = _make_test_case("PAY-CONF-GATE-BYPASS-001")
+        # ActionType.RETRY_NOW with confidence 0.70 (< 0.85) bypassing strategy agent
+        gate_decision = run_all_checks(
+            case,
+            ActionType.RETRY_NOW,
+            self.audit_log.get_execution_log(),
+            current_time=config.SIMULATED_CURRENT_TIME,
+            confidence=0.70,
+        )
+
+        self.assertFalse(gate_decision.approved)
+        violations = [v for v in gate_decision.violations if v.rule_name == "confidence_threshold"]
+        self.assertEqual(len(violations), 1)
+        self.assertIn("LOW_CONFIDENCE_BLOCKED", violations[0].reason)
+
+    def test_compliance_gate_allows_high_confidence_action(self):
+        """Prompt 7: High-confidence recovery action passes deterministic gate check."""
+        case = _make_test_case("PAY-CONF-HIGH-001")
+        gate_decision = run_all_checks(
+            case,
+            ActionType.RETRY_NOW,
+            self.audit_log.get_execution_log(),
+            current_time=config.SIMULATED_CURRENT_TIME,
+            confidence=0.90,
+        )
+        self.assertTrue(gate_decision.approved)
+
+    def test_compliance_gate_allows_human_escalation_at_low_confidence(self):
+        """Prompt 7: Terminal/passive actions (ESCALATE_HUMAN) remain exempt from low-confidence blocking."""
+        case = _make_test_case("PAY-CONF-ESC-001")
+        gate_decision = run_all_checks(
+            case,
+            ActionType.ESCALATE_HUMAN,
+            self.audit_log.get_execution_log(),
+            current_time=config.SIMULATED_CURRENT_TIME,
+            confidence=0.20,
+        )
+        self.assertTrue(gate_decision.approved)
+
     def test_malformed_unparseable_llm_response(self):
         """Scenario 2: LLM API returns corrupted/truncated JSON -> catches, zero crash, LLM_RESPONSE_UNPARSEABLE."""
         case = _make_test_case("PAY-MALFORMED-001")

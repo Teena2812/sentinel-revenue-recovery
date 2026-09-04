@@ -14,6 +14,7 @@ from datetime import datetime
 
 from core.compliance import (
     check_attempt_cap,
+    check_confidence_threshold,
     check_contact_hours,
     check_cost_threshold,
     check_dispute_stop,
@@ -414,6 +415,32 @@ class TestRunAllChecks(unittest.TestCase):
         )
         self.assertTrue(decision.approved)
         self.assertEqual(len(decision.violations), 0)
+
+
+class TestConfidenceGatingCheck(unittest.TestCase):
+    """Test suite for Prompt 7 confidence-gated auto-escalation check."""
+
+    def test_active_action_blocked_below_threshold(self):
+        result = check_confidence_threshold(ActionType.RETRY_NOW, confidence=0.84)
+        self.assertFalse(result.passed)
+        self.assertEqual(result.rule_name, "confidence_threshold")
+        self.assertIn("LOW_CONFIDENCE_BLOCKED", result.reason)
+
+    def test_active_action_allowed_at_or_above_threshold(self):
+        result_exact = check_confidence_threshold(ActionType.RETRY_NOW, confidence=0.85)
+        self.assertTrue(result_exact.passed)
+        result_above = check_confidence_threshold(ActionType.RETRY_NOW, confidence=0.90)
+        self.assertTrue(result_above.passed)
+
+    def test_terminal_passive_actions_exempt(self):
+        for act in [ActionType.ESCALATE_HUMAN, ActionType.STOP, ActionType.WAIT]:
+            res = check_confidence_threshold(act, confidence=0.10)
+            self.assertTrue(res.passed)
+            self.assertIn("exempt", res.reason)
+
+    def test_none_confidence_passes_by_default(self):
+        res = check_confidence_threshold(ActionType.RETRY_NOW, confidence=None)
+        self.assertTrue(res.passed)
 
 
 if __name__ == "__main__":

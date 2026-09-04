@@ -1,6 +1,6 @@
 # Sentinel — AI Revenue Recovery Agent
 
-![Tests](https://img.shields.io/badge/Tests-133%2F133%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/Tests-140%2F140%20passing-brightgreen)
 ![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
 ![Buildathon](https://img.shields.io/badge/Razorpay%20AI%20Buildathon-Track%203-orange)
 
@@ -45,7 +45,7 @@ An estimated **₹8.1 trillion** is currently locked in delayed payments to Indi
 
 Both benchmarks evaluate against identical synthetic datasets anchored to `config.SIMULATED_CURRENT_TIME = 2026-08-24 12:00:00 IST` with isolated RNG streams (`seed=42`).
 
-**133/133 tests passing, reproducible across independent runs.**
+**140/140 tests passing, reproducible across independent runs.**
 
 ### Benchmark Visualizations
 
@@ -341,5 +341,9 @@ In a production revenue recovery engine, resilience is measured by how safely th
 4. **Near-Simultaneous Double-Processing Race Conditions (`CONCURRENT_EXECUTION_BLOCKED`)**  
    *What happens:* Webhook delivery retries or multiple distributed worker nodes may attempt to process the exact same invoice or failed transaction at the exact same millisecond.  
    *What Sentinel does:* Sentinel enforces thread-safe atomic check-and-reserve idempotency under a re-entrant lock (`check_and_reserve_idempotency`). The first arriving thread atomically claims the case attempt and marks it `IN_FLIGHT`. Any competing thread reaching the gate at the identical instant is immediately blocked with `CONCURRENT_EXECUTION_BLOCKED` before firing duplicate debit attempts or harassing debtor reminders.
+
+5. **Sub-Threshold / Low-Confidence Proposals (`LOW_CONFIDENCE_BLOCKED`)**  
+   *What happens:* A generative model might propose an active recovery action with low statistical confidence (below the regulatory bar of 0.85), or an unvalidated caller might bypass the Strategy agent's internal Fallback Ladder.  
+   *What Sentinel does:* The Deterministic Compliance Gate independently evaluates `check_confidence_threshold` against `config.CONFIDENCE_THRESHOLD` (`0.85`, sourced from `config/rules_config.json`). If confidence is sub-threshold, the gate independently rejects the action with `LOW_CONFIDENCE_BLOCKED` and routes directly to the human operations queue with the explicit reason code `low_confidence`. Safe passive actions (`ESCALATE_HUMAN`, `STOP`, `WAIT`) remain exempt, ensuring the system can always stand down safely.
 
 

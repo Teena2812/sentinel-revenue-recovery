@@ -434,6 +434,53 @@ CONTACT_ACTIONS = {
 
 
 # ---------------------------------------------------------------------------
+# Confidence Threshold Check (Prompt 7)
+# ---------------------------------------------------------------------------
+
+def check_confidence_threshold(
+    proposed_action: ActionType,
+    confidence: Optional[float] = None,
+) -> ComplianceResult:
+    """Verify that the proposed recovery action meets the confidence threshold.
+
+    Deterministic Gate Check (Prompt 7, Addendum §3).
+    Safe terminal / passive actions (STOP, WAIT, ESCALATE_HUMAN) are exempt from
+    confidence blocking — a low confidence score must never prevent the system from
+    safely standing down or routing to human operations.
+    """
+    if proposed_action in {ActionType.STOP, ActionType.WAIT, ActionType.ESCALATE_HUMAN}:
+        return ComplianceResult(
+            passed=True,
+            rule_name="confidence_threshold",
+            reason=f"Action '{proposed_action.value}' is exempt from confidence gating.",
+        )
+
+    if confidence is None:
+        return ComplianceResult(
+            passed=True,
+            rule_name="confidence_threshold",
+            reason="No confidence score provided; check passed by default.",
+        )
+
+    if confidence < config.CONFIDENCE_THRESHOLD:
+        return ComplianceResult(
+            passed=False,
+            rule_name="confidence_threshold",
+            reason=(
+                f"LOW_CONFIDENCE_BLOCKED: Proposed action '{proposed_action.value}' "
+                f"confidence ({confidence:.2f}) is below threshold ({config.CONFIDENCE_THRESHOLD:.2f}). "
+                f"Action blocked by deterministic compliance gate."
+            ),
+        )
+
+    return ComplianceResult(
+        passed=True,
+        rule_name="confidence_threshold",
+        reason=f"Confidence ({confidence:.2f}) meets or exceeds threshold ({config.CONFIDENCE_THRESHOLD:.2f}).",
+    )
+
+
+# ---------------------------------------------------------------------------
 # Aggregate Gate Check
 # ---------------------------------------------------------------------------
 
@@ -443,6 +490,7 @@ def run_all_checks(
     execution_log: Union[dict[str, dict], Any],
     current_time: Optional[datetime] = None,
     reserve_idempotency: bool = False,
+    confidence: Optional[float] = None,
 ) -> GateDecision:
     """Run every applicable compliance check for a proposed action.
 
@@ -472,6 +520,9 @@ def run_all_checks(
 
     # 5. Idempotency (always checked, optionally with atomic reservation)
     results.append(check_idempotency(case, execution_log, reserve=reserve_idempotency, action=proposed_action))
+
+    # 6. Confidence threshold (Prompt 7 — hard gate backstop on active recovery actions)
+    results.append(check_confidence_threshold(proposed_action, confidence=confidence))
 
     approved = all(r.passed for r in results)
 
