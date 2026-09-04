@@ -102,6 +102,15 @@ class MockLLMClient(LLMClient):
         if "B2B_RECEIVABLE" in prompt or "Invoice ID:" in prompt:
             return self._handle_b2b_diagnosis(prompt, tier)
 
+        # Multi-sample perspective: counter-indicator on conflicting evidence
+        if "PERSPECTIVE: COUNTER_INDICATOR" in prompt and "Conflicting Signals: None" not in prompt:
+            return {
+                "root_cause": "Contextual counter-indicators indicate customer requested pause or support friction.",
+                "category": "SYSTEMIC_RISK",
+                "confidence": 0.88,
+                "reasoning": "Counter-indicator perspective prioritized contradictory support ticket and risk signals.",
+            }
+
         # Payments Diagnosis
         failure_code = "INSUFFICIENT_FUNDS"
         for fc in FailureCode:
@@ -216,6 +225,15 @@ class MockLLMClient(LLMClient):
         return fc_data.get(tier, fc_data["MEDIUM"])
 
     def _handle_b2b_diagnosis(self, prompt: str, tier: str) -> dict[str, Any]:
+        # Multi-sample perspective: counter-indicator on conflicting evidence
+        if "PERSPECTIVE: COUNTER_INDICATOR" in prompt and "Conflicting Signals: None" not in prompt:
+            return {
+                "root_cause": "Contextual counter-indicators suggest underlying deliverable dispute or broken commitment.",
+                "category": "DISPUTED_DELIVERABLE",
+                "confidence": 0.86,
+                "reasoning": "Counter-indicator perspective detected contradictory debtor signals.",
+            }
+
         # Identify B2B scenario triggers
         if "Dispute Flag: True" in prompt:
             return {

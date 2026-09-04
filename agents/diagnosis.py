@@ -8,6 +8,7 @@ the root cause of revenue at risk.
 
 from __future__ import annotations
 
+from collections import Counter
 import enum
 import logging
 from dataclasses import dataclass
@@ -64,8 +65,32 @@ DIAGNOSIS_SCHEMA = {
 }
 
 
-def _build_diagnosis_prompt(case: Case) -> str:
+def _build_diagnosis_prompt(case: Case, perspective: str = "FACTUAL") -> str:
     tier_val = case.relationship_tier.value if case.relationship_tier else "MEDIUM"
+
+    conflicts_text = "None"
+    if getattr(case, "conflicting_signals", None):
+        conflicts_text = "; ".join(
+            f"{s.source_a} ('{s.signal_a}') vs {s.source_b} ('{s.signal_b}'): {s.description}"
+            for s in case.conflicting_signals
+        )
+
+    if perspective == "COUNTER_INDICATOR":
+        perspective_header = (
+            "PERSPECTIVE: COUNTER_INDICATOR\n"
+            "Examine all contextual counter-indicators, contradictory notes, support tickets, and disputes. "
+            "If contradictory evidence exists, prioritize identifying underlying friction over the primary switch code.\n\n"
+        )
+    elif perspective == "CONSERVATIVE":
+        perspective_header = (
+            "PERSPECTIVE: CONSERVATIVE\n"
+            "Evaluate from a strict compliance and relationship preservation perspective, avoiding optimistic retry assumptions.\n\n"
+        )
+    else:
+        perspective_header = (
+            "PERSPECTIVE: FACTUAL\n"
+            "Evaluate strictly based on confirmed technical switch codes and direct evidence.\n\n"
+        )
 
     if case.case_type == CaseType.FAILED_PAYMENT:
         pay_case: FailedPaymentCase = case  # type: ignore
@@ -78,7 +103,7 @@ def _build_diagnosis_prompt(case: Case) -> str:
                 f"Total volume: ₹{cust_hist.total_amount:,.2f}"
             )
 
-        return f"""DIAGNOSIS REQUEST
+        return f"""{perspective_header}DIAGNOSIS REQUEST
 Case ID: {pay_case.case_id}
 Case Type: {pay_case.case_type.value}
 Amount: ₹{pay_case.amount:,.2f}
@@ -87,6 +112,7 @@ Attempt Count: {pay_case.attempt_count}
 Customer History: {hist_summary}
 Relationship Tier: {tier_val}
 Fraud Flag: {pay_case.fraud_flag}
+Conflicting Signals: {conflicts_text}
 
 Task: Diagnose the root cause of this failed payment.
 Classify category into: TRANSIENT_NETWORK, FUNDS_UNAVAILABLE, AUTH_EXPIRED, SYSTEMIC_RISK, or UNKNOWN.
@@ -109,7 +135,7 @@ Provide confidence (0.0-1.0) and reasoning.
             status_str = "ACTIVE" if p.kept is None else ("KEPT" if p.kept else "BROKEN")
             promise_info = f"Promised Date: {p.promised_date.strftime('%Y-%m-%d')}, Amount: ₹{p.promised_amount:,.2f}, Status: {status_str}"
 
-        return f"""DIAGNOSIS REQUEST
+        return f"""{perspective_header}DIAGNOSIS REQUEST
 Case ID: {b2b_case.case_id}
 Case Type: {b2b_case.case_type.value}
 Invoice ID: {b2b_case.invoice_id}
@@ -122,6 +148,7 @@ Relationship Tier: {tier_val}
 Dispute Flag: {b2b_case.dispute_flag}
 Fraud Flag: {b2b_case.fraud_flag}
 Promise-to-Pay: {promise_info}
+Conflicting Signals: {conflicts_text}
 
 Task: Diagnose the root cause of this overdue B2B invoice.
 Classify category into: CASH_FLOW_MISMATCH, ADMINISTRATIVE_DELAY, DISPUTED_DELIVERABLE, CHRONIC_DELINQUENCY, COMMUNICATION_BREAKDOWN, or UNKNOWN.
@@ -129,11 +156,8 @@ Provide confidence (0.0-1.0) and reasoning.
 """
 
 
-def diagnose(case: Case, llm_client: LLMClient) -> DiagnosisResult:
-    """Diagnose the root cause of a failed payment or B2B receivable case."""
-    prompt = _build_diagnosis_prompt(case)
-
-    # Attempt 1
+def _diagnose_single_sample(case: Case, prompt: str, llm_client: LLMClient) -> DiagnosisResult:
+    """Execute a single diagnosis LLM call with retry and schema validation."""
     raw_response: Optional[dict[str, Any]] = None
     try:
         raw_response = llm_client.call(prompt, DIAGNOSIS_SCHEMA)
@@ -152,11 +176,7 @@ def diagnose(case: Case, llm_client: LLMClient) -> DiagnosisResult:
                 reasoning="Automated fallback due to LLM invocation/parsing failure.",
             )
 
-    # Parse and validate schema fields
     try:
-        # validate_diagnosis_output raises SchemaValidationError (subclass of Exception)
-        # if the response has wrong types, missing fields, or invalid enum values.
-        # Caught by the enclosing except Exception below — same fallback path as unparseable JSON.
         validate_diagnosis_output(raw_response)
         cat_str = raw_response.get("category", "UNKNOWN")
         try:
@@ -192,3 +212,68 @@ def diagnose(case: Case, llm_client: LLMClient) -> DiagnosisResult:
             confidence=0.0,
             reasoning=f"LLM_RESPONSE_UNPARSEABLE: Parsing error: {parse_err}",
         )
+
+
+def diagnose(case: Case, llm_client: LLMClient, num_samples: int = 3) -> DiagnosisResult:
+    """Diagnose the root cause with multi-sample self-consistency voting (Prompt 6).
+
+    Executes num_samples perspective passes:
+    - 3/3 unanimous: full consensus confidence preserved.
+    - 2/3 majority: majority category adopted, but confidence is strictly capped at 0.80
+      (< 0.85 threshold) because a dissenting vote indicates uncertainty requiring human oversight.
+    - 1/1/1 split: category set to UNKNOWN, confidence = 0.50, and reasoning flagged with
+      SELF_CONSISTENCY_DISAGREEMENT.
+    """
+    if num_samples <= 1:
+        prompt = _build_diagnosis_prompt(case, perspective="FACTUAL")
+        return _diagnose_single_sample(case, prompt, llm_client)
+
+    perspectives = ["FACTUAL", "COUNTER_INDICATOR", "CONSERVATIVE"][:num_samples]
+    samples: list[DiagnosisResult] = []
+    for p in perspectives:
+        prompt = _build_diagnosis_prompt(case, perspective=p)
+        samples.append(_diagnose_single_sample(case, prompt, llm_client))
+
+    # Voting & Consensus Logic
+    cat_counts = Counter(s.category for s in samples)
+    top_cat, top_count = cat_counts.most_common(1)[0]
+
+    # 1. Unanimous Consensus (3/3)
+    if top_count == 3:
+        avg_conf = sum(s.confidence for s in samples) / 3.0
+        return DiagnosisResult(
+            case_id=case.case_id,
+            root_cause=samples[0].root_cause,
+            category=top_cat,
+            confidence=round(avg_conf, 2),
+            reasoning=f"Consensus diagnosis (3/3 agreement across perspectives): {samples[0].reasoning}",
+        )
+
+    # 2. Majority Consensus (2/3) — strictly capped at 0.80 due to dissenting vote
+    if top_count == 2:
+        agreeing = [s for s in samples if s.category == top_cat]
+        dissenting = next(s for s in samples if s.category != top_cat)
+        mean_conf = sum(s.confidence for s in agreeing) / len(agreeing)
+        # Cap strictly at 0.80 (< 0.85 threshold) to guarantee dissenting votes cannot auto-execute
+        calibrated_conf = round(min(mean_conf * 0.90, 0.80), 2)
+        return DiagnosisResult(
+            case_id=case.case_id,
+            root_cause=agreeing[0].root_cause,
+            category=top_cat,
+            confidence=calibrated_conf,
+            reasoning=(
+                f"Majority diagnosis (2/3 agreement on {top_cat.value}, dissenting: {dissenting.category.value}). "
+                f"Confidence calibrated to {calibrated_conf:.2f} (strictly capped at 0.80 due to dissenting sample)."
+            ),
+        )
+
+    # 3. Split Disagreement (1/1/1 or tie) — route to UNKNOWN at 0.50
+    split_details = ", ".join(f"{s.category.value} ({s.confidence:.2f})" for s in samples)
+    return DiagnosisResult(
+        case_id=case.case_id,
+        root_cause="Diagnostic self-consistency disagreement across independent perspective samples.",
+        category=DiagnosisCategory.UNKNOWN,
+        confidence=0.50,
+        reasoning=f"SELF_CONSISTENCY_DISAGREEMENT: Conflicting diagnostic outputs across 3 samples: {split_details}.",
+    )
+

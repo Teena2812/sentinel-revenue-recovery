@@ -91,6 +91,7 @@ class AgentBatchReport:
     total_compliance_violations: int   # Target: 0 (verified by Gate)
     cases_hard_stopped: int
     cases_escalated: int
+    diagnosis_disagreements: int = 0
     individual_outcomes: list[CaseOutcome] = field(default_factory=list)
 
     @property
@@ -514,6 +515,13 @@ def process_payment_batch(
 
     cases_stopped = sum(1 for o in outcomes if o.status == "STOPPED")
     cases_escalated = sum(1 for o in outcomes if o.status == "ESCALATED")
+    diag_disagreements = sum(
+        1 for o in outcomes
+        if o.diagnosis and (
+            "SELF_CONSISTENCY_DISAGREEMENT" in o.diagnosis.reasoning
+            or "Majority diagnosis (2/3" in o.diagnosis.reasoning
+        )
+    )
 
     return AgentBatchReport(
         scenario=scenario_name,
@@ -527,6 +535,7 @@ def process_payment_batch(
         total_compliance_violations=0,
         cases_hard_stopped=cases_stopped,
         cases_escalated=cases_escalated,
+        diagnosis_disagreements=diag_disagreements,
         individual_outcomes=outcomes,
     )
 
@@ -563,6 +572,13 @@ def process_b2b_batch(
 
     cases_stopped = sum(1 for o in outcomes if o.status == "STOPPED")
     cases_escalated = sum(1 for o in outcomes if o.status == "ESCALATED")
+    diag_disagreements = sum(
+        1 for o in outcomes
+        if o.diagnosis and (
+            "SELF_CONSISTENCY_DISAGREEMENT" in o.diagnosis.reasoning
+            or "Majority diagnosis (2/3" in o.diagnosis.reasoning
+        )
+    )
 
     return AgentBatchReport(
         scenario=scenario_name,
@@ -576,6 +592,7 @@ def process_b2b_batch(
         total_compliance_violations=0,
         cases_hard_stopped=cases_stopped,
         cases_escalated=cases_escalated,
+        diagnosis_disagreements=diag_disagreements,
         individual_outcomes=outcomes,
     )
 
@@ -639,4 +656,5 @@ def print_agent_batch_report(report: AgentBatchReport) -> None:
     print(f"Compliance violations:    {report.total_compliance_violations}")
     print(f"Cases hard-stopped:       {report.cases_hard_stopped}")
     print(f"Cases escalated:          {report.cases_escalated}")
+    print(f"Diagnosis disagreements:  {report.diagnosis_disagreements}")
     print(f"{'─' * 60}\n")

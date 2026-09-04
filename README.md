@@ -1,6 +1,6 @@
 # Sentinel — AI Revenue Recovery Agent
 
-![Tests](https://img.shields.io/badge/Tests-141%2F141%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/Tests-147%2F147%20passing-brightgreen)
 ![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
 ![Buildathon](https://img.shields.io/badge/Razorpay%20AI%20Buildathon-Track%203-orange)
 
@@ -45,7 +45,7 @@ An estimated **₹8.1 trillion** is currently locked in delayed payments to Indi
 
 Both benchmarks evaluate against identical synthetic datasets anchored to `config.SIMULATED_CURRENT_TIME = 2026-08-24 12:00:00 IST` with isolated RNG streams (`seed=42`).
 
-**141/141 tests passing, reproducible across independent runs.**
+**147/147 tests passing, reproducible across independent runs.**
 
 ### Benchmark Visualizations
 
